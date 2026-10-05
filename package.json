@@ -1,0 +1,14 @@
+{
+  "name": "wolves-without-kings",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A deterministic authority kernel for a history-bearing fictional crime-life RPG.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "demo": "node src/wolves-without-kings/demo.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
