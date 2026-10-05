@@ -430,6 +430,51 @@ Still open:
 
 - remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 22 — Tattoos, rank, and visible history
+
+Implemented:
+
+- marker state for body location, category, origin, organization relation, prison context, earned history, visibility, age, and historical band;
+- observer profiles with scoped organization and era knowledge so the same marker can be recognized, misunderstood, or ignored by different people;
+- qualitative consequences for unauthorized claims and unearned status without a universal authority token;
+- covered/concealed visibility, decade aging into old-guard history, and public projection that omits issuer, organization, recognition, misuse, and event internals;
+- hash-linked snapshots plus stale, invalid, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 75 tests, including four tattoo/status tests;
+- `tattoos.test.mjs` proves three observer-specific interpretations, prison-context history, aging, private visibility, fail-closed writes, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional social-history model. It does not encode tattoo symbolism, impersonation, evasion, violence, or real-world criminal procedure.
+
+Still open:
+
+- organization doctrine and succession, remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+## Episode 23 — Organization doctrine and succession
+
+Implemented:
+
+- doctrine rules for permitted, forbidden, tolerated, civilian, family, foreign, and police-policy bands;
+- member decisions that use personal values and knowledge scope, producing compliance, pause, or deviation with an evented consequence;
+- leadership succession scoring seniority, relationship, capability, coalition support, and discipline history;
+- consolidated, fragmented, and caretaker outcomes after retirement, death, arrest, or disappearance;
+- authorized doctrine changes, generational-tension aging, public/private governance projection, hash-linked snapshots, and fail-closed stale/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 79 tests, including four doctrine/succession tests;
+- `doctrine.test.mjs` proves three succession graphs, non-automatic compliance, authorization/time behavior, redaction, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional organization-governance model. It does not encode real-world criminal logistics, recruitment, coercion, evasion, or operational procedure.
+
+Still open:
+
+- remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 24 — Abstract drug economy and health externality
 
 Implemented:
@@ -492,6 +537,51 @@ Acceptance evidence:
 Safety boundary:
 
 - this is a fictional business-simulation model. It does not provide accounting, laundering, tax evasion, political influence, or real-world financial-crime instructions.
+
+Still open:
+
+- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 27 — World aging and environmental memory
+
+Implemented:
+
+- place state for region, type, condition, institutional attention, status, age, public/local/private memories, scars, and changing social meaning;
+- public, local, and private memory visibility with canonical condition/attention consequences;
+- seven-year era transition, persistent scars, era-layered place meaning, and time-driven renovation eligibility;
+- qualitative public projection, hash-linked snapshots, and fail-closed stale/invalid/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 95 tests, including four world-aging tests;
+- `world-aging.test.mjs` proves divergent place aging, scar persistence, private-memory redaction, era transition, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictionalized world-history model. It does not claim a factual reconstruction of Bulgaria, specific real places, or real institutional events.
+
+Still open:
+
+- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 28 — Content-pack admission and era variants
+
+Implemented:
+
+- transactional authored-pack admission for regions, NPCs, businesses, and organizations;
+- stable IDs with cross-reference validation before mutation;
+- era variants attached to stable base content and activated without replacing canonical identity;
+- public pack projection with counts and active era while authoring metadata, event history, source revisions, and unactivated variants remain private;
+- hash-linked snapshots and fail-closed stale, duplicate, missing-reference, and tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 99 tests, including four content-admission tests;
+- `content.test.mjs` proves cross-reference validation, stable era activation, no-partial-admission behavior, public projection, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional content-authoring registry. It does not claim factual geography, real-person likeness, or production-ready asset validation.
 
 Still open:
 
@@ -562,94 +652,24 @@ Safety/evidence boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
-
-## Episode 28 — Content-pack admission and era variants
-
-Implemented:
-
-- transactional authored-pack admission for regions, NPCs, businesses, and organizations;
-- stable IDs with cross-reference validation before mutation;
-- era variants attached to stable base content and activated without replacing canonical identity;
-- public pack projection with counts and active era while authoring metadata, event history, source revisions, and unactivated variants remain private;
-- hash-linked snapshots and fail-closed stale, duplicate, missing-reference, and tampered writes.
-
-Acceptance evidence:
-
-- `npm test` passes 99 tests, including four content-admission tests;
-- `content.test.mjs` proves cross-reference validation, stable era activation, no-partial-admission behavior, public projection, and snapshot integrity.
-
-Safety boundary:
-
-- this is a fictional content-authoring registry. It does not claim factual geography, real-person likeness, or production-ready asset validation.
-
-Still open:
-
-- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
-
-## Episode 27 — World aging and environmental memory
+## Episode 32 — Authority snapshot recovery
 
 Implemented:
 
-- place state for region, type, condition, institutional attention, status, age, public/local/private memories, scars, and changing social meaning;
-- public, local, and private memory visibility with canonical condition/attention consequences;
-- seven-year era transition, persistent scars, era-layered place meaning, and time-driven renovation eligibility;
-- qualitative public projection, hash-linked snapshots, and fail-closed stale/invalid/tampered writes.
+- authority snapshot restart before accepting new input;
+- packet-loss retry idempotency through per-session input sequence;
+- ordered next-input acceptance against the restored revision;
+- corrected build-log order for Episodes 22–31 so acceptance evidence follows dependency order.
 
 Acceptance evidence:
 
-- `npm test` passes 95 tests, including four world-aging tests;
-- `world-aging.test.mjs` proves divergent place aging, scar persistence, private-memory redaction, era transition, and snapshot integrity.
+- `npm test` passes 112 tests, including the authority recovery test;
+- `authority-network.test.mjs` proves restored duplicate rejection and next-sequence admission.
 
-Safety boundary:
+Boundary:
 
-- this is a fictionalized world-history model. It does not claim a factual reconstruction of Bulgaria, specific real places, or real institutional events.
-
-Still open:
-
-- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
-
-## Episode 23 — Organization doctrine and succession
-
-Implemented:
-
-- doctrine rules for permitted, forbidden, tolerated, civilian, family, foreign, and police-policy bands;
-- member decisions that use personal values and knowledge scope, producing compliance, pause, or deviation with an evented consequence;
-- leadership succession scoring seniority, relationship, capability, coalition support, and discipline history;
-- consolidated, fragmented, and caretaker outcomes after retirement, death, arrest, or disappearance;
-- authorized doctrine changes, generational-tension aging, public/private governance projection, hash-linked snapshots, and fail-closed stale/tampered writes.
-
-Acceptance evidence:
-
-- `npm test` passes 79 tests, including four doctrine/succession tests;
-- `doctrine.test.mjs` proves three succession graphs, non-automatic compliance, authorization/time behavior, redaction, and snapshot integrity.
-
-Safety boundary:
-
-- this is a fictional organization-governance model. It does not encode real-world criminal logistics, recruitment, coercion, evasion, or operational procedure.
+- this is an in-process recovery contract, not production transport, TLS, authentication, durable database, failover, moderation, or availability proof.
 
 Still open:
 
-- remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
-
-## Episode 22 — Tattoos, rank, and visible history
-
-Implemented:
-
-- marker state for body location, category, origin, organization relation, prison context, earned history, visibility, age, and historical band;
-- observer profiles with scoped organization and era knowledge so the same marker can be recognized, misunderstood, or ignored by different people;
-- qualitative consequences for unauthorized claims and unearned status without a universal authority token;
-- covered/concealed visibility, decade aging into old-guard history, and public projection that omits issuer, organization, recognition, misuse, and event internals;
-- hash-linked snapshots plus stale, invalid, and tamper rejection.
-
-Acceptance evidence:
-
-- `npm test` passes 75 tests, including four tattoo/status tests;
-- `tattoos.test.mjs` proves three observer-specific interpretations, prison-context history, aging, private visibility, fail-closed writes, and snapshot integrity.
-
-Safety boundary:
-
-- this is a fictional social-history model. It does not encode tattoo symbolism, impersonation, evasion, violence, or real-world criminal procedure.
-
-Still open:
-
-- organization doctrine and succession, remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

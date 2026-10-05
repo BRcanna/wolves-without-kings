@@ -25,4 +25,4 @@ This is an in-process contract and test fixture. It does not claim a socket prot
 npm test
 ```
 
-`test/authority-network.test.mjs` covers ordered intent admission, server-computed outcomes, stale/duplicate rejection, client-result rejection, unique-object transfer conflicts, disconnect settlement, reconnect reconciliation, redaction, lease expiry, snapshot restore, and tamper rejection.
+`test/authority-network.test.mjs` covers ordered intent admission, server-computed outcomes, stale/duplicate rejection, client-result rejection, unique-object transfer conflicts, disconnect settlement, reconnect reconciliation, redaction, lease expiry, snapshot restart after a lost packet retry, and tamper rejection.

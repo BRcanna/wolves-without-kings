@@ -249,3 +249,41 @@ test("authority events survive snapshot restore and lease expiry is evented", ()
     AuthorityValidationError,
   );
 });
+
+test("snapshot restart and packet-loss retry preserve idempotency and allow the next ordered input", () => {
+  let state = connectedState();
+  const firstInput = {
+    sessionId: "session:host",
+    clientInputSeq: 1,
+    baseRevision: state.worldRevision,
+    intent: {
+      type: "wait",
+      actorId: "character:host",
+      regionId: "region:sofia-south",
+      entityIds: [],
+      payload: { reason: "packet-loss-fixture" },
+    },
+  };
+  state = submitIntent(state, firstInput, {
+    resolve: () => ({ eventType: "wait", payload: { accepted: true } }),
+  });
+  const restarted = restoreAuthorityState(snapshotAuthorityState(state));
+  assert.throws(
+    () => submitIntent(
+      restarted,
+      { ...firstInput, baseRevision: restarted.worldRevision },
+      { resolve: () => ({ eventType: "wait" }) },
+    ),
+    DuplicateInputError,
+  );
+  const next = submitIntent(restarted, {
+    ...firstInput,
+    clientInputSeq: 2,
+    baseRevision: restarted.worldRevision,
+    intent: { ...firstInput.intent, payload: { reason: "post-restart" } },
+  }, {
+    resolve: () => ({ eventType: "wait", payload: { accepted: true } }),
+  });
+  assert.equal(next.sessions["session:host"].lastInputSeq, 2);
+  assert.equal(next.events.at(-1).eventType, "net.intent.resolved");
+});

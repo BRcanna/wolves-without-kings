@@ -37,6 +37,7 @@
 | Multi-dimensional unlock web, distinct evidence histories, no-XP progression, and explainable lock reasons | `unlock-web.test.mjs`, `SECTION_31_UNLOCK_WEB.md` | PASS |
 | Offline-property protection, bounded conflict windows, nonlethal modes, harassment cooldowns, and recovery | `conflict.test.mjs`, `SECTION_32_CONFLICT_WINDOWS.md` | PASS |
 | Deterministic fidelity tiers, promotion caps, separate renderer/simulation/network budgets, and stress reports | `performance.test.mjs`, `SECTION_33_PERFORMANCE_BUDGETS.md` | PASS |
+| Snapshot restart, packet-loss retry idempotency, and next-sequence recovery | `authority-network.test.mjs`, `SECTION_34_AUTHORITY_RECOVERY.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
