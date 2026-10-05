@@ -497,6 +497,28 @@ Still open:
 
 - remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 29 — Needs and unlock web
+
+Implemented:
+
+- nodes that require meaningful practice, knowledge, familiarity, time, relationships, and context together;
+- explainable evaluation with unmet reasons and distinct evidence sources;
+- explicit claim/effect ownership without generic XP currency;
+- hidden/discovered visibility, qualitative public projection, hash-linked snapshots, and fail-closed stale/invalid/ineligible writes.
+
+Acceptance evidence:
+
+- `npm test` passes 103 tests, including four unlock-web tests;
+- `unlock-web.test.mjs` proves multi-dimensional gating, two eligibility histories, no-XP progression, explainable locks, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional progression/evidence model. It does not grant real-world credentials, teach operational procedure, or expose private competence merely because a node is evaluated.
+
+Still open:
+
+- remaining world/content/technical volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 28 — Content-pack admission and era variants
 
 Implemented:
