@@ -238,3 +238,21 @@ Acceptance evidence:
 Still open:
 
 - real network transport/service deployment, encryption, moderation, availability, production performance, and the explicitly deferred online underworld.
+
+## Episode 13 — Local service adapter
+
+Implemented:
+
+- transport-shaped `health`, `connect`, `input`, `disconnect`, `reconnect`, and `reconcile` request handling over the authority contract;
+- bounded status/error responses for stale and duplicate inputs, malformed bodies, and unknown routes;
+- redacted input acknowledgements and reconciliation envelopes that do not expose canonical event payloads or the persistent store;
+- service tests that exercise the request boundary without opening a socket or claiming deployment.
+
+Acceptance evidence:
+
+- `npm test` passes 42 tests, including four local service-adapter tests;
+- `service.test.mjs` proves successful connection/input flow, no-result leakage, stale/duplicate no-mutation behavior, disconnect/reconnect, reconciliation redaction, and bounded errors.
+
+Still open:
+
+- real network transport, encryption, authentication, moderation, persistence operations, availability, production performance, and the explicitly deferred online underworld.

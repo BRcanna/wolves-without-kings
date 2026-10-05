@@ -28,7 +28,8 @@
 | Vehicle persistence, pursuit segments, damage, and retirement | `vehicle.test.mjs` | PASS |
 | Local renderer preview consumes only public projection data | `renderer.test.mjs`, `npm run preview:build`, `SECTION_13_RENDERER.md` | PASS |
 | In-process authority contract for ordered intents, ownership, leases, reconnect, and redaction | `authority-network.test.mjs`, `SECTION_14_AUTHORITY.md` | PASS |
-| Online service and production acceptance | no implementation yet | OPEN |
+| Local transport-shaped authority service adapter | `service.test.mjs`, `SECTION_15_SERVICE_ADAPTER.md` | PASS |
+| Network deployment, encryption, moderation, availability, and production acceptance | no production implementation | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 
 This matrix is evidence for the current foundation slice, not a claim that the overall docuseries goal is complete.
