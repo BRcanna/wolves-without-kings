@@ -541,6 +541,28 @@ Still open:
 
 - performance budgets, production network deployment, authentication/encryption, moderation, remaining technical/content volumes, and the explicitly deferred online MMO layer.
 
+## Episode 31 — Simulation fidelity and performance budgets
+
+Implemented:
+
+- deterministic entity fidelity state with importance, distance, simulation mode, update rate, AI/physics/history tiers, network interest, and promotion/demotion reasons;
+- explicit full/promoted/aggregate caps and deterministic rebalancing;
+- separate renderer, simulation, and network budget reporting under synthetic stress inputs;
+- qualitative public projection, hash-linked snapshots, and fail-closed stale/invalid/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 111 tests, including four performance-budget tests;
+- `performance.test.mjs` proves deterministic promotion, caps, separate budgets, invalid writes, and snapshot integrity.
+
+Safety/evidence boundary:
+
+- these are executable budget contracts and synthetic stress reports, not hardware/FPS proof. Real renderer, server, and platform acceptance remain external gates.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 28 — Content-pack admission and era variants
 
 Implemented:

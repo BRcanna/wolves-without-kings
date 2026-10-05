@@ -36,6 +36,7 @@
 | Validated content-pack admission, stable IDs, cross-references, and era variants | `content.test.mjs`, `SECTION_30_CONTENT_ADMISSION.md` | PASS |
 | Multi-dimensional unlock web, distinct evidence histories, no-XP progression, and explainable lock reasons | `unlock-web.test.mjs`, `SECTION_31_UNLOCK_WEB.md` | PASS |
 | Offline-property protection, bounded conflict windows, nonlethal modes, harassment cooldowns, and recovery | `conflict.test.mjs`, `SECTION_32_CONFLICT_WINDOWS.md` | PASS |
+| Deterministic fidelity tiers, promotion caps, separate renderer/simulation/network budgets, and stress reports | `performance.test.mjs`, `SECTION_33_PERFORMANCE_BUDGETS.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
