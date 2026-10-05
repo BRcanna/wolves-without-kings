@@ -94,3 +94,21 @@ Acceptance evidence:
 Still open:
 
 - evidence-bearing police cases, action systems, renderer, the single-player vertical trace, online systems, and production acceptance.
+
+## Episode 5 — Evidence-bearing police cases
+
+Implemented:
+
+- persistent case files with matter type, jurisdiction, suspects, confidence, legal stage, age, evidence, witnesses, and agency views;
+- separate agency knowledge and authority actions for one shared incident;
+- belief-bearing witness retellings with divergent confidence and status;
+- explicit stage authorization and invalid-jurisdiction rejection;
+- deterministic cold-case aging through world-time settlement and snapshot replay.
+
+Acceptance evidence:
+
+- `npm test` passes 20 tests covering all prior gates plus a two-agency case trace with divergent knowledge, authorization boundaries, and cold-case transition.
+
+Still open:
+
+- the integrated single-player vertical trace, renderer, online systems, and production acceptance.

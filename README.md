@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–6 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, and item provenance.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–7 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, and evidence-bearing police cases.
 
 ## Current build slice
 
@@ -18,6 +18,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Organization work: dependency-ordered work items use capability checks, leases, review, and explicit recovery.
 - Economy: regional supply-demand price bands respond to transport, legal, faction, and independent market shocks.
 - Provenance: promoted objects retain stable identity through storage, transfer, seizure, return, damage, and repair.
+- Cases: agencies retain separate jurisdiction, evidence, witness, action, confidence, and aging state.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
@@ -36,4 +37,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Build the evidence-bearing police-case slice, then connect economy, provenance, social state, and cases to the single-player vertical trace. Keep online breadth deferred until the local authority path has stronger acceptance evidence.
+Connect economy, provenance, social state, organization work, and cases to the single-player vertical trace. Keep online breadth deferred until the local authority path has stronger acceptance evidence.

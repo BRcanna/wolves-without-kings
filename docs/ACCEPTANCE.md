@@ -20,7 +20,8 @@
 | Dependency-ordered organization work and lease recovery | `social-organization.test.mjs` organization test | PASS |
 | Regional market state and shock direction | `economy-provenance.test.mjs` market test | PASS |
 | Promoted object provenance across storage, transfer, seizure, return, damage, and repair | `economy-provenance.test.mjs` provenance test | PASS |
-| Evidence-bearing police cases and action simulation | no implementation yet | OPEN |
+| Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
+| Action simulation and integrated single-player vertical trace | no implementation yet | OPEN |
 | Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 

@@ -240,6 +240,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     organizations: {},
     objects: {},
     markets: {},
+    cases: {},
     events: [],
   };
 }
@@ -341,6 +342,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
         next.markets[marketSettlement.marketId] = {
           ...market,
           ...marketSettlement.nextMarket,
+          lastEventId: event.eventId,
+        };
+      }
+    }
+    for (const caseSettlement of event.payload.caseSettlements ?? []) {
+      const caseFile = next.cases[caseSettlement.caseId];
+      if (caseFile) {
+        next.cases[caseSettlement.caseId] = {
+          ...caseFile,
+          ...caseSettlement.nextCase,
           lastEventId: event.eventId,
         };
       }
@@ -534,6 +545,37 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
       ...clone(event.payload.nextMarket),
       lastEventId: event.eventId,
     };
+  } else if (event.eventType === "case.created") {
+    next.cases[event.payload.caseFile.id] = {
+      ...clone(event.payload.caseFile),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "case.agency_attached") {
+    const caseFile = next.cases[event.payload.caseId];
+    caseFile.agencyViews[event.payload.agencyId] = clone(event.payload.agencyView);
+    caseFile.lastEventId = event.eventId;
+  } else if (event.eventType === "case.evidence_added") {
+    const caseFile = next.cases[event.payload.caseId];
+    caseFile.evidenceLinks.push(clone(event.payload.evidence));
+    caseFile.confidence = event.payload.nextConfidence;
+    caseFile.agencyViews[event.payload.agencyId].knownEvidence.push(event.payload.evidence.evidenceId);
+    caseFile.lastEventId = event.eventId;
+  } else if (event.eventType === "case.witness_recorded") {
+    const caseFile = next.cases[event.payload.caseId];
+    caseFile.witnesses.push(clone(event.payload.witness));
+    caseFile.confidence = event.payload.nextConfidence;
+    caseFile.agencyViews[event.payload.agencyId].knownWitnesses.push(event.payload.witness.witnessId);
+    caseFile.lastEventId = event.eventId;
+  } else if (event.eventType === "case.action_authorized") {
+    const caseFile = next.cases[event.payload.caseId];
+    caseFile.agencyViews[event.payload.agencyId].authorizedActions = [
+      ...new Set([...caseFile.agencyViews[event.payload.agencyId].authorizedActions, event.payload.action]),
+    ];
+    caseFile.lastEventId = event.eventId;
+  } else if (event.eventType === "case.stage_changed") {
+    const caseFile = next.cases[event.payload.caseId];
+    caseFile.legalStage = event.payload.nextStage;
+    caseFile.lastEventId = event.eventId;
   }
 
   next.events.push(clone(event));
@@ -602,12 +644,28 @@ function buildTimeSettlements(world, days, toDate) {
       informationLagDays: Math.max(0, market.informationLagDays - days),
     },
   }));
+  const caseSettlements = Object.values(world.cases).map((caseFile) => {
+    const ageDays = caseFile.caseAgeDays + days;
+    const nextStage = caseFile.legalStage === "open"
+      && ageDays >= 30
+      && caseFile.confidence < 40
+      ? "cold"
+      : caseFile.legalStage;
+    return {
+      caseId: caseFile.id,
+      nextCase: {
+        caseAgeDays: ageDays,
+        legalStage: nextStage,
+      },
+    };
+  });
   return {
     npcSettlements,
     beliefSettlements,
     relationshipSettlements,
     workSettlements,
     marketSettlements,
+    caseSettlements,
   };
 }
 
@@ -1685,6 +1743,227 @@ export function updateMarket(
       shockType,
     },
     visibility: "local",
+  });
+}
+
+function requireCase(world, caseId) {
+  assertNonEmptyString(caseId, "caseId");
+  const caseFile = world.cases[caseId];
+  if (!caseFile) throw new InvalidCommandError(`unknown case: ${caseId}`);
+  return caseFile;
+}
+
+function requireCaseAgency(caseFile, agencyId) {
+  assertNonEmptyString(agencyId, "agencyId");
+  const agencyView = caseFile.agencyViews[agencyId];
+  if (!agencyView) throw new InvalidCommandError(`agency is not attached to case: ${agencyId}`);
+  return agencyView;
+}
+
+export function createCase(
+  world,
+  {
+    expectedRevision,
+    caseId,
+    matterType,
+    leadAgency,
+    jurisdiction,
+    suspects = [],
+    authorityActions = [],
+    confidence = 0,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(caseId, "caseId");
+  assertNonEmptyString(matterType, "matterType");
+  assertNonEmptyString(leadAgency, "leadAgency");
+  assertNonEmptyString(jurisdiction, "jurisdiction");
+  assertRange(confidence, "confidence", 0, 100);
+  if (world.cases[caseId]) throw new InvalidCommandError(`case already exists: ${caseId}`);
+  const caseFile = {
+    id: caseId,
+    matterType,
+    leadAgency,
+    jurisdiction,
+    suspects: normalizeIds(suspects, "suspects"),
+    supportingAgencies: [],
+    evidenceLinks: [],
+    witnesses: [],
+    confidence,
+    legalStage: "intake",
+    caseAgeDays: 0,
+    agencyViews: {
+      [leadAgency]: {
+        agencyId: leadAgency,
+        jurisdiction,
+        authorityActions: normalizeStringArray(authorityActions, "authorityActions"),
+        authorizedActions: [],
+        knownEvidence: [],
+        knownWitnesses: [],
+      },
+    },
+  };
+  return commit(world, {
+    eventType: "case.created",
+    actors: [leadAgency],
+    subjects: [caseId, ...caseFile.suspects],
+    payload: { caseFile },
+    visibility: "institutional",
+  });
+}
+
+export function attachCaseAgency(
+  world,
+  { expectedRevision, caseId, agencyId, jurisdiction, authorityActions = [] },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const caseFile = requireCase(world, caseId);
+  assertNonEmptyString(agencyId, "agencyId");
+  assertNonEmptyString(jurisdiction, "jurisdiction");
+  if (caseFile.agencyViews[agencyId]) throw new InvalidCommandError(`agency already attached to case: ${agencyId}`);
+  const agencyView = {
+    agencyId,
+    jurisdiction,
+    authorityActions: normalizeStringArray(authorityActions, "authorityActions"),
+    authorizedActions: [],
+    knownEvidence: [],
+    knownWitnesses: [],
+  };
+  return commit(world, {
+    eventType: "case.agency_attached",
+    actors: [agencyId],
+    subjects: [caseId, agencyId],
+    payload: { caseId, agencyId, agencyView },
+    visibility: "institutional",
+  });
+}
+
+export function recordCaseEvidence(
+  world,
+  { expectedRevision, caseId, agencyId, evidenceId, source, strength = 10, objectId = null },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const caseFile = requireCase(world, caseId);
+  requireCaseAgency(caseFile, agencyId);
+  assertNonEmptyString(evidenceId, "evidenceId");
+  assertNonEmptyString(source, "source");
+  assertRange(strength, "strength", 1, 100);
+  if (objectId !== null) assertNonEmptyString(objectId, "objectId");
+  if (caseFile.evidenceLinks.some((evidence) => evidence.evidenceId === evidenceId)) {
+    throw new InvalidCommandError(`evidence already linked to case: ${evidenceId}`);
+  }
+  const evidence = {
+    evidenceId,
+    source,
+    strength,
+    objectId,
+    observedBy: agencyId,
+    observedOn: world.date,
+    interpretation: "agency-scoped",
+  };
+  const nextConfidence = Math.min(100, caseFile.confidence + Math.max(1, Math.round(strength / 10)));
+  return commit(world, {
+    eventType: "case.evidence_added",
+    actors: [agencyId],
+    subjects: [caseId, evidenceId],
+    payload: { caseId, agencyId, evidence, nextConfidence },
+    visibility: "institutional",
+  });
+}
+
+export function recordCaseWitness(
+  world,
+  {
+    expectedRevision,
+    caseId,
+    agencyId,
+    witnessId,
+    retelling,
+    confidence = 50,
+    status = "reported",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const caseFile = requireCase(world, caseId);
+  requireCaseAgency(caseFile, agencyId);
+  assertNonEmptyString(witnessId, "witnessId");
+  assertNonEmptyString(retelling, "retelling");
+  assertRange(confidence, "confidence", 0, 100);
+  if (!["reported", "recanted", "corroborated"].includes(status)) {
+    throw new InvalidCommandError(`unsupported witness status: ${status}`);
+  }
+  if (caseFile.witnesses.some((witness) => witness.witnessId === witnessId)) {
+    throw new InvalidCommandError(`witness statement already recorded: ${witnessId}`);
+  }
+  const witness = {
+    witnessId,
+    retelling,
+    confidence,
+    status,
+    observedBy: agencyId,
+    observedOn: world.date,
+  };
+  const nextConfidence = Math.min(100, caseFile.confidence + (status === "corroborated" ? 5 : Math.round(confidence / 25)));
+  return commit(world, {
+    eventType: "case.witness_recorded",
+    actors: [agencyId],
+    subjects: [caseId, witnessId],
+    payload: { caseId, agencyId, witness, nextConfidence },
+    visibility: "institutional",
+  });
+}
+
+export function authorizeCaseAction(
+  world,
+  { expectedRevision, caseId, agencyId, action },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const caseFile = requireCase(world, caseId);
+  const agencyView = requireCaseAgency(caseFile, agencyId);
+  assertNonEmptyString(action, "action");
+  if (!agencyView.authorityActions.includes(action)) {
+    throw new InvalidCommandError(`action is outside agency jurisdiction: ${action}`);
+  }
+  return commit(world, {
+    eventType: "case.action_authorized",
+    actors: [agencyId],
+    subjects: [caseId],
+    payload: { caseId, agencyId, action },
+    visibility: "institutional",
+  });
+}
+
+export function advanceCaseStage(
+  world,
+  { expectedRevision, caseId, agencyId, nextStage },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const caseFile = requireCase(world, caseId);
+  const agencyView = requireCaseAgency(caseFile, agencyId);
+  if (!["intake", "open", "investigating", "charged", "court", "cold", "closed"].includes(nextStage)) {
+    throw new InvalidCommandError(`unsupported case stage: ${nextStage}`);
+  }
+  if (!agencyView.authorizedActions.includes("advance-stage")) {
+    throw new InvalidCommandError(`agency cannot advance case stage: ${agencyId}`);
+  }
+  const validTransitions = {
+    intake: ["open", "closed"],
+    open: ["investigating", "cold", "closed"],
+    investigating: ["charged", "cold", "closed"],
+    charged: ["court", "closed"],
+    court: ["closed"],
+    cold: ["open", "closed"],
+    closed: [],
+  };
+  if (!validTransitions[caseFile.legalStage].includes(nextStage)) {
+    throw new InvalidCommandError(`invalid case stage transition: ${caseFile.legalStage} -> ${nextStage}`);
+  }
+  return commit(world, {
+    eventType: "case.stage_changed",
+    actors: [agencyId],
+    subjects: [caseId],
+    payload: { caseId, agencyId, previousStage: caseFile.legalStage, nextStage },
+    visibility: "institutional",
   });
 }
 
