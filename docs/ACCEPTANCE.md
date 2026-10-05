@@ -32,6 +32,7 @@
 | Abstract commodity supply shock, doctrine policy, health externality, and redacted drug-market projection | `drug-economy.test.mjs`, `SECTION_26_DRUG_ECONOMY.md` | PASS |
 | Abstract route planning, changing route conditions, stale-plan rejection, and qualitative logistics projection | `logistics.test.mjs`, `SECTION_27_LOGISTICS.md` | PASS |
 | Five-year legitimate-front divergence, manager turnover, separate money state, and public business projection | `fronts.test.mjs`, `SECTION_28_FRONTS_MONEY.md` | PASS |
+| Persistent place scars, era aging, private-memory redaction, and qualitative environmental projection | `world-aging.test.mjs`, `SECTION_29_WORLD_AGING.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

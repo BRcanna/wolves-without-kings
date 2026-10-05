@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–28 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, bounded drop-in/drop-out co-op settlement, a one-week persistent Underworld macro proof, explicit dynasty/successor continuity, consequential abstract ranged action, time-bearing prison/re-entry state, observer-scoped tattoos/status history, doctrine-driven organization succession, an abstract commodity/health externality layer, stale-plan-safe route logistics, and five-year legitimate-front divergence.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–29 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, bounded drop-in/drop-out co-op settlement, a one-week persistent Underworld macro proof, explicit dynasty/successor continuity, consequential abstract ranged action, time-bearing prison/re-entry state, observer-scoped tattoos/status history, doctrine-driven organization succession, an abstract commodity/health externality layer, stale-plan-safe route logistics, five-year legitimate-front divergence, and persistent place scars/era aging.
 
 ## Current build slice
 
@@ -40,6 +40,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Abstract drug economy: fictional commodity supply, demand, quality, policy, health externality, and scarcity shocks remain evented and redacted.
 - Route logistics: fictional route versions, risk bands, changing conditions, fallback counts, and explicit replanning remain evented without operational geography.
 - Legitimate fronts: business maturity, manager divergence, debt, reputation, tax attention, criminal dependency, and public/private financial boundaries remain separate.
+- World aging: place condition, public/local/private memory, persistent scars, era transition, and qualitative environmental meaning survive long horizons.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 

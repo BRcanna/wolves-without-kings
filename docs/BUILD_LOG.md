@@ -497,6 +497,28 @@ Still open:
 
 - remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 27 — World aging and environmental memory
+
+Implemented:
+
+- place state for region, type, condition, institutional attention, status, age, public/local/private memories, scars, and changing social meaning;
+- public, local, and private memory visibility with canonical condition/attention consequences;
+- seven-year era transition, persistent scars, era-layered place meaning, and time-driven renovation eligibility;
+- qualitative public projection, hash-linked snapshots, and fail-closed stale/invalid/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 95 tests, including four world-aging tests;
+- `world-aging.test.mjs` proves divergent place aging, scar persistence, private-memory redaction, era transition, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictionalized world-history model. It does not claim a factual reconstruction of Bulgaria, specific real places, or real institutional events.
+
+Still open:
+
+- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 23 — Organization doctrine and succession
 
 Implemented:
