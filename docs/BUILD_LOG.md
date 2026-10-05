@@ -519,6 +519,28 @@ Still open:
 
 - remaining world/content/technical volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 30 — Conflict windows and anti-grief structure
+
+Implemented:
+
+- explicit conflict declarations with participants, causal claim, location, mode, bounded window, and optional property scope;
+- offline-property protection and explicit contest settlement;
+- nonlethal competition modes separate from a capped two-day abstract violent window;
+- repeated-harassment rate limiting, cooldown expiry, evidence, recovery bands, qualitative public projection, hash-linked snapshots, and fail-closed writes.
+
+Acceptance evidence:
+
+- `npm test` passes 107 tests, including four conflict-policy tests;
+- `conflict.test.mjs` proves offline-property safety, nonlethal/violent-window separation, harassment cooldowns, redaction, and snapshot integrity.
+
+Safety boundary:
+
+- anti-grief protections are explicit game/server rules. This episode does not encode real-world violence, intimidation, retaliation, or enforcement procedure.
+
+Still open:
+
+- performance budgets, production network deployment, authentication/encryption, moderation, remaining technical/content volumes, and the explicitly deferred online MMO layer.
+
 ## Episode 28 — Content-pack admission and era variants
 
 Implemented:
