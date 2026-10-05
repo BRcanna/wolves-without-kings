@@ -893,3 +893,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 43 — Order-independent event projection fan-out
+
+Implemented:
+
+- deterministic event-set fan-out for social, case, vehicle, and other event families;
+- idempotent delivery for repeated committed events;
+- conflicting duplicate-ID rejection before projection mutation;
+- qualitative public activity bands with private payload/actor omission;
+- snapshot validation for both source events and derived projection state.
+
+Acceptance evidence:
+
+- `npm test` passes 159 tests, including four event-projection tests;
+- `event-projections.test.mjs` proves order independence, retry idempotency, duplicate rejection, public redaction, and snapshot integrity;
+- `npm run verify` continues to report `docuseries-verify: PASS`.
+
+Boundary:
+
+- this is a local projection/fan-out contract, not a production message broker or network delivery guarantee.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
