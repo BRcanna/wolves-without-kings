@@ -868,3 +868,28 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 42 — Bounded NPC belief, planning, and adaptation
+
+Implemented:
+
+- belief-scoped planning that reads NPC knowledge rather than evaluator truth;
+- competing needs, obligations, and goal postures;
+- major/background plan bounds;
+- repeated-observation adaptation with a hard pressure cap;
+- organization-order outcomes through loyalty, fear, competence, and consequence band;
+- time settlement, event hashing, snapshot integrity, and privacy-safe public projection.
+
+Acceptance evidence:
+
+- `npm test` passes 155 tests, including five NPC AI tests;
+- `npc-ai.test.mjs` proves scoped planning, need/obligation competition, repeated-only adaptation, capped pressure, order discretion, time settlement, snapshot integrity, and redaction;
+- `npm run verify` continues to report `docuseries-verify: PASS`.
+
+Boundary:
+
+- this is a fictional abstract NPC contract, not real-world surveillance, criminal procedure, or operational guidance.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
