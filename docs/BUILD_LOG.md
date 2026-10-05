@@ -844,3 +844,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 41 — Versioned save/replay and counterfactual branches
+
+Implemented:
+
+- versioned save envelopes with deterministic snapshot digests and metadata checks;
+- explicit version-zero migration through the authoritative event-chain restore path;
+- checkpoint replay for accelerated multi-year time settlement;
+- isolated counterfactual branches that cannot overwrite canonical checkpoints;
+- tamper, schema, digest, event-count, and metadata rejection before restore.
+
+Acceptance evidence:
+
+- `npm test` passes 150 tests, including four save/replay tests;
+- `save-replay.test.mjs` proves current round trips, legacy migration, five-year replay, counterfactual isolation, and tamper rejection;
+- `npm run verify` continues to report `docuseries-verify: PASS`.
+
+Boundary:
+
+- this is a deterministic local save/replay contract, not filesystem crash atomicity, cloud durability, online rollback, or a production migration service.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

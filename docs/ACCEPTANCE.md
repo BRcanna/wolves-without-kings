@@ -46,6 +46,7 @@
 | Bounded online shard sessions, NPC baseline liquidity, capped player influence, property survival, and public macro projection | `underworld.test.mjs`, `SECTION_40_ONLINE_SHARD_CONTRACT.md` | PASS |
 | Qualitative contact/pressure language, calendar, map knowledge, organization assignments, private-scope rejection, and stable notifications | `ui-projection.test.mjs`, `SECTION_41_UI_UX_PROJECTION.md` | PASS |
 | Executable acceptance verifier binds tests, matrix, build log, README scope, preview artifact, and recorded external gates | `verification.test.mjs`, `scripts/verify-docuseries.mjs`, `SECTION_42_TESTING_ACCEPTANCE.md` | PASS |
+| Versioned save envelopes, legacy migration, five-year checkpoint replay, counterfactual isolation, and tamper rejection | `save-replay.test.mjs`, `SECTION_43_SAVE_REPLAY.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
