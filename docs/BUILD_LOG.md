@@ -738,6 +738,26 @@ Boundary:
 
 - this is a deterministic headless contract, not production streaming, crowd simulation, exact witness reconstruction, or online availability proof.
 
+## Episode 36 — Regional market ecology
+
+Implemented:
+
+- regional supply, demand, inventory, price bands, resilience, and ecological pressure;
+- coarse market links with capacity, friction, latency, and status;
+- bounded cross-region flow that preserves local shortage;
+- source/sink-accounted shocks and resilience-driven ecological recovery;
+- public price and continuity bands with exact economic and shock history redacted;
+- snapshot, stale-write, invalid-link, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 132 tests, including five market-ecology tests;
+- `market-ecology.test.mjs` proves bounded flow, shock direction, ecological recovery, public redaction, and snapshot integrity.
+
+Boundary:
+
+- this is a fictionalized economic contract, not real-world procurement, trafficking, concealment, evasion, or financial-crime procedure.
+
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
