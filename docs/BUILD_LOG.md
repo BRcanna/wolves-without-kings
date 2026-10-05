@@ -41,3 +41,20 @@ Acceptance evidence:
 Still open:
 
 - character condition, hidden skills, familiarity, NPC life simulation, economy, action, police cases, and online systems.
+
+## Episode 2 — Character condition and hidden competence
+
+Implemented:
+
+- stable character identity and canonical body condition;
+- history-based hidden skill practice for driving, fighting, lock work, intimidation, and negotiation;
+- bounded district/context familiarity with qualitative levels;
+- snapshot/restore coverage and fail-closed validation.
+
+Acceptance evidence:
+
+- `npm test` covers character creation, skill thresholds, familiarity, body condition, invalid skills, and restore equality.
+
+Still open:
+
+- persistent NPC life, richer relationships, organization doctrine, economy, action, police cases, and online systems.

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 export const ENGINE_SCHEMA_VERSION = 1;
+export const CHARACTER_SKILLS = ["driving", "fighting", "lock_work", "intimidation", "negotiation"];
 
 export class StaleRevisionError extends Error {
   constructor(expectedRevision, actualRevision) {
@@ -71,6 +72,12 @@ function assertInteger(value, field, minimum = 0) {
   }
 }
 
+function assertRange(value, field, minimum, maximum) {
+  if (!Number.isInteger(value) || value < minimum || value > maximum) {
+    throw new InvalidCommandError(`${field} must be an integer between ${minimum} and ${maximum}`);
+  }
+}
+
 function normalizeIds(value, field) {
   if (value === undefined) return [];
   if (!Array.isArray(value) || value.some((id) => typeof id !== "string" || id.trim() === "")) {
@@ -97,6 +104,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
       condition: "stable",
     },
     relationships: {},
+    characters: {},
     events: [],
   };
 }
@@ -164,6 +172,30 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
     next.relationships[relationshipId] = {
       trust: event.payload.nextTrust,
       respect: event.payload.nextRespect,
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "character.created") {
+    next.characters[event.payload.character.id] = clone(event.payload.character);
+  } else if (event.eventType === "character.skill_practiced") {
+    const character = next.characters[event.payload.characterId];
+    character.skills[event.payload.skill] = {
+      practice: event.payload.nextPractice,
+      tier: event.payload.nextTier,
+      lastPracticeEventId: event.eventId,
+    };
+  } else if (event.eventType === "character.familiarity_changed") {
+    const character = next.characters[event.payload.characterId];
+    character.familiarity[event.payload.contextId] = {
+      exposure: event.payload.nextExposure,
+      level: event.payload.nextLevel,
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "character.condition_changed") {
+    const character = next.characters[event.payload.characterId];
+    character.condition = {
+      fatigue: event.payload.nextFatigue,
+      injury: event.payload.nextInjury,
+      healthState: event.payload.nextHealthState,
       lastEventId: event.eventId,
     };
   }
@@ -265,6 +297,157 @@ export function resolveSocialContact(
       previousRespect: previous.respect,
       nextRespect,
       informationScope: "local-observation",
+    },
+    visibility: "local",
+  });
+}
+
+function requireCharacter(world, characterId) {
+  assertNonEmptyString(characterId, "characterId");
+  const character = world.characters[characterId];
+  if (!character) throw new InvalidCommandError(`unknown character: ${characterId}`);
+  return character;
+}
+
+function skillTier(practice) {
+  if (practice >= 60) return "seasoned";
+  if (practice >= 25) return "capable";
+  if (practice >= 10) return "practiced";
+  if (practice >= 3) return "initiated";
+  return "latent";
+}
+
+function familiarityLevel(exposure) {
+  if (exposure >= 20) return "deep";
+  if (exposure >= 10) return "familiar";
+  if (exposure >= 3) return "known";
+  return "new";
+}
+
+export function createCharacter(
+  world,
+  {
+    expectedRevision,
+    characterId,
+    displayName,
+    birthYear = 1980,
+    background = "resident",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(characterId, "characterId");
+  assertNonEmptyString(displayName, "displayName");
+  assertRange(birthYear, "birthYear", 1900, 2100);
+  assertNonEmptyString(background, "background");
+  if (world.characters[characterId]) throw new InvalidCommandError(`character already exists: ${characterId}`);
+  const skills = Object.fromEntries(CHARACTER_SKILLS.map((skill) => [skill, { practice: 0, tier: "latent" }]));
+  const character = {
+    id: characterId,
+    displayName,
+    birthYear,
+    background,
+    condition: { fatigue: 0, injury: 0, healthState: "stable" },
+    skills,
+    familiarity: {},
+  };
+  return commit(world, {
+    eventType: "character.created",
+    actors: [characterId],
+    subjects: [characterId],
+    payload: { character },
+    visibility: "local",
+  });
+}
+
+export function practiceCharacterSkill(
+  world,
+  { expectedRevision, characterId, skill, units = 1, contextId = null },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const character = requireCharacter(world, characterId);
+  assertNonEmptyString(skill, "skill");
+  if (!CHARACTER_SKILLS.includes(skill)) throw new InvalidCommandError(`unsupported skill: ${skill}`);
+  assertRange(units, "units", 1, 100);
+  if (contextId !== null) assertNonEmptyString(contextId, "contextId");
+  const previousPractice = character.skills[skill].practice;
+  const nextPractice = previousPractice + units;
+  return commit(world, {
+    eventType: "character.skill_practiced",
+    actors: [characterId],
+    subjects: [characterId],
+    location: contextId,
+    payload: {
+      characterId,
+      skill,
+      contextId,
+      previousPractice,
+      nextPractice,
+      previousTier: character.skills[skill].tier,
+      nextTier: skillTier(nextPractice),
+      evidence: "recorded-practice",
+    },
+    visibility: "local",
+  });
+}
+
+export function changeCharacterFamiliarity(
+  world,
+  { expectedRevision, characterId, contextId, exposure = 1 },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const character = requireCharacter(world, characterId);
+  assertNonEmptyString(contextId, "contextId");
+  assertRange(exposure, "exposure", 1, 100);
+  const previous = character.familiarity[contextId]?.exposure ?? 0;
+  const nextExposure = Math.min(100, previous + exposure);
+  return commit(world, {
+    eventType: "character.familiarity_changed",
+    actors: [characterId],
+    subjects: [characterId],
+    location: contextId,
+    payload: {
+      characterId,
+      contextId,
+      previousExposure: previous,
+      nextExposure,
+      previousLevel: familiarityLevel(previous),
+      nextLevel: familiarityLevel(nextExposure),
+    },
+    visibility: "local",
+  });
+}
+
+export function changeCharacterCondition(
+  world,
+  {
+    expectedRevision,
+    characterId,
+    fatigueDelta = 0,
+    injuryDelta = 0,
+    healthState = null,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const character = requireCharacter(world, characterId);
+  if (!Number.isInteger(fatigueDelta) || !Number.isInteger(injuryDelta)) throw new InvalidCommandError("condition deltas must be integers");
+  if (healthState !== null && !["stable", "strained", "injured", "recovering"].includes(healthState)) {
+    throw new InvalidCommandError(`unsupported health state: ${healthState}`);
+  }
+  const nextFatigue = Math.max(0, Math.min(100, character.condition.fatigue + fatigueDelta));
+  const nextInjury = Math.max(0, Math.min(100, character.condition.injury + injuryDelta));
+  const nextHealthState = healthState ?? (nextInjury > 0 ? "injured" : character.condition.healthState);
+  return commit(world, {
+    eventType: "character.condition_changed",
+    actors: [characterId],
+    subjects: [characterId],
+    payload: {
+      characterId,
+      previousFatigue: character.condition.fatigue,
+      nextFatigue,
+      previousInjury: character.condition.injury,
+      nextInjury,
+      previousHealthState: character.condition.healthState,
+      nextHealthState,
     },
     visibility: "local",
   });

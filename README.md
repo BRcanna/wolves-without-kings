@@ -12,6 +12,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Fiction boundary: the runtime models consequences and relationships; it does not encode transferable real-world criminal procedure.
 - Authored district: stable street, interior, roof, and service locations with deterministic traversal paths.
 - Social projection: one local-observation contact outcome updates trust/respect through an event, not a hidden flag.
+- Character state: identity, body condition, history-based hidden skills, and district/context familiarity are canonical and replayable.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
@@ -30,4 +31,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Build character condition, hidden skills, familiarity, and body-state transitions on the same authority path. Keep all state evented and replayable before adding economy or online breadth.
+Build persistent NPC routines, richer relationship state, rumor/belief, and the first organization work graph on the same authority path. Keep all state evented and replayable before adding economy or online breadth.
