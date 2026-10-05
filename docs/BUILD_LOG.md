@@ -218,3 +218,23 @@ Acceptance evidence:
 Still open:
 
 - online transport/service implementation, production acceptance, and the explicitly deferred online underworld.
+
+## Episode 12 — In-process authority and replication contract
+
+Implemented:
+
+- host and guest session admission with explicit region and role boundaries;
+- ordered client intents whose outcomes are computed server-side;
+- stale revision, duplicate sequence, unauthorized actor, and client-supplied authoritative-result rejection;
+- canonical unique-entity ownership, contested lease rejection, disconnect claim release, and server-side transfer settlement;
+- reconnect state with reconciliation metadata and interest-scoped, redacted event envelopes;
+- hash-linked authority events, lease expiry, snapshot restore, and tamper detection.
+
+Acceptance evidence:
+
+- `npm test` passes 38 tests, including six authority/replication tests;
+- `authority-network.test.mjs` covers stale/duplicate inputs, server-computed outcomes, ownership conflicts, disconnect/reconnect, redaction, lease expiry, and snapshot integrity.
+
+Still open:
+
+- real network transport/service deployment, encryption, moderation, availability, production performance, and the explicitly deferred online underworld.

@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–13 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, and a local public-projection renderer preview.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–14 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, and an in-process authority/replication contract.
 
 ## Current build slice
 
@@ -25,6 +25,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Action outcomes: traversal and melee preserve route knowledge, risk, witnesses, injury, and nonterminal outcomes.
 - Vehicles: pursuit segments preserve handling, familiarity, damage, ownership, observer signals, and retirement.
 - Renderer preview: a reproducible local browser surface consumes committed public projection data and fails visibly when that data cannot load.
+- Authority contract: ordered intents, stale/duplicate rejection, leases, unique-object ownership, disconnect settlement, reconnect reconciliation, and redacted replication are evented and snapshot-tested.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
@@ -44,4 +45,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Audit the online transport boundary and production/runtime edges; online underworld breadth remains explicitly deferred.
+Audit the transport/runtime edges and production acceptance; network service deployment and online underworld breadth remain explicitly deferred.
