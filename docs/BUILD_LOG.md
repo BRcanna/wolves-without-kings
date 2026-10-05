@@ -798,6 +798,25 @@ Boundary:
 
 - this is an in-process shard contract, not production sockets, auth/encryption, durable storage, moderation, anti-cheat, failover, availability, or deployment proof.
 
+## Episode 39 — Qualitative UI/UX projection
+
+Implemented:
+
+- qualitative contact summaries for history, reliability, obligation, and availability;
+- pressure cues for direction, cause, and uncertainty without hidden formulas;
+- calendar/life-course, organization assignment, property, learned-map, and notification view models;
+- public-scope enforcement and omission of exact trust, debt, competence, case confidence, and server-only pressure;
+- stable fail-soft notification tones and invalid-scope/band rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 145 tests, including five UI-projection tests;
+- `ui-projection.test.mjs` proves qualitative language, map filtering, assignment clarity, private-scope rejection, and stable notifications.
+
+Boundary:
+
+- this is a headless UI view-model contract, not fresh-player usability, localization, controller navigation, accessibility, authored dialogue/audio, or shipping native-client proof.
+
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

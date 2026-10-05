@@ -44,6 +44,7 @@
 | Regional supply/demand ecology, bounded market flow, source/sink shocks, resilience, and public price bands | `market-ecology.test.mjs`, `SECTION_38_MARKET_ECOLOGY.md` | PASS |
 | Seed-stable procedural proposals, layer ordering, evidence-gated admission, reversible receipts, and topology validation | `authoring.test.mjs`, `SECTION_39_PROCEDURAL_AUTHORING.md` | PASS |
 | Bounded online shard sessions, NPC baseline liquidity, capped player influence, property survival, and public macro projection | `underworld.test.mjs`, `SECTION_40_ONLINE_SHARD_CONTRACT.md` | PASS |
+| Qualitative contact/pressure language, calendar, map knowledge, organization assignments, private-scope rejection, and stable notifications | `ui-projection.test.mjs`, `SECTION_41_UI_UX_PROJECTION.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
