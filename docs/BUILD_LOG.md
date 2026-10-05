@@ -430,6 +430,28 @@ Still open:
 
 - remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 24 — Abstract drug economy and health externality
+
+Implemented:
+
+- fictional product classes with regional supply/demand, quality, police pressure, organization policy, and health externality;
+- batch creation that consumes simulated supply and never silently replaces a supply shock;
+- 30% seizure/loss shocks with scarcity pressure, institutional attention, and community-health consequences;
+- organization prohibition, long-horizon time settlement, public redaction, hash-linked snapshots, and fail-closed stale/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 83 tests, including four drug-economy tests;
+- `drug-economy.test.mjs` proves downstream shock effects without replacement spawns, policy rejection, time-borne externality, redaction, and snapshot integrity.
+
+Safety boundary:
+
+- all products and routes are fictionalized abstractions. This episode does not encode production, dosage, trafficking, concealment, evasion, or other real-world criminal procedure.
+
+Still open:
+
+- smuggling/logistics, legitimate fronts/money, remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 23 — Organization doctrine and succession
 
 Implemented:
