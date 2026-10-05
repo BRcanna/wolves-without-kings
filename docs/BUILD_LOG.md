@@ -429,3 +429,26 @@ Safety boundary:
 Still open:
 
 - remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 22 — Tattoos, rank, and visible history
+
+Implemented:
+
+- marker state for body location, category, origin, organization relation, prison context, earned history, visibility, age, and historical band;
+- observer profiles with scoped organization and era knowledge so the same marker can be recognized, misunderstood, or ignored by different people;
+- qualitative consequences for unauthorized claims and unearned status without a universal authority token;
+- covered/concealed visibility, decade aging into old-guard history, and public projection that omits issuer, organization, recognition, misuse, and event internals;
+- hash-linked snapshots plus stale, invalid, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 75 tests, including four tattoo/status tests;
+- `tattoos.test.mjs` proves three observer-specific interpretations, prison-context history, aging, private visibility, fail-closed writes, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional social-history model. It does not encode tattoo symbolism, impersonation, evasion, violence, or real-world criminal procedure.
+
+Still open:
+
+- organization doctrine and succession, remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
