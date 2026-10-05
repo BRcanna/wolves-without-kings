@@ -1,0 +1,84 @@
+{
+  "previewVersion": 1,
+  "generatedAt": "1999-01-01",
+  "summary": {
+    "variant": "relationship",
+    "date": "1999-01-01",
+    "npcCount": 30,
+    "businessCount": 3,
+    "organizationCount": 2,
+    "caseCount": 1,
+    "marketCount": 1,
+    "playerRelationships": 8,
+    "vehicleOwner": "character:player",
+    "caseStage": "cold",
+    "eventCount": 58
+  },
+  "projection": {
+    "projectionVersion": 1,
+    "scope": "public",
+    "worldId": "wwk-vertical-slice",
+    "date": "1999-01-01",
+    "tick": 365,
+    "district": {
+      "id": "sofia-south",
+      "label": "South Sofia (fictionalized)",
+      "condition": "watchful"
+    },
+    "businesses": [
+      {
+        "id": "business:night-market",
+        "displayName": "Night Market Hall",
+        "locationId": "loc:night-market",
+        "venueType": "nightlife-venue",
+        "condition": "stable",
+        "reputationBand": "steady",
+        "ageDays": 365
+      },
+      {
+        "id": "business:south-ring-motel",
+        "displayName": "South Ring Motel",
+        "locationId": "loc:motel-lobby",
+        "venueType": "motel",
+        "condition": "stable",
+        "reputationBand": "steady",
+        "ageDays": 365
+      },
+      {
+        "id": "business:river-cafe",
+        "displayName": "River Cafe",
+        "locationId": "loc:river-walk",
+        "venueType": "cafe",
+        "condition": "stable",
+        "reputationBand": "steady",
+        "ageDays": 365
+      }
+    ],
+    "markets": [
+      {
+        "id": "market:sofia-south",
+        "regionId": "district:sofia-south",
+        "commodity": "nightlife-demand",
+        "priceBand": {
+          "low": 82,
+          "high": 138,
+          "midpoint": 110,
+          "confidence": 75
+        },
+        "informationLagDays": 0
+      }
+    ],
+    "objects": [
+      {
+        "id": "vehicle:favorite-sedan",
+        "objectType": "vehicle",
+        "currentLocationId": "loc:market-street",
+        "status": "held",
+        "condition": "intact",
+        "trophyTags": [
+          "favorite-vehicle"
+        ]
+      }
+    ]
+  }
+}

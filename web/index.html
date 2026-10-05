@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="WOLVES WITHOUT KINGS local renderer preview">
+    <title>WOLVES WITHOUT KINGS — Local Projection</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">LOCAL PROJECTION / YEAR ONE</p>
+        <h1>WOLVES WITHOUT KINGS</h1>
+        <p class="lede">A rendered public projection of a history-bearing fictional district.</p>
+        <p class="boundary">This preview is presentation only. It does not expose private beliefs, hidden competence, agency case confidence, or server-only surveillance state.</p>
+      </header>
+
+      <section id="status" class="status" aria-live="polite">Loading projection…</section>
+      <section id="summary" class="grid" aria-label="World summary"></section>
+      <section id="businesses" class="panel" aria-labelledby="businesses-heading">
+        <div class="panel-heading"><p class="eyebrow">PLACES</p><h2 id="businesses-heading">Businesses</h2></div>
+        <div id="business-list" class="cards"></div>
+      </section>
+      <section id="markets" class="panel" aria-labelledby="markets-heading">
+        <div class="panel-heading"><p class="eyebrow">PRESSURE</p><h2 id="markets-heading">Regional markets</h2></div>
+        <div id="market-list" class="cards"></div>
+      </section>
+      <footer>Projection scope: <code>public</code> · Source: deterministic local scenario builder</footer>
+    </main>
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

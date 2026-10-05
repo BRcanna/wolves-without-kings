@@ -26,7 +26,8 @@
 | Scope-filtered renderer-facing projection and privacy boundary | `projection.test.mjs`, `ONLINE_BOUNDARY.md` | PASS |
 | Bounded traversal and melee action outcomes | `action.test.mjs` | PASS |
 | Vehicle persistence, pursuit segments, damage, and retirement | `vehicle.test.mjs` | PASS |
-| Renderer implementation, online service, and production acceptance | no implementation yet | OPEN |
+| Local renderer preview consumes only public projection data | `renderer.test.mjs`, `npm run preview:build`, `SECTION_13_RENDERER.md` | PASS |
+| Online service and production acceptance | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 
 This matrix is evidence for the current foundation slice, not a claim that the overall docuseries goal is complete.

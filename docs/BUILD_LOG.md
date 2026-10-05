@@ -199,3 +199,22 @@ Acceptance evidence:
 Still open:
 
 - renderer/runtime implementation, online service implementation, and production acceptance.
+
+## Episode 11 — Local public-projection renderer preview
+
+Implemented:
+
+- a reproducible preview-data builder that runs the year-one history and writes only the public projection to `web/scenario.json`;
+- an accessible local renderer with summary, business, and market panels;
+- explicit loading and error states, semantic landmarks, live status text, responsive layout, and DOM text insertion through `textContent`;
+- a renderer smoke test proving the preview is reproducible and excludes private beliefs, surveillance records, and police-case internals.
+
+Acceptance evidence:
+
+- `npm test` passes 32 tests, including the renderer projection/privacy smoke test;
+- `npm run preview:build` regenerates the committed preview data deterministically;
+- `git diff --check` passes for the episode files.
+
+Still open:
+
+- online transport/service implementation, production acceptance, and the explicitly deferred online underworld.

@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "demo": "node src/wolves-without-kings/demo.mjs"
+    "demo": "node src/wolves-without-kings/demo.mjs",
+    "preview:build": "node scripts/build-preview.mjs"
   },
   "engines": {
     "node": ">=22"
