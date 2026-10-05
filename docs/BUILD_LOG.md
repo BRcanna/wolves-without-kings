@@ -718,6 +718,26 @@ Boundary:
 
 - this is a headless campaign contract, not authored mission dialogue, audio, animation, UI, or production executable proof.
 
+## Episode 35 — Offscreen and aggregate simulation
+
+Implemented:
+
+- Full and Aggregate region modes with separate continuity counters;
+- important named entities promoted across aggregate settlement;
+- deterministic scheduled event materialization after elapsed time;
+- aggregate-to-full reconciliation with explicit unknown witness detail;
+- public continuity bands with materialization seeds and exact event payloads redacted;
+- snapshot, stale-write, invalid-region, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 127 tests, including five offscreen-simulation tests;
+- `offscreen.test.mjs` proves Full/Aggregate settlement, promoted entities, scheduled materialization, redaction, reconciliation, and snapshot integrity.
+
+Boundary:
+
+- this is a deterministic headless contract, not production streaming, crowd simulation, exact witness reconstruction, or online availability proof.
+
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
