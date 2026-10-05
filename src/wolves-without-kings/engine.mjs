@@ -242,6 +242,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     markets: {},
     cases: {},
     businesses: {},
+    surveillance: {},
     events: [],
   };
 }
@@ -363,6 +364,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
         next.businesses[businessSettlement.businessId] = {
           ...business,
           ...businessSettlement.nextBusiness,
+          lastEventId: event.eventId,
+        };
+      }
+    }
+    for (const surveillanceSettlement of event.payload.surveillanceSettlements ?? []) {
+      const record = next.surveillance[surveillanceSettlement.surveillanceId];
+      if (record) {
+        next.surveillance[surveillanceSettlement.surveillanceId] = {
+          ...record,
+          ...surveillanceSettlement.nextRecord,
           lastEventId: event.eventId,
         };
       }
@@ -597,6 +608,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
       ...clone(event.payload.nextBusiness),
       lastEventId: event.eventId,
     };
+  } else if (event.eventType === "surveillance.started") {
+    next.surveillance[event.payload.record.id] = {
+      ...clone(event.payload.record),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "surveillance.updated" || event.eventType === "surveillance.interrupted") {
+    next.surveillance[event.payload.surveillanceId] = {
+      ...clone(event.payload.nextRecord),
+      lastEventId: event.eventId,
+    };
   }
 
   next.events.push(clone(event));
@@ -688,6 +709,20 @@ function buildTimeSettlements(world, days, toDate) {
       lastSettledDate: toDate,
     },
   }));
+  const surveillanceSettlements = Object.values(world.surveillance).map((record) => {
+    const target = world.npcLife[record.targetId];
+    const scheduleChanged = Boolean(target && record.knownRoutineId && target.currentRoutineId !== record.knownRoutineId);
+    return {
+      surveillanceId: record.id,
+      nextRecord: {
+        stalenessDays: record.stalenessDays + days,
+        routineConfidence: scheduleChanged
+          ? Math.max(0, record.routineConfidence - Math.min(50, days))
+          : record.routineConfidence,
+        scheduleStatus: scheduleChanged ? "stale" : record.scheduleStatus,
+      },
+    };
+  });
   return {
     npcSettlements,
     beliefSettlements,
@@ -696,6 +731,7 @@ function buildTimeSettlements(world, days, toDate) {
     marketSettlements,
     caseSettlements,
     businessSettlements,
+    surveillanceSettlements,
   };
 }
 
@@ -2082,6 +2118,143 @@ export function updateBusiness(
     location: business.locationId,
     payload: { businessId, previousBusiness: business, nextBusiness },
     visibility: "local",
+  });
+}
+
+function requireSurveillance(world, surveillanceId) {
+  assertNonEmptyString(surveillanceId, "surveillanceId");
+  const record = world.surveillance[surveillanceId];
+  if (!record) throw new InvalidCommandError(`unknown surveillance record: ${surveillanceId}`);
+  return record;
+}
+
+export function startSurveillance(
+  world,
+  {
+    expectedRevision,
+    surveillanceId,
+    observerId,
+    targetId,
+    locationId,
+    visibility = 0,
+    sound = 0,
+    accessState = "public",
+    entryMethod = "observation",
+    timeWindowDays = 1,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(surveillanceId, "surveillanceId");
+  assertNonEmptyString(observerId, "observerId");
+  assertNonEmptyString(targetId, "targetId");
+  assertNonEmptyString(locationId, "locationId");
+  assertRange(visibility, "visibility", 0, 100);
+  assertRange(sound, "sound", 0, 100);
+  assertRange(timeWindowDays, "timeWindowDays", 1, 30);
+  if (!["public", "restricted", "unknown"].includes(accessState)) {
+    throw new InvalidCommandError(`unsupported access state: ${accessState}`);
+  }
+  assertNonEmptyString(entryMethod, "entryMethod");
+  if (world.surveillance[surveillanceId]) throw new InvalidCommandError(`surveillance already exists: ${surveillanceId}`);
+  const record = {
+    id: surveillanceId,
+    observerId,
+    targetId,
+    locationId,
+    visibility,
+    sound,
+    accessState,
+    entryMethod,
+    timeWindowDays,
+    status: "active",
+    witnessState: "none",
+    counterSurveillance: 0,
+    knownRoutineId: null,
+    routineConfidence: 0,
+    informationGained: [],
+    stalenessDays: 0,
+    scheduleStatus: "unknown",
+    startedOn: world.date,
+  };
+  return commit(world, {
+    eventType: "surveillance.started",
+    actors: [observerId],
+    subjects: [targetId, surveillanceId],
+    location: locationId,
+    payload: { record },
+    visibility: "observer-scoped",
+  });
+}
+
+export function recordSurveillanceObservation(
+  world,
+  {
+    expectedRevision,
+    surveillanceId,
+    observerId,
+    knownRoutineId = null,
+    routineConfidence = null,
+    informationGained = [],
+    witnessState = "none",
+    counterSurveillance = 0,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const record = requireSurveillance(world, surveillanceId);
+  assertNonEmptyString(observerId, "observerId");
+  if (record.observerId !== observerId) throw new InvalidCommandError(`observer does not own surveillance record: ${surveillanceId}`);
+  if (knownRoutineId !== null) assertNonEmptyString(knownRoutineId, "knownRoutineId");
+  if (routineConfidence !== null) assertRange(routineConfidence, "routineConfidence", 0, 100);
+  const normalizedInformation = normalizeStringArray(informationGained, "informationGained");
+  if (!["none", "uncertain", "noticed", "withdrawn"].includes(witnessState)) {
+    throw new InvalidCommandError(`unsupported witness state: ${witnessState}`);
+  }
+  assertRange(counterSurveillance, "counterSurveillance", 0, 100);
+  const nextRecord = {
+    ...clone(record),
+    knownRoutineId: knownRoutineId ?? record.knownRoutineId,
+    routineConfidence: routineConfidence ?? record.routineConfidence,
+    informationGained: [...new Set([...record.informationGained, ...normalizedInformation])],
+    witnessState,
+    counterSurveillance,
+    stalenessDays: 0,
+    scheduleStatus: knownRoutineId === null ? record.scheduleStatus : "current",
+    lastObservedOn: world.date,
+  };
+  return commit(world, {
+    eventType: "surveillance.updated",
+    actors: [observerId],
+    subjects: [record.targetId, surveillanceId],
+    location: record.locationId,
+    payload: { surveillanceId, nextRecord, observation: { knownRoutineId, informationGained: normalizedInformation } },
+    visibility: "observer-scoped",
+  });
+}
+
+export function interruptSurveillance(
+  world,
+  { expectedRevision, surveillanceId, observerId, outcome = "withdrawn" },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const record = requireSurveillance(world, surveillanceId);
+  assertNonEmptyString(observerId, "observerId");
+  if (record.observerId !== observerId) throw new InvalidCommandError(`observer does not own surveillance record: ${surveillanceId}`);
+  if (!["uncertain", "noticed", "withdrawn"].includes(outcome)) {
+    throw new InvalidCommandError(`unsupported surveillance interruption: ${outcome}`);
+  }
+  const nextRecord = {
+    ...clone(record),
+    status: "interrupted",
+    witnessState: outcome,
+    endedOn: world.date,
+  };
+  return commit(world, {
+    eventType: "surveillance.interrupted",
+    actors: [observerId],
+    subjects: [record.targetId, surveillanceId],
+    location: record.locationId,
+    payload: { surveillanceId, nextRecord, outcome },
+    visibility: "observer-scoped",
   });
 }
 

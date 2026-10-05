@@ -22,7 +22,8 @@
 | Promoted object provenance across storage, transfer, seizure, return, damage, and repair | `economy-provenance.test.mjs` provenance test | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
-| Bounded action/surveillance interaction and renderer projection | no implementation yet | OPEN |
+| Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
+| Renderer-facing projection and online boundary audit | no implementation yet | OPEN |
 | Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 

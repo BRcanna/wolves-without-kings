@@ -129,3 +129,20 @@ Acceptance evidence:
 Still open:
 
 - bounded action/surveillance interactions, renderer-facing projections, online systems, and production acceptance.
+
+## Episode 7 — Surveillance and durable information
+
+Implemented:
+
+- observer-scoped surveillance records with access, visibility, sound, time window, and entry-state provenance;
+- durable routine knowledge, confidence, information gained, witness uncertainty, and counter-surveillance state;
+- deterministic staleness and confidence decay after target routine changes and world-time advancement;
+- noncombat withdrawal/uncertainty/noticed outcomes and fail-closed ownership validation.
+
+Acceptance evidence:
+
+- `npm test` passes 24 tests covering routine learning, threat-driven change, stale knowledge, noncombat outcomes, invalid observers, and invalid outcomes.
+
+Still open:
+
+- renderer-facing projections, online boundary audit, remaining action families, and production acceptance.
