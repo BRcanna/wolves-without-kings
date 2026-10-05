@@ -244,6 +244,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     businesses: {},
     surveillance: {},
     actions: [],
+    vehicles: {},
     events: [],
   };
 }
@@ -630,6 +631,17 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
         lastEventId: event.eventId,
       };
     }
+  } else if (event.eventType === "vehicle.created") {
+    next.vehicles[event.payload.vehicle.id] = {
+      ...clone(event.payload.vehicle),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "vehicle.action_resolved") {
+    next.vehicles[event.payload.vehicleId] = {
+      ...clone(event.payload.nextVehicle),
+      lastEventId: event.eventId,
+    };
+    next.actions.push(clone(event.payload.action));
   }
 
   next.events.push(clone(event));
@@ -2387,6 +2399,131 @@ export function resolveMeleeEncounter(
     subjects: [actionId],
     location: locationId,
     payload: { action, actorId, nextCondition },
+    visibility: "local",
+  });
+}
+
+function requireVehicle(world, vehicleId) {
+  assertNonEmptyString(vehicleId, "vehicleId");
+  const vehicle = world.vehicles[vehicleId];
+  if (!vehicle) throw new InvalidCommandError(`unknown vehicle: ${vehicleId}`);
+  return vehicle;
+}
+
+export function createVehicle(
+  world,
+  {
+    expectedRevision,
+    vehicleId,
+    vehicleClass = "hatchback",
+    mass,
+    handling,
+    ownerId = null,
+    tires = "standard",
+    damage = 0,
+    locationId,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(vehicleId, "vehicleId");
+  assertNonEmptyString(vehicleClass, "vehicleClass");
+  assertRange(mass, "mass", 1, 100);
+  assertRange(handling, "handling", 0, 100);
+  assertNonEmptyString(tires, "tires");
+  assertRange(damage, "damage", 0, 100);
+  assertNonEmptyString(locationId, "locationId");
+  if (ownerId !== null) assertNonEmptyString(ownerId, "ownerId");
+  if (world.vehicles[vehicleId]) throw new InvalidCommandError(`vehicle already exists: ${vehicleId}`);
+  const vehicle = {
+    id: vehicleId,
+    vehicleClass,
+    mass,
+    handling,
+    ownerId,
+    tires,
+    damage,
+    condition: damage >= 100 ? "retired" : damage > 0 ? "damaged" : "intact",
+    locationId,
+    driverFamiliarity: {},
+    pursuitHistory: [],
+    observerSignals: [],
+  };
+  return commit(world, {
+    eventType: "vehicle.created",
+    actors: [ownerId ?? "system:vehicle"],
+    subjects: [vehicleId],
+    location: locationId,
+    payload: { vehicle },
+    visibility: "local",
+  });
+}
+
+export function resolveVehicleAction(
+  world,
+  {
+    expectedRevision,
+    actionId,
+    vehicleId,
+    driverId,
+    locationId,
+    surface,
+    speedBand = "steady",
+    damageDelta = 0,
+    outcome = "continued",
+    observerSignal = null,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const vehicle = requireVehicle(world, vehicleId);
+  assertNonEmptyString(actionId, "actionId");
+  assertNonEmptyString(driverId, "driverId");
+  assertNonEmptyString(locationId, "locationId");
+  assertNonEmptyString(surface, "surface");
+  assertNonEmptyString(speedBand, "speedBand");
+  if (!Number.isInteger(damageDelta) || damageDelta < 0 || damageDelta > 100) {
+    throw new InvalidCommandError("damageDelta must be an integer between 0 and 100");
+  }
+  if (!["continued", "switched", "disabled", "retired"].includes(outcome)) {
+    throw new InvalidCommandError(`unsupported vehicle outcome: ${outcome}`);
+  }
+  if (observerSignal !== null) assertNonEmptyString(observerSignal, "observerSignal");
+  if (vehicle.condition === "retired") throw new InvalidCommandError(`vehicle is retired: ${vehicleId}`);
+  const nextDamage = Math.min(100, vehicle.damage + damageDelta);
+  const nextVehicle = {
+    ...clone(vehicle),
+    damage: nextDamage,
+    condition: nextDamage >= 100 || outcome === "retired" ? "retired" : nextDamage > 0 ? "damaged" : vehicle.condition,
+    locationId,
+    driverFamiliarity: {
+      ...vehicle.driverFamiliarity,
+      [driverId]: Math.min(100, (vehicle.driverFamiliarity[driverId] ?? 0) + 1),
+    },
+    pursuitHistory: [
+      ...vehicle.pursuitHistory,
+      { actionId, driverId, locationId, surface, speedBand, damageDelta, outcome, date: world.date },
+    ],
+    observerSignals: observerSignal === null
+      ? vehicle.observerSignals
+      : [...vehicle.observerSignals, { signal: observerSignal, locationId, date: world.date }],
+  };
+  const action = {
+    id: actionId,
+    type: "vehicle",
+    vehicleId,
+    driverId,
+    locationId,
+    surface,
+    speedBand,
+    outcome,
+    damageDelta,
+    date: world.date,
+  };
+  return commit(world, {
+    eventType: "vehicle.action_resolved",
+    actors: [driverId],
+    subjects: [vehicleId, actionId],
+    location: locationId,
+    payload: { vehicleId, nextVehicle, action },
     visibility: "local",
   });
 }

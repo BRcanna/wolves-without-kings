@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–11 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, and bounded action outcomes.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–12 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, and vehicle persistence.
 
 ## Current build slice
 
@@ -23,6 +23,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Surveillance: learned routines carry confidence, staleness, witness uncertainty, access state, and counter-surveillance state.
 - Projection boundary: public, observer, institutional, and debug views are explicit and privacy-tested.
 - Action outcomes: traversal and melee preserve route knowledge, risk, witnesses, injury, and nonterminal outcomes.
+- Vehicles: pursuit segments preserve handling, familiarity, damage, ownership, observer signals, and retirement.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
@@ -41,4 +42,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Audit vehicle/action edge cases and keep online breadth deferred until the local authority path has stronger acceptance evidence.
+Audit remaining renderer/runtime edges and keep online breadth deferred until the local authority path has stronger acceptance evidence.

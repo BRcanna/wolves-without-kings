@@ -182,3 +182,20 @@ Acceptance evidence:
 Still open:
 
 - vehicle/action edge cases, renderer implementation, online service implementation, and production acceptance.
+
+## Episode 10 — Vehicle persistence and pursuit segments
+
+Implemented:
+
+- stable vehicle state with class, handling, mass, tires, owner, location, damage, condition, familiarity, pursuit history, and observer signals;
+- urban, highway, mountain, and service-road action segments;
+- driver-specific familiarity and persistent damage;
+- catastrophic retirement with fail-closed later use.
+
+Acceptance evidence:
+
+- `npm test` passes 30 tests, including three vehicle segments and catastrophic retirement coverage.
+
+Still open:
+
+- renderer/runtime implementation, online service implementation, and production acceptance.

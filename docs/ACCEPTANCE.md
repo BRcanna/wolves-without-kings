@@ -25,6 +25,7 @@
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
 | Scope-filtered renderer-facing projection and privacy boundary | `projection.test.mjs`, `ONLINE_BOUNDARY.md` | PASS |
 | Bounded traversal and melee action outcomes | `action.test.mjs` | PASS |
+| Vehicle persistence, pursuit segments, damage, and retirement | `vehicle.test.mjs` | PASS |
 | Renderer implementation, online service, and production acceptance | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 
