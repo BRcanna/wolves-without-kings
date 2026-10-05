@@ -697,3 +697,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 34 — Pauseable systemic single-player campaign
+
+Implemented:
+
+- setup, active, paused, completed, and retired campaign lifecycle;
+- controlled time settlement with missed opportunities adapting into explicit branches;
+- systemic jobs and businesses settling between authored chapters;
+- offline campaign completion with an explicit ending;
+- successor continuation carrying public legacy bands without exact skills, private memories, or competitive power;
+- snapshot, stale-write, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 122 tests, including five campaign tests;
+- `campaign.test.mjs` proves pause/resume, opportunity drift, systemic settlement, offline completion, successor continuity, and snapshot integrity.
+
+Boundary:
+
+- this is a headless campaign contract, not authored mission dialogue, audio, animation, UI, or production executable proof.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
