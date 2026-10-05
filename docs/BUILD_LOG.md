@@ -430,6 +430,29 @@ Still open:
 
 - remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 23 — Organization doctrine and succession
+
+Implemented:
+
+- doctrine rules for permitted, forbidden, tolerated, civilian, family, foreign, and police-policy bands;
+- member decisions that use personal values and knowledge scope, producing compliance, pause, or deviation with an evented consequence;
+- leadership succession scoring seniority, relationship, capability, coalition support, and discipline history;
+- consolidated, fragmented, and caretaker outcomes after retirement, death, arrest, or disappearance;
+- authorized doctrine changes, generational-tension aging, public/private governance projection, hash-linked snapshots, and fail-closed stale/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 79 tests, including four doctrine/succession tests;
+- `doctrine.test.mjs` proves three succession graphs, non-automatic compliance, authorization/time behavior, redaction, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional organization-governance model. It does not encode real-world criminal logistics, recruitment, coercion, evasion, or operational procedure.
+
+Still open:
+
+- remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 22 — Tattoos, rank, and visible history
 
 Implemented:

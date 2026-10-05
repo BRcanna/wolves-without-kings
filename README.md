@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–24 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, bounded drop-in/drop-out co-op settlement, a one-week persistent Underworld macro proof, explicit dynasty/successor continuity, consequential abstract ranged action, time-bearing prison/re-entry state, and observer-scoped tattoos/status history.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–25 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, bounded drop-in/drop-out co-op settlement, a one-week persistent Underworld macro proof, explicit dynasty/successor continuity, consequential abstract ranged action, time-bearing prison/re-entry state, observer-scoped tattoos/status history, and doctrine-driven organization succession.
 
 ## Current build slice
 
@@ -36,6 +36,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Ranged action: abstract weapon condition/ammo, suppression, cover, sound, witnesses, evidence artifacts, police interest, and fail-closed outcomes are evented and projection-filtered.
 - Prison/re-entry: a multi-year sentence advances prison relationships, visitation, work/status marks, injury, outside-world drift, and release state without real-world institutional procedure.
 - Tattoos/status history: observer knowledge, era, prison context, earned markers, visibility, aging, and misuse consequences remain contextual rather than granting direct authority.
+- Organization doctrine: members choose whether to comply, pause, or deviate; succession can consolidate, fragment, or require a caretaker based on history and coalition support.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
@@ -55,4 +56,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Build organization doctrine, internal politics, and succession as a stateful composition over the existing organization work graph; network service deployment and online underworld breadth remain explicitly deferred.
+Build the remaining character/world/content volumes and audit transport/runtime edges; network service deployment and online underworld breadth remain explicitly deferred.

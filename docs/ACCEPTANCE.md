@@ -28,6 +28,7 @@
 | Consequential abstract ranged action with suppression, cover, evidence, and projection boundary | `ranged.test.mjs`, `SECTION_22_RANGED_ACTION.md` | PASS |
 | Time-bearing prison life, outside-world drift, release, and re-entry boundary | `prison.test.mjs`, `SECTION_23_PRISON.md` | PASS |
 | Observer-scoped tattoos, visible status, prison context, aging, and misuse boundary | `tattoos.test.mjs`, `SECTION_24_TATTOOS_RANK.md` | PASS |
+| Organization doctrine, value-mediated compliance, coalition succession, and public governance projection | `doctrine.test.mjs`, `SECTION_25_DOCTRINE_SUCCESSION.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
