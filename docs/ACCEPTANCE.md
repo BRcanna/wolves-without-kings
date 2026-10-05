@@ -18,7 +18,9 @@
 | Multi-axis relationship history and aging | `social-organization.test.mjs` relationship test | PASS |
 | Observer-scoped rumor and belief divergence | `social-organization.test.mjs` rumor test | PASS |
 | Dependency-ordered organization work and lease recovery | `social-organization.test.mjs` organization test | PASS |
-| Economy, property lineage, and action/case simulation | no implementation yet | OPEN |
+| Regional market state and shock direction | `economy-provenance.test.mjs` market test | PASS |
+| Promoted object provenance across storage, transfer, seizure, return, damage, and repair | `economy-provenance.test.mjs` provenance test | PASS |
+| Evidence-bearing police cases and action simulation | no implementation yet | OPEN |
 | Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 

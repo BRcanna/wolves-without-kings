@@ -200,6 +200,21 @@ function refreshWorkAvailability(organization) {
   }
 }
 
+function priceBand({ basePrice, supply, demand, transportCost, legalPressure, factionControl, volatility }) {
+  const pressure = demand - supply;
+  const midpoint = Math.max(
+    1,
+    Math.round(basePrice * (1 + pressure / 100 + transportCost / 100 + legalPressure / 200 + factionControl / 200)),
+  );
+  const spread = Math.max(1, Math.round(midpoint * (10 + volatility) / 100));
+  return {
+    low: Math.max(1, midpoint - spread),
+    high: midpoint + spread,
+    midpoint,
+    confidence: Math.max(0, 100 - volatility - Math.min(50, Math.abs(pressure))),
+  };
+}
+
 export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-01" } = {}) {
   assertNonEmptyString(worldId, "worldId");
   assertDate(startDate, "startDate");
@@ -223,6 +238,8 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     rumors: {},
     beliefs: {},
     organizations: {},
+    objects: {},
+    markets: {},
     events: [],
   };
 }
@@ -316,6 +333,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
           lastEventId: event.eventId,
         };
         refreshWorkAvailability(organization);
+      }
+    }
+    for (const marketSettlement of event.payload.marketSettlements ?? []) {
+      const market = next.markets[marketSettlement.marketId];
+      if (market) {
+        next.markets[marketSettlement.marketId] = {
+          ...market,
+          ...marketSettlement.nextMarket,
+          lastEventId: event.eventId,
+        };
       }
     }
   } else if (event.eventType === "district.condition_changed") {
@@ -434,6 +461,79 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
     };
     refreshWorkAvailability(organization);
     organization.lastEventId = event.eventId;
+  } else if (event.eventType === "object.created") {
+    next.objects[event.payload.object.id] = {
+      ...clone(event.payload.object),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "object.transferred") {
+    const object = next.objects[event.payload.objectId];
+    next.objects[event.payload.objectId] = {
+      ...object,
+      currentOwnerId: event.payload.toId,
+      ownerChain: [...object.ownerChain, clone(event.payload.ownerRecord)],
+      custodyChain: [...object.custodyChain, clone(event.payload.custodyRecord)],
+      status: "held",
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "object.moved") {
+    const object = next.objects[event.payload.objectId];
+    next.objects[event.payload.objectId] = {
+      ...object,
+      currentLocationId: event.payload.locationId,
+      currentContainerId: event.payload.containerId,
+      locationHistory: [...object.locationHistory, clone(event.payload.locationRecord)],
+      custodyChain: [...object.custodyChain, clone(event.payload.custodyRecord)],
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "object.seized") {
+    const object = next.objects[event.payload.objectId];
+    next.objects[event.payload.objectId] = {
+      ...object,
+      status: "seized",
+      currentLocationId: event.payload.locationId,
+      currentContainerId: null,
+      evidenceFlags: [...new Set([...object.evidenceFlags, event.payload.evidenceFlag])],
+      eventLinks: [...object.eventLinks, event.eventId],
+      custodyChain: [...object.custodyChain, clone(event.payload.custodyRecord)],
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "object.returned") {
+    const object = next.objects[event.payload.objectId];
+    next.objects[event.payload.objectId] = {
+      ...object,
+      status: "held",
+      currentLocationId: event.payload.locationId,
+      currentContainerId: event.payload.containerId,
+      custodyChain: [...object.custodyChain, clone(event.payload.custodyRecord)],
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "object.damaged") {
+    const object = next.objects[event.payload.objectId];
+    next.objects[event.payload.objectId] = {
+      ...object,
+      damageHistory: [...object.damageHistory, clone(event.payload.damageRecord)],
+      condition: event.payload.nextCondition,
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "object.repaired") {
+    const object = next.objects[event.payload.objectId];
+    next.objects[event.payload.objectId] = {
+      ...object,
+      repairHistory: [...object.repairHistory, clone(event.payload.repairRecord)],
+      condition: event.payload.nextCondition,
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "market.created") {
+    next.markets[event.payload.market.id] = {
+      ...clone(event.payload.market),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "market.updated") {
+    next.markets[event.payload.marketId] = {
+      ...clone(event.payload.nextMarket),
+      lastEventId: event.eventId,
+    };
   }
 
   next.events.push(clone(event));
@@ -495,7 +595,20 @@ function buildTimeSettlements(world, days, toDate) {
       }
     }
   }
-  return { npcSettlements, beliefSettlements, relationshipSettlements, workSettlements };
+  const marketSettlements = Object.values(world.markets).map((market) => ({
+    marketId: market.id,
+    nextMarket: {
+      lastSettledDate: toDate,
+      informationLagDays: Math.max(0, market.informationLagDays - days),
+    },
+  }));
+  return {
+    npcSettlements,
+    beliefSettlements,
+    relationshipSettlements,
+    workSettlements,
+    marketSettlements,
+  };
 }
 
 export function advanceTime(world, { expectedRevision, days, actorId = "system:time" }) {
@@ -1200,6 +1313,376 @@ export function completeWorkItem(
       memberId,
       reviewState,
       completedOn: world.date,
+    },
+    visibility: "local",
+  });
+}
+
+function requireObject(world, objectId) {
+  assertNonEmptyString(objectId, "objectId");
+  const object = world.objects[objectId];
+  if (!object) throw new InvalidCommandError(`unknown object: ${objectId}`);
+  return object;
+}
+
+function requireMarket(world, marketId) {
+  assertNonEmptyString(marketId, "marketId");
+  const market = world.markets[marketId];
+  if (!market) throw new InvalidCommandError(`unknown market: ${marketId}`);
+  return market;
+}
+
+export function createProvenanceObject(
+  world,
+  {
+    expectedRevision,
+    objectId,
+    objectType,
+    origin,
+    ownerId = null,
+    locationId = world.district.id,
+    fidelity = "promoted",
+    authenticity = "unknown",
+    evidenceFlags = [],
+    trophyTags = [],
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(objectId, "objectId");
+  assertNonEmptyString(objectType, "objectType");
+  assertNonEmptyString(origin, "origin");
+  assertNonEmptyString(locationId, "locationId");
+  if (ownerId !== null) assertNonEmptyString(ownerId, "ownerId");
+  if (!["ordinary", "promoted", "important"].includes(fidelity)) {
+    throw new InvalidCommandError(`unsupported object fidelity: ${fidelity}`);
+  }
+  if (!["unknown", "verified", "contested", "altered"].includes(authenticity)) {
+    throw new InvalidCommandError(`unsupported object authenticity: ${authenticity}`);
+  }
+  if (world.objects[objectId]) throw new InvalidCommandError(`object already exists: ${objectId}`);
+  const ownerRecord = ownerId ? [{ ownerId, date: world.date, reason: "origin" }] : [];
+  const object = {
+    id: objectId,
+    objectType,
+    origin,
+    fidelity,
+    authenticity,
+    currentOwnerId: ownerId,
+    currentLocationId: locationId,
+    currentContainerId: null,
+    status: "held",
+    ownerChain: ownerRecord,
+    custodyChain: [{ holderId: ownerId ?? "world:origin", locationId, date: world.date, state: "held", reason: "created" }],
+    eventLinks: [],
+    damageHistory: [],
+    repairHistory: [],
+    locationHistory: [{ locationId, date: world.date, reason: "created" }],
+    evidenceFlags: normalizeStringArray(evidenceFlags, "evidenceFlags"),
+    trophyTags: normalizeStringArray(trophyTags, "trophyTags"),
+    condition: "intact",
+  };
+  return commit(world, {
+    eventType: "object.created",
+    actors: ownerId ? [ownerId] : ["system:provenance"],
+    subjects: [objectId],
+    location: locationId,
+    payload: { object },
+    visibility: "local",
+  });
+}
+
+export function transferObject(
+  world,
+  { expectedRevision, objectId, fromId, toId, locationId = null, reason = "transfer" },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const object = requireObject(world, objectId);
+  assertNonEmptyString(fromId, "fromId");
+  assertNonEmptyString(toId, "toId");
+  assertNonEmptyString(reason, "reason");
+  if (object.status === "seized") throw new InvalidCommandError(`seized object cannot be transferred: ${objectId}`);
+  if (object.currentOwnerId !== fromId) throw new InvalidCommandError(`object is not owned by ${fromId}: ${objectId}`);
+  const nextLocation = locationId ?? object.currentLocationId;
+  assertNonEmptyString(nextLocation, "locationId");
+  return commit(world, {
+    eventType: "object.transferred",
+    actors: [fromId, toId],
+    subjects: [objectId],
+    location: nextLocation,
+    payload: {
+      objectId,
+      fromId,
+      toId,
+      ownerRecord: { ownerId: toId, date: world.date, reason },
+      custodyRecord: { holderId: toId, locationId: nextLocation, date: world.date, state: "held", reason },
+    },
+    visibility: "local",
+  });
+}
+
+export function moveObject(
+  world,
+  { expectedRevision, objectId, actorId, locationId, containerId = null, reason = "moved" },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const object = requireObject(world, objectId);
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(locationId, "locationId");
+  assertNonEmptyString(reason, "reason");
+  if (object.status === "seized") throw new InvalidCommandError(`seized object cannot be moved: ${objectId}`);
+  if (containerId !== null) assertNonEmptyString(containerId, "containerId");
+  return commit(world, {
+    eventType: "object.moved",
+    actors: [actorId],
+    subjects: [objectId],
+    location: locationId,
+    payload: {
+      objectId,
+      locationId,
+      containerId,
+      locationRecord: { locationId, containerId, date: world.date, reason },
+      custodyRecord: {
+        holderId: object.currentOwnerId ?? "world:origin",
+        locationId,
+        containerId,
+        date: world.date,
+        state: containerId ? "stored" : "held",
+        reason,
+      },
+    },
+    visibility: "local",
+  });
+}
+
+export function seizeObject(
+  world,
+  { expectedRevision, objectId, agencyId, locationId, evidenceFlag = "evidence:seized" },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const object = requireObject(world, objectId);
+  assertNonEmptyString(agencyId, "agencyId");
+  assertNonEmptyString(locationId, "locationId");
+  assertNonEmptyString(evidenceFlag, "evidenceFlag");
+  if (object.status === "seized") throw new InvalidCommandError(`object is already seized: ${objectId}`);
+  return commit(world, {
+    eventType: "object.seized",
+    actors: [agencyId],
+    subjects: [objectId],
+    location: locationId,
+    payload: {
+      objectId,
+      agencyId,
+      locationId,
+      evidenceFlag,
+      custodyRecord: { holderId: agencyId, locationId, date: world.date, state: "seized", reason: "evidence" },
+    },
+    visibility: "institutional",
+  });
+}
+
+export function returnSeizedObject(
+  world,
+  { expectedRevision, objectId, agencyId, locationId, containerId = null },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const object = requireObject(world, objectId);
+  assertNonEmptyString(agencyId, "agencyId");
+  assertNonEmptyString(locationId, "locationId");
+  if (object.status !== "seized") throw new InvalidCommandError(`object is not seized: ${objectId}`);
+  if (containerId !== null) assertNonEmptyString(containerId, "containerId");
+  return commit(world, {
+    eventType: "object.returned",
+    actors: [agencyId, object.currentOwnerId ?? "world:origin"],
+    subjects: [objectId],
+    location: locationId,
+    payload: {
+      objectId,
+      agencyId,
+      locationId,
+      containerId,
+      custodyRecord: {
+        holderId: object.currentOwnerId ?? "world:origin",
+        locationId,
+        containerId,
+        date: world.date,
+        state: containerId ? "stored" : "held",
+        reason: "evidence-returned",
+      },
+    },
+    visibility: "institutional",
+  });
+}
+
+export function recordObjectDamage(
+  world,
+  { expectedRevision, objectId, actorId, severity, cause = "unknown", locationId = null },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const object = requireObject(world, objectId);
+  assertNonEmptyString(actorId, "actorId");
+  assertRange(severity, "severity", 1, 100);
+  assertNonEmptyString(cause, "cause");
+  if (locationId !== null) assertNonEmptyString(locationId, "locationId");
+  const nextCondition = severity === 100 ? "destroyed" : "damaged";
+  return commit(world, {
+    eventType: "object.damaged",
+    actors: [actorId],
+    subjects: [objectId],
+    location: locationId ?? object.currentLocationId,
+    payload: {
+      objectId,
+      nextCondition,
+      damageRecord: { severity, cause, date: world.date, locationId: locationId ?? object.currentLocationId },
+    },
+    visibility: "local",
+  });
+}
+
+export function recordObjectRepair(
+  world,
+  { expectedRevision, objectId, actorId, condition = "intact", locationId = null },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const object = requireObject(world, objectId);
+  assertNonEmptyString(actorId, "actorId");
+  if (!["intact", "damaged"].includes(condition)) throw new InvalidCommandError(`unsupported object condition: ${condition}`);
+  if (locationId !== null) assertNonEmptyString(locationId, "locationId");
+  return commit(world, {
+    eventType: "object.repaired",
+    actors: [actorId],
+    subjects: [objectId],
+    location: locationId ?? object.currentLocationId,
+    payload: {
+      objectId,
+      nextCondition: condition,
+      repairRecord: { date: world.date, actorId, locationId: locationId ?? object.currentLocationId, condition },
+    },
+    visibility: "local",
+  });
+}
+
+export function createMarket(
+  world,
+  {
+    expectedRevision,
+    marketId,
+    regionId,
+    commodity,
+    basePrice,
+    supply = 0,
+    demand = 0,
+    inventory = 0,
+    transportCost = 0,
+    legalPressure = 0,
+    factionControl = 0,
+    volatility = 10,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(marketId, "marketId");
+  assertNonEmptyString(regionId, "regionId");
+  assertNonEmptyString(commodity, "commodity");
+  assertInteger(basePrice, "basePrice", 1);
+  assertRange(supply, "supply", 0, 1000);
+  assertRange(demand, "demand", 0, 1000);
+  assertRange(inventory, "inventory", 0, 100000);
+  assertRange(transportCost, "transportCost", 0, 100);
+  assertRange(legalPressure, "legalPressure", 0, 100);
+  assertRange(factionControl, "factionControl", 0, 100);
+  assertRange(volatility, "volatility", 0, 50);
+  if (world.markets[marketId]) throw new InvalidCommandError(`market already exists: ${marketId}`);
+  const market = {
+    id: marketId,
+    regionId,
+    commodity,
+    basePrice,
+    supply,
+    demand,
+    inventory,
+    transportCost,
+    legalPressure,
+    factionControl,
+    volatility,
+    priceBand: priceBand({ basePrice, supply, demand, transportCost, legalPressure, factionControl, volatility }),
+    shockHistory: [],
+    informationLagDays: 0,
+    lastSettledDate: world.date,
+  };
+  return commit(world, {
+    eventType: "market.created",
+    actors: ["system:market"],
+    subjects: [marketId],
+    location: regionId,
+    payload: { market },
+    visibility: "local",
+  });
+}
+
+export function updateMarket(
+  world,
+  {
+    expectedRevision,
+    marketId,
+    actorId = "system:market",
+    supplyDelta = 0,
+    demandDelta = 0,
+    inventoryDelta = 0,
+    transportCostDelta = 0,
+    legalPressureDelta = 0,
+    factionControlDelta = 0,
+    shockType = "ordinary-settlement",
+    informationLagDays = null,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const market = requireMarket(world, marketId);
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(shockType, "shockType");
+  for (const [field, value] of Object.entries({
+    supplyDelta,
+    demandDelta,
+    inventoryDelta,
+    transportCostDelta,
+    legalPressureDelta,
+    factionControlDelta,
+  })) {
+    if (!Number.isInteger(value)) throw new InvalidCommandError(`${field} must be an integer`);
+  }
+  const next = {
+    ...clone(market),
+    supply: Math.max(0, Math.min(1000, market.supply + supplyDelta)),
+    demand: Math.max(0, Math.min(1000, market.demand + demandDelta)),
+    inventory: Math.max(0, Math.min(100000, market.inventory + inventoryDelta)),
+    transportCost: Math.max(0, Math.min(100, market.transportCost + transportCostDelta)),
+    legalPressure: Math.max(0, Math.min(100, market.legalPressure + legalPressureDelta)),
+    factionControl: Math.max(0, Math.min(100, market.factionControl + factionControlDelta)),
+  };
+  if (informationLagDays !== null) assertRange(informationLagDays, "informationLagDays", 0, 365);
+  if (informationLagDays !== null) next.informationLagDays = informationLagDays;
+  next.priceBand = priceBand(next);
+  next.shockHistory = [
+    ...market.shockHistory,
+    {
+      type: shockType,
+      date: world.date,
+      supplyDelta,
+      demandDelta,
+      inventoryDelta,
+      transportCostDelta,
+      legalPressureDelta,
+      factionControlDelta,
+    },
+  ];
+  return commit(world, {
+    eventType: "market.updated",
+    actors: [actorId],
+    subjects: [marketId],
+    location: market.regionId,
+    payload: {
+      marketId,
+      previousMarket: market,
+      nextMarket: next,
+      shockType,
     },
     visibility: "local",
   });

@@ -76,3 +76,21 @@ Acceptance evidence:
 Still open:
 
 - economy, property lineage, action/case systems, renderer, online systems, and production acceptance.
+
+## Episode 4 — Regional economy and item provenance
+
+Implemented:
+
+- promoted object identity with owner, custody, location, evidence, damage, repair, and event-link history;
+- property storage, player transfer, institutional seizure, eventual return, damage, and repair transitions;
+- regional market state with supply, demand, inventory, transport cost, legal pressure, faction control, information lag, and uncertain price bands;
+- deterministic market shocks whose direction follows the changed state rather than event-specific scripted prices;
+- replay-compatible time settlement for market information lag.
+
+Acceptance evidence:
+
+- `npm test` passes 19 tests covering all prior gates plus provenance continuity and independent market-shock direction.
+
+Still open:
+
+- evidence-bearing police cases, action systems, renderer, the single-player vertical trace, online systems, and production acceptance.
