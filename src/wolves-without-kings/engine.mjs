@@ -674,6 +674,11 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
       lastEventId: event.eventId,
     };
     next.actions.push(clone(event.payload.action));
+  } else if (event.eventType === "vehicle.provenance_advanced") {
+    next.vehicles[event.payload.vehicleId] = {
+      ...clone(event.payload.nextVehicle),
+      lastEventId: event.eventId,
+    };
   }
 
   next.events.push(clone(event));
@@ -2739,10 +2744,20 @@ export function createVehicle(
     mass,
     handling,
     ownerId,
+    holderId: ownerId,
     tires,
     damage,
     condition: damage >= 100 ? "retired" : damage > 0 ? "damaged" : "intact",
     locationId,
+    status: "held",
+    ownerHistory: ownerId ? [{ ownerId, date: world.date, reason: "origin" }] : [],
+    plateHistory: [],
+    serviceHistory: [],
+    storageHistory: [],
+    policeInterest: 0,
+    marketDemand: 0,
+    recognitionRisk: 0,
+    trophyTags: [],
     driverFamiliarity: {},
     pursuitHistory: [],
     observerSignals: [],
@@ -2823,6 +2838,136 @@ export function resolveVehicleAction(
     subjects: [vehicleId, actionId],
     location: locationId,
     payload: { vehicleId, nextVehicle, action },
+    visibility: "local",
+  });
+}
+
+export function advanceVehicleProvenance(
+  world,
+  {
+    expectedRevision,
+    vehicleId,
+    actorId,
+    transition,
+    locationId = null,
+    recipientId = null,
+    newOwnerId = null,
+    appearanceBand = null,
+    serviceLabel = null,
+    repairDelta = 0,
+    policeInterestDelta = 0,
+    marketDemandDelta = 0,
+    recognitionRiskDelta = 0,
+    evidenceSignal = "none",
+    trophyTag = null,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const vehicle = requireVehicle(world, vehicleId);
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(transition, "transition");
+  if (![
+    "theft",
+    "storage",
+    "service",
+    "repaint",
+    "fence",
+    "chop",
+    "transfer",
+    "resale",
+    "trophy",
+    "return",
+  ].includes(transition)) throw new InvalidCommandError(`unsupported vehicle provenance transition: ${transition}`);
+  if (locationId !== null) assertNonEmptyString(locationId, "locationId");
+  if (recipientId !== null) assertNonEmptyString(recipientId, "recipientId");
+  if (newOwnerId !== null) assertNonEmptyString(newOwnerId, "newOwnerId");
+  if (appearanceBand !== null) assertNonEmptyString(appearanceBand, "appearanceBand");
+  if (serviceLabel !== null) assertNonEmptyString(serviceLabel, "serviceLabel");
+  if (trophyTag !== null) assertNonEmptyString(trophyTag, "trophyTag");
+  assertRange(repairDelta, "repairDelta", 0, 100);
+  if (!Number.isInteger(policeInterestDelta) || policeInterestDelta < -100 || policeInterestDelta > 100) {
+    throw new InvalidCommandError("policeInterestDelta must be an integer between -100 and 100");
+  }
+  if (!Number.isInteger(marketDemandDelta) || marketDemandDelta < -100 || marketDemandDelta > 100) {
+    throw new InvalidCommandError("marketDemandDelta must be an integer between -100 and 100");
+  }
+  if (!Number.isInteger(recognitionRiskDelta) || recognitionRiskDelta < -100 || recognitionRiskDelta > 100) {
+    throw new InvalidCommandError("recognitionRiskDelta must be an integer between -100 and 100");
+  }
+  assertNonEmptyString(evidenceSignal, "evidenceSignal");
+  if (vehicle.condition === "retired") throw new InvalidCommandError(`vehicle is retired: ${vehicleId}`);
+  if (transition === "resale" && newOwnerId === null) throw new InvalidCommandError("resale requires newOwnerId");
+  if (transition === "transfer" && recipientId === null) throw new InvalidCommandError("transfer requires recipientId");
+  if (transition === "repaint" && appearanceBand === null) throw new InvalidCommandError("repaint requires appearanceBand");
+  if (transition === "service" && serviceLabel === null) throw new InvalidCommandError("service requires serviceLabel");
+  if (transition === "trophy" && actorId !== vehicle.ownerId && actorId !== vehicle.holderId) {
+    throw new InvalidCommandError("trophy transition requires the current owner or holder");
+  }
+  if (transition === "return" && vehicle.ownerId === null) {
+    throw new InvalidCommandError("vehicle without an owner cannot be returned");
+  }
+  const nextVehicle = clone(vehicle);
+  nextVehicle.locationId = locationId ?? vehicle.locationId;
+  nextVehicle.policeInterest = Math.max(0, Math.min(100, vehicle.policeInterest + policeInterestDelta));
+  nextVehicle.marketDemand = Math.max(0, Math.min(100, vehicle.marketDemand + marketDemandDelta));
+  nextVehicle.recognitionRisk = Math.max(0, Math.min(100, vehicle.recognitionRisk + recognitionRiskDelta));
+  if (transition === "theft") {
+    nextVehicle.status = "stolen";
+    nextVehicle.holderId = actorId;
+  } else if (transition === "storage") {
+    nextVehicle.status = "stored";
+    nextVehicle.storageHistory.push({ holderId: vehicle.holderId ?? actorId, locationId: nextVehicle.locationId, date: world.date });
+  } else if (transition === "service") {
+    nextVehicle.damage = Math.max(0, vehicle.damage - repairDelta);
+    nextVehicle.condition = nextVehicle.damage === 0 ? "intact" : "damaged";
+    nextVehicle.serviceHistory.push({ label: serviceLabel, repairDelta, date: world.date });
+  } else if (transition === "repaint") {
+    nextVehicle.plateHistory.push({ appearanceBand, date: world.date, reason: "appearance-change" });
+  } else if (transition === "fence" || transition === "chop") {
+    nextVehicle.status = "processed";
+    nextVehicle.holderId = recipientId ?? actorId;
+  } else if (transition === "transfer") {
+    nextVehicle.ownerId = recipientId;
+    nextVehicle.holderId = recipientId;
+    nextVehicle.status = "held";
+    nextVehicle.ownerHistory.push({ ownerId: recipientId, date: world.date, reason: "transfer" });
+  } else if (transition === "resale") {
+    nextVehicle.ownerId = newOwnerId;
+    nextVehicle.holderId = newOwnerId;
+    nextVehicle.status = "held";
+    nextVehicle.ownerHistory.push({ ownerId: newOwnerId, date: world.date, reason: "resale" });
+  } else if (transition === "trophy") {
+    nextVehicle.status = "trophy";
+    nextVehicle.trophyTags = trophyTag === null
+      ? nextVehicle.trophyTags
+      : [...new Set([...nextVehicle.trophyTags, trophyTag])];
+  } else if (transition === "return") {
+    nextVehicle.status = "held";
+    nextVehicle.holderId = vehicle.ownerId;
+  }
+  nextVehicle.provenanceHistory = [
+    ...(vehicle.provenanceHistory ?? []),
+    {
+      transition,
+      actorId,
+      locationId: nextVehicle.locationId,
+      recipientId,
+      newOwnerId,
+      evidenceSignal,
+      date: world.date,
+    },
+  ];
+  return commit(world, {
+    eventType: "vehicle.provenance_advanced",
+    actors: [actorId, ...(recipientId ? [recipientId] : []), ...(newOwnerId ? [newOwnerId] : [])],
+    subjects: [vehicleId],
+    location: nextVehicle.locationId,
+    payload: {
+      vehicleId,
+      transition,
+      evidenceSignal,
+      nextVehicle,
+    },
     visibility: "local",
   });
 }

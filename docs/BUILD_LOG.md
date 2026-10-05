@@ -275,3 +275,26 @@ Acceptance evidence:
 Still open:
 
 - vehicle-crime workflow beyond provenance/action persistence, aggregate-region simulation, co-op settlement, real network deployment, production acceptance, and the explicitly deferred online underworld.
+
+## Episode 15 — Vehicle-crime provenance transitions
+
+Implemented:
+
+- persistent holder, owner history, appearance history, service history, storage history, police interest, market demand, recognition risk, trophy tags, and provenance history on every vehicle;
+- abstract evented transitions for theft, storage, service, appearance change, processing, transfer, resale, return, and trophy display;
+- unique identity continuity across ten transitions with no silent cloning or reset;
+- qualitative public vehicle projection that omits owner/holder and detailed service/provenance history;
+- fail-closed resale, trophy, retired-vehicle, and stale-revision validation.
+
+Acceptance evidence:
+
+- `npm test` passes 48 tests, including the ten-transition vehicle provenance trace and negative coverage;
+- `vehicle.test.mjs` proves event-history restore, ownership continuity, service/storage/appearance histories, recognition-risk projection, and retirement boundaries.
+
+Safety boundary:
+
+- vehicle-crime transitions use abstract state labels and consequence history only; they do not encode bypass, theft, concealment, or evasion instructions.
+
+Still open:
+
+- aggregate-region simulation, co-op settlement, real network deployment, production acceptance, and the explicitly deferred online underworld.

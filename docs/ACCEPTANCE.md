@@ -26,7 +26,7 @@
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
 | Scope-filtered renderer-facing projection and privacy boundary | `projection.test.mjs`, `ONLINE_BOUNDARY.md` | PASS |
 | Bounded traversal and melee action outcomes | `action.test.mjs` | PASS |
-| Vehicle persistence, pursuit segments, damage, and retirement | `vehicle.test.mjs` | PASS |
+| Vehicle persistence, pursuit segments, damage, retirement, and provenance history | `vehicle.test.mjs`, `SECTION_17_VEHICLE_PROVENANCE.md` | PASS |
 | Local renderer preview consumes only public projection data | `renderer.test.mjs`, `npm run preview:build`, `SECTION_13_RENDERER.md` | PASS |
 | In-process authority contract for ordered intents, ownership, leases, reconnect, and redaction | `authority-network.test.mjs`, `SECTION_14_AUTHORITY.md` | PASS |
 | Local transport-shaped authority service adapter | `service.test.mjs`, `SECTION_15_SERVICE_ADAPTER.md` | PASS |

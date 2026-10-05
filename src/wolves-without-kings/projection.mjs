@@ -51,6 +51,16 @@ function baseProjection(world) {
       relationshipBand: protectionRelationshipBand(arrangement),
       daysActive: arrangement.daysActive,
     })),
+    vehicles: Object.values(world.vehicles).map((vehicle) => ({
+      id: vehicle.id,
+      vehicleClass: vehicle.vehicleClass,
+      locationId: vehicle.locationId,
+      status: vehicle.status,
+      condition: vehicle.condition,
+      marketDemand: vehicle.marketDemand,
+      recognitionRiskBand: vehicle.recognitionRisk >= 60 ? "high" : vehicle.recognitionRisk >= 25 ? "moderate" : "low",
+      trophyTags: clone(vehicle.trophyTags),
+    })),
     objects: Object.values(world.objects).map((object) => ({
       id: object.id,
       objectType: object.objectType,
