@@ -24,6 +24,13 @@ function publicMarket(market) {
   };
 }
 
+function protectionRelationshipBand(arrangement) {
+  if (arrangement.status === "disputed") return "contested";
+  if (arrangement.trust >= 40 && arrangement.resentment <= 20) return "cooperative";
+  if (arrangement.fear >= 50 || arrangement.resentment >= 50) return "fragile";
+  return "strained";
+}
+
 function baseProjection(world) {
   return {
     projectionVersion: 1,
@@ -34,6 +41,16 @@ function baseProjection(world) {
     district: clone(world.district),
     businesses: Object.values(world.businesses).map(publicBusiness),
     markets: Object.values(world.markets).map(publicMarket),
+    protectionArrangements: Object.values(world.protectionArrangements).map((arrangement) => ({
+      id: arrangement.id,
+      businessId: arrangement.businessId,
+      districtId: arrangement.districtId,
+      mode: arrangement.mode,
+      status: arrangement.status,
+      paymentBand: arrangement.paymentBand,
+      relationshipBand: protectionRelationshipBand(arrangement),
+      daysActive: arrangement.daysActive,
+    })),
     objects: Object.values(world.objects).map((object) => ({
       id: object.id,
       objectType: object.objectType,

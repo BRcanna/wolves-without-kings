@@ -68,6 +68,7 @@
         "informationLagDays": 0
       }
     ],
+    "protectionArrangements": [],
     "objects": [
       {
         "id": "vehicle:favorite-sedan",

@@ -242,6 +242,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     markets: {},
     cases: {},
     businesses: {},
+    protectionArrangements: {},
     surveillance: {},
     actions: [],
     vehicles: {},
@@ -366,6 +367,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
         next.businesses[businessSettlement.businessId] = {
           ...business,
           ...businessSettlement.nextBusiness,
+          lastEventId: event.eventId,
+        };
+      }
+    }
+    for (const protectionSettlement of event.payload.protectionSettlements ?? []) {
+      const arrangement = next.protectionArrangements[protectionSettlement.arrangementId];
+      if (arrangement) {
+        next.protectionArrangements[protectionSettlement.arrangementId] = {
+          ...arrangement,
+          ...protectionSettlement.nextArrangement,
           lastEventId: event.eventId,
         };
       }
@@ -610,6 +621,27 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
       ...clone(event.payload.nextBusiness),
       lastEventId: event.eventId,
     };
+  } else if (event.eventType === "protection.created") {
+    next.protectionArrangements[event.payload.arrangement.id] = {
+      ...clone(event.payload.arrangement),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "protection.cycle_resolved") {
+    next.protectionArrangements[event.payload.arrangementId] = {
+      ...clone(event.payload.nextArrangement),
+      lastEventId: event.eventId,
+    };
+    if (event.payload.nextBusiness) {
+      next.businesses[event.payload.businessId] = {
+        ...clone(event.payload.nextBusiness),
+        lastEventId: event.eventId,
+      };
+    }
+  } else if (event.eventType === "protection.claim_disputed") {
+    next.protectionArrangements[event.payload.arrangementId] = {
+      ...clone(event.payload.nextArrangement),
+      lastEventId: event.eventId,
+    };
   } else if (event.eventType === "surveillance.started") {
     next.surveillance[event.payload.record.id] = {
       ...clone(event.payload.record),
@@ -733,6 +765,13 @@ function buildTimeSettlements(world, days, toDate) {
       lastSettledDate: toDate,
     },
   }));
+  const protectionSettlements = Object.values(world.protectionArrangements).map((arrangement) => ({
+    arrangementId: arrangement.id,
+    nextArrangement: {
+      daysActive: arrangement.daysActive + days,
+      daysSinceReview: arrangement.daysSinceReview + days,
+    },
+  }));
   const surveillanceSettlements = Object.values(world.surveillance).map((record) => {
     const target = world.npcLife[record.targetId];
     const scheduleChanged = Boolean(target && record.knownRoutineId && target.currentRoutineId !== record.knownRoutineId);
@@ -755,6 +794,7 @@ function buildTimeSettlements(world, days, toDate) {
     marketSettlements,
     caseSettlements,
     businessSettlements,
+    protectionSettlements,
     surveillanceSettlements,
   };
 }
@@ -2141,6 +2181,265 @@ export function updateBusiness(
     subjects: [businessId],
     location: business.locationId,
     payload: { businessId, previousBusiness: business, nextBusiness },
+    visibility: "local",
+  });
+}
+
+function requireProtectionArrangement(world, arrangementId) {
+  assertNonEmptyString(arrangementId, "arrangementId");
+  const arrangement = world.protectionArrangements[arrangementId];
+  if (!arrangement) throw new InvalidCommandError(`unknown protection arrangement: ${arrangementId}`);
+  return arrangement;
+}
+
+function assertBoolean(value, field) {
+  if (typeof value !== "boolean") throw new InvalidCommandError(`${field} must be a boolean`);
+}
+
+function bounded(value) {
+  return Math.max(0, Math.min(100, value));
+}
+
+function protectionTreatmentDelta(treatment) {
+  return {
+    respectful: { trust: 4, fear: -3, resentment: -4 },
+    pressured: { trust: -1, fear: 6, resentment: 4 },
+    humiliating: { trust: -4, fear: 12, resentment: 12 },
+    protective: { trust: 6, fear: -2, resentment: -5 },
+    absent: { trust: -3, fear: 0, resentment: 5 },
+  }[treatment];
+}
+
+function protectionBusinessImpact({ treatment, paymentStatus, serviceDelivered, previousReputation }) {
+  const treatmentDelta = {
+    respectful: 1,
+    pressured: -2,
+    humiliating: -8,
+    protective: 2,
+    absent: -4,
+  }[treatment];
+  const paymentDelta = paymentStatus === "paid" ? 0 : paymentStatus === "waived" ? 1 : -2;
+  const serviceDelta = serviceDelivered ? 1 : -1;
+  const nextReputation = Math.max(-100, Math.min(100, previousReputation + treatmentDelta + paymentDelta + serviceDelta));
+  const nextCondition = nextReputation <= -80 ? "damaged" : nextReputation <= -45 ? "strained" : "stable";
+  return { nextReputation, nextCondition };
+}
+
+export function createProtectionArrangement(
+  world,
+  {
+    expectedRevision,
+    arrangementId,
+    businessId,
+    ownerId,
+    providerId,
+    districtId = world.district.id,
+    mode = "negotiated",
+    paymentBand = "moderate",
+    serviceExpectations = ["presence", "information"],
+    vulnerability = 30,
+    competitorPressure = 0,
+    policeExposure = 0,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(arrangementId, "arrangementId");
+  assertNonEmptyString(businessId, "businessId");
+  assertNonEmptyString(ownerId, "ownerId");
+  assertNonEmptyString(providerId, "providerId");
+  assertNonEmptyString(districtId, "districtId");
+  if (![
+    "coercive",
+    "protective",
+    "negotiated",
+    "partnership",
+  ].includes(mode)) throw new InvalidCommandError(`unsupported protection mode: ${mode}`);
+  if (!["low", "moderate", "high"].includes(paymentBand)) {
+    throw new InvalidCommandError(`unsupported payment band: ${paymentBand}`);
+  }
+  assertRange(vulnerability, "vulnerability", 0, 100);
+  assertRange(competitorPressure, "competitorPressure", 0, 100);
+  assertRange(policeExposure, "policeExposure", 0, 100);
+  const business = requireBusiness(world, businessId);
+  if (business.ownerId !== null && business.ownerId !== ownerId) {
+    throw new InvalidCommandError(`business owner does not match protection owner: ${businessId}`);
+  }
+  if (world.protectionArrangements[arrangementId]) {
+    throw new InvalidCommandError(`protection arrangement already exists: ${arrangementId}`);
+  }
+  const defaults = {
+    coercive: { trust: 0, fear: 35, resentment: 25 },
+    protective: { trust: 25, fear: 0, resentment: 0 },
+    negotiated: { trust: 20, fear: 5, resentment: 5 },
+    partnership: { trust: 40, fear: 0, resentment: 0 },
+  }[mode];
+  const arrangement = {
+    id: arrangementId,
+    businessId,
+    ownerId,
+    providerId,
+    districtId,
+    mode,
+    paymentBand,
+    serviceExpectations: normalizeStringArray(serviceExpectations, "serviceExpectations"),
+    vulnerability,
+    trust: defaults.trust,
+    fear: defaults.fear,
+    resentment: defaults.resentment,
+    competitorPressure,
+    policeExposure,
+    status: "active",
+    missedPayments: 0,
+    completedCycles: 0,
+    daysActive: 0,
+    daysSinceReview: 0,
+    lastPaymentStatus: "not-due",
+    lastTreatment: null,
+    lastOwnerDecision: "continue",
+    history: [{ type: "created", date: world.date, mode }],
+  };
+  return commit(world, {
+    eventType: "protection.created",
+    actors: [providerId, ownerId],
+    subjects: [arrangementId, businessId],
+    location: districtId,
+    payload: { arrangement },
+    visibility: "local",
+  });
+}
+
+export function resolveProtectionCycle(
+  world,
+  {
+    expectedRevision,
+    arrangementId,
+    collectorId,
+    treatment = "respectful",
+    paymentStatus = "paid",
+    serviceDelivered = true,
+    observedByPolice = false,
+    competitorAction = "none",
+    ownerDecision = "continue",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const arrangement = requireProtectionArrangement(world, arrangementId);
+  const business = requireBusiness(world, arrangement.businessId);
+  assertNonEmptyString(collectorId, "collectorId");
+  if (collectorId !== arrangement.providerId) {
+    throw new InvalidCommandError("collector is not authorized by the protection arrangement");
+  }
+  if (!["respectful", "pressured", "humiliating", "protective", "absent"].includes(treatment)) {
+    throw new InvalidCommandError(`unsupported protection treatment: ${treatment}`);
+  }
+  if (!["paid", "missed", "disputed", "waived"].includes(paymentStatus)) {
+    throw new InvalidCommandError(`unsupported protection payment status: ${paymentStatus}`);
+  }
+  if (!["none", "rival-claim"].includes(competitorAction)) {
+    throw new InvalidCommandError(`unsupported competitor action: ${competitorAction}`);
+  }
+  if (!["continue", "report", "flee", "rival", "partner", "request-help"].includes(ownerDecision)) {
+    throw new InvalidCommandError(`unsupported owner decision: ${ownerDecision}`);
+  }
+  assertBoolean(serviceDelivered, "serviceDelivered");
+  assertBoolean(observedByPolice, "observedByPolice");
+  if (business.condition === "closed" && paymentStatus === "paid") {
+    throw new InvalidCommandError("closed business cannot complete a paid protection cycle");
+  }
+  if (arrangement.status === "ended") throw new InvalidCommandError(`protection arrangement is ended: ${arrangementId}`);
+  const delta = protectionTreatmentDelta(treatment);
+  const nextArrangement = {
+    ...clone(arrangement),
+    trust: bounded(arrangement.trust + delta.trust + (serviceDelivered ? 2 : -1) + (ownerDecision === "partner" ? 6 : 0)),
+    fear: bounded(arrangement.fear + delta.fear + (ownerDecision === "report" ? -5 : 0)),
+    resentment: bounded(arrangement.resentment + delta.resentment + (paymentStatus === "missed" ? 3 : 0)),
+    policeExposure: bounded(arrangement.policeExposure + (observedByPolice ? 15 : 0)),
+    vulnerability: bounded(arrangement.vulnerability + (serviceDelivered ? -2 : 4)),
+    missedPayments: arrangement.missedPayments + (paymentStatus === "missed" ? 1 : 0),
+    completedCycles: arrangement.completedCycles + 1,
+    daysSinceReview: 0,
+    lastPaymentStatus: paymentStatus,
+    lastTreatment: treatment,
+    lastOwnerDecision: ownerDecision,
+    history: [
+      ...arrangement.history,
+      {
+        type: "cycle",
+        date: world.date,
+        collectorId,
+        treatment,
+        paymentStatus,
+        serviceDelivered,
+        observedByPolice,
+        competitorAction,
+        ownerDecision,
+      },
+    ],
+  };
+  if (ownerDecision === "partner") nextArrangement.mode = "partnership";
+  if (competitorAction === "rival-claim" || ownerDecision === "rival") nextArrangement.status = "disputed";
+  if (["report", "flee"].includes(ownerDecision)) nextArrangement.status = "ended";
+  if (ownerDecision === "request-help") nextArrangement.vulnerability = bounded(nextArrangement.vulnerability - 5);
+  const businessImpact = protectionBusinessImpact({
+    treatment,
+    paymentStatus,
+    serviceDelivered,
+    previousReputation: business.reputation,
+  });
+  const nextBusiness = {
+    ...clone(business),
+    reputation: businessImpact.nextReputation,
+    condition: businessImpact.nextCondition,
+  };
+  return commit(world, {
+    eventType: "protection.cycle_resolved",
+    actors: [collectorId, arrangement.ownerId],
+    subjects: [arrangementId, arrangement.businessId],
+    location: arrangement.districtId,
+    payload: {
+      arrangementId,
+      businessId: arrangement.businessId,
+      nextArrangement,
+      nextBusiness,
+      cycle: {
+        treatment,
+        paymentStatus,
+        serviceDelivered,
+        observedByPolice,
+        competitorAction,
+        ownerDecision,
+      },
+    },
+    visibility: "local",
+  });
+}
+
+export function disputeProtectionClaim(
+  world,
+  { expectedRevision, arrangementId, claimantId, reason = "rival-claim" },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const arrangement = requireProtectionArrangement(world, arrangementId);
+  assertNonEmptyString(claimantId, "claimantId");
+  if (!["rival-claim", "owner-request"].includes(reason)) {
+    throw new InvalidCommandError(`unsupported protection dispute reason: ${reason}`);
+  }
+  if (arrangement.status === "ended") throw new InvalidCommandError(`protection arrangement is ended: ${arrangementId}`);
+  const nextArrangement = {
+    ...clone(arrangement),
+    status: "disputed",
+    competitorPressure: bounded(arrangement.competitorPressure + 20),
+    history: [
+      ...arrangement.history,
+      { type: "claim-disputed", date: world.date, claimantId, reason },
+    ],
+  };
+  return commit(world, {
+    eventType: "protection.claim_disputed",
+    actors: [claimantId],
+    subjects: [arrangementId, arrangement.businessId],
+    location: arrangement.districtId,
+    payload: { arrangementId, nextArrangement, claimantId, reason },
     visibility: "local",
   });
 }

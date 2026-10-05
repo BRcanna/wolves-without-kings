@@ -256,3 +256,22 @@ Acceptance evidence:
 Still open:
 
 - real network transport, encryption, authentication, moderation, persistence operations, availability, production performance, and the explicitly deferred online underworld.
+
+## Episode 14 — Protection relationship economy
+
+Implemented:
+
+- persistent protection arrangements attached to real businesses with owner, provider, district, payment band, service expectations, vulnerability, trust, fear, resentment, competitor pressure, and police exposure;
+- abstract treatment and service outcomes that distinguish respectful, pressured, humiliating, protective, absent, and partnership trajectories without encoding transferable real-world procedure;
+- payment status, owner decisions, rival claims, arrangement termination, business reputation/condition impact, and six-month time aging;
+- qualitative public projection bands that omit private relationship axes, provider identity, and history details;
+- snapshot/replay coverage and fail-closed validation for ended arrangements, unauthorized collectors, impossible paid cycles, and stale claims.
+
+Acceptance evidence:
+
+- `npm test` passes 46 tests, including four protection-relationship tests;
+- `protection.test.mjs` distinguishes coercive, protective, and partnership strategies across six months, verifies rival disputes and public redaction, and proves event-history restore.
+
+Still open:
+
+- vehicle-crime workflow beyond provenance/action persistence, aggregate-region simulation, co-op settlement, real network deployment, production acceptance, and the explicitly deferred online underworld.

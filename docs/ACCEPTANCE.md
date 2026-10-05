@@ -20,6 +20,7 @@
 | Dependency-ordered organization work and lease recovery | `social-organization.test.mjs` organization test | PASS |
 | Regional market state and shock direction | `economy-provenance.test.mjs` market test | PASS |
 | Promoted object provenance across storage, transfer, seizure, return, damage, and repair | `economy-provenance.test.mjs` provenance test | PASS |
+| Protection/extortion relationship economy and rival-claim state | `protection.test.mjs`, `SECTION_16_PROTECTION.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
