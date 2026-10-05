@@ -112,3 +112,20 @@ Acceptance evidence:
 Still open:
 
 - the integrated single-player vertical trace, renderer, online systems, and production acceptance.
+
+## Episode 6 — Single-player vertical slice
+
+Implemented:
+
+- a deterministic year-one fixture with one fictionalized district, 30 routine-bearing NPCs, 3 businesses, 2 organizations, 1 market, 1 provenance-bearing vehicle, and 1 police case;
+- eight deep player relationships with shared history and one full-year age settlement;
+- relationship-first, organization-first, and quiet-market history variants reaching the same endpoint without bespoke mission rails;
+- business aging, NPC life settlement, case aging, market settlement, and snapshot replay in the integrated trace.
+
+Acceptance evidence:
+
+- `npm test` passes 22 tests, including three year-one histories and full-year restore equality.
+
+Still open:
+
+- bounded action/surveillance interactions, renderer-facing projections, online systems, and production acceptance.

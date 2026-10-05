@@ -241,6 +241,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     objects: {},
     markets: {},
     cases: {},
+    businesses: {},
     events: [],
   };
 }
@@ -352,6 +353,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
         next.cases[caseSettlement.caseId] = {
           ...caseFile,
           ...caseSettlement.nextCase,
+          lastEventId: event.eventId,
+        };
+      }
+    }
+    for (const businessSettlement of event.payload.businessSettlements ?? []) {
+      const business = next.businesses[businessSettlement.businessId];
+      if (business) {
+        next.businesses[businessSettlement.businessId] = {
+          ...business,
+          ...businessSettlement.nextBusiness,
           lastEventId: event.eventId,
         };
       }
@@ -576,6 +587,16 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
     const caseFile = next.cases[event.payload.caseId];
     caseFile.legalStage = event.payload.nextStage;
     caseFile.lastEventId = event.eventId;
+  } else if (event.eventType === "business.created") {
+    next.businesses[event.payload.business.id] = {
+      ...clone(event.payload.business),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "business.updated") {
+    next.businesses[event.payload.businessId] = {
+      ...clone(event.payload.nextBusiness),
+      lastEventId: event.eventId,
+    };
   }
 
   next.events.push(clone(event));
@@ -659,6 +680,14 @@ function buildTimeSettlements(world, days, toDate) {
       },
     };
   });
+  const businessSettlements = Object.values(world.businesses).map((business) => ({
+    businessId: business.id,
+    nextBusiness: {
+      ageDays: business.ageDays + days,
+      operatingMonths: Math.floor((business.ageDays + days) / 30),
+      lastSettledDate: toDate,
+    },
+  }));
   return {
     npcSettlements,
     beliefSettlements,
@@ -666,6 +695,7 @@ function buildTimeSettlements(world, days, toDate) {
     workSettlements,
     marketSettlements,
     caseSettlements,
+    businessSettlements,
   };
 }
 
@@ -1964,6 +1994,94 @@ export function advanceCaseStage(
     subjects: [caseId],
     payload: { caseId, agencyId, previousStage: caseFile.legalStage, nextStage },
     visibility: "institutional",
+  });
+}
+
+function requireBusiness(world, businessId) {
+  assertNonEmptyString(businessId, "businessId");
+  const business = world.businesses[businessId];
+  if (!business) throw new InvalidCommandError(`unknown business: ${businessId}`);
+  return business;
+}
+
+export function createBusiness(
+  world,
+  {
+    expectedRevision,
+    businessId,
+    displayName,
+    locationId,
+    venueType,
+    ownerId = null,
+    reputation = 0,
+    condition = "stable",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(businessId, "businessId");
+  assertNonEmptyString(displayName, "displayName");
+  assertNonEmptyString(locationId, "locationId");
+  assertNonEmptyString(venueType, "venueType");
+  if (ownerId !== null) assertNonEmptyString(ownerId, "ownerId");
+  assertRange(reputation, "reputation", -100, 100);
+  if (!["stable", "strained", "damaged", "closed"].includes(condition)) {
+    throw new InvalidCommandError(`unsupported business condition: ${condition}`);
+  }
+  if (world.businesses[businessId]) throw new InvalidCommandError(`business already exists: ${businessId}`);
+  const business = {
+    id: businessId,
+    displayName,
+    locationId,
+    venueType,
+    ownerId,
+    reputation,
+    condition,
+    ageDays: 0,
+    operatingMonths: 0,
+    lastSettledDate: world.date,
+  };
+  return commit(world, {
+    eventType: "business.created",
+    actors: [ownerId ?? "system:business"],
+    subjects: [businessId],
+    location: locationId,
+    payload: { business },
+    visibility: "local",
+  });
+}
+
+export function updateBusiness(
+  world,
+  {
+    expectedRevision,
+    businessId,
+    actorId = "system:business",
+    reputationDelta = 0,
+    condition = null,
+    ownerId = undefined,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const business = requireBusiness(world, businessId);
+  assertNonEmptyString(actorId, "actorId");
+  if (!Number.isInteger(reputationDelta)) throw new InvalidCommandError("reputationDelta must be an integer");
+  if (condition !== null && !["stable", "strained", "damaged", "closed"].includes(condition)) {
+    throw new InvalidCommandError(`unsupported business condition: ${condition}`);
+  }
+  if (ownerId !== undefined && ownerId !== null) assertNonEmptyString(ownerId, "ownerId");
+  const nextBusiness = {
+    ...clone(business),
+    reputation: Math.max(-100, Math.min(100, business.reputation + reputationDelta)),
+    condition: condition ?? business.condition,
+    ownerId: ownerId === undefined ? business.ownerId : ownerId,
+  };
+  return commit(world, {
+    eventType: "business.updated",
+    actors: [actorId],
+    subjects: [businessId],
+    location: business.locationId,
+    payload: { businessId, previousBusiness: business, nextBusiness },
+    visibility: "local",
   });
 }
 

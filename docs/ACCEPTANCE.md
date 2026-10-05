@@ -21,7 +21,8 @@
 | Regional market state and shock direction | `economy-provenance.test.mjs` market test | PASS |
 | Promoted object provenance across storage, transfer, seizure, return, damage, and repair | `economy-provenance.test.mjs` provenance test | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
-| Action simulation and integrated single-player vertical trace | no implementation yet | OPEN |
+| Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
+| Bounded action/surveillance interaction and renderer projection | no implementation yet | OPEN |
 | Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 
