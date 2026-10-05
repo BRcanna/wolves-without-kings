@@ -21,6 +21,7 @@
 | Regional market state and shock direction | `economy-provenance.test.mjs` market test | PASS |
 | Promoted object provenance across storage, transfer, seizure, return, damage, and repair | `economy-provenance.test.mjs` provenance test | PASS |
 | Protection/extortion relationship economy and rival-claim state | `protection.test.mjs`, `SECTION_16_PROTECTION.md` | PASS |
+| Aggregate region continuity, simulation modes, and Sofia/coastal corridor | `region.test.mjs`, `SECTION_18_AGGREGATE_REGIONS.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

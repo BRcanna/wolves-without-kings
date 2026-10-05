@@ -243,6 +243,8 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     cases: {},
     businesses: {},
     protectionArrangements: {},
+    regions: {},
+    corridors: {},
     surveillance: {},
     actions: [],
     vehicles: {},
@@ -381,6 +383,15 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
         };
       }
     }
+    for (const regionSettlement of event.payload.regionSettlements ?? []) {
+      const region = next.regions[regionSettlement.regionId];
+      if (region) {
+        next.regions[regionSettlement.regionId] = {
+          ...clone(regionSettlement.nextRegion),
+          lastEventId: event.eventId,
+        };
+      }
+    }
     for (const surveillanceSettlement of event.payload.surveillanceSettlements ?? []) {
       const record = next.surveillance[surveillanceSettlement.surveillanceId];
       if (record) {
@@ -395,6 +406,31 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
     next.district = {
       ...next.district,
       condition: event.payload.condition,
+    };
+  } else if (event.eventType === "region.created") {
+    next.regions[event.payload.region.id] = {
+      ...clone(event.payload.region),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "region.mode_changed") {
+    next.regions[event.payload.regionId] = {
+      ...next.regions[event.payload.regionId],
+      mode: event.payload.nextMode,
+      history: [
+        ...next.regions[event.payload.regionId].history,
+        { type: "mode-change", date: next.date, mode: event.payload.nextMode },
+      ],
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "region.aggregate_settled") {
+    next.regions[event.payload.regionId] = {
+      ...clone(event.payload.nextRegion),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "corridor.created") {
+    next.corridors[event.payload.corridor.id] = {
+      ...clone(event.payload.corridor),
+      lastEventId: event.eventId,
     };
   } else if (event.eventType === "social.contact_resolved") {
     const relationshipId = event.payload.relationshipId;
@@ -701,6 +737,39 @@ function assertExpectedRevision(world, command) {
   }
 }
 
+function settleAggregateRegion(region, days, shocks = {}, toDate = null) {
+  const marketShock = shocks.marketShock ?? 0;
+  const policeShock = shocks.policeShock ?? 0;
+  const logisticsShock = shocks.logisticsShock ?? 0;
+  const next = clone(region);
+  next.offscreenDays += days;
+  next.marketPressure = bounded(region.marketPressure + marketShock);
+  next.policePressure = bounded(region.policePressure + policeShock + Math.floor(days / 180));
+  next.logisticsPressure = bounded(region.logisticsPressure + logisticsShock + Math.floor(days / 365));
+  next.condition = next.policePressure >= 80 || next.logisticsPressure >= 80
+    ? "strained"
+    : next.marketPressure <= 20
+      ? "degraded"
+      : "stable";
+  if (next.condition !== region.condition) {
+    next.scars = [...new Set([...region.scars, `condition:${next.condition}`])];
+  }
+  next.history = [
+    ...region.history,
+    {
+      type: "aggregate-settlement",
+      date: toDate ?? region.lastSettledDate,
+      days,
+      marketShock,
+      policeShock,
+      logisticsShock,
+      condition: next.condition,
+    },
+  ];
+  next.lastSettledDate = toDate ?? region.lastSettledDate;
+  return next;
+}
+
 function buildTimeSettlements(world, days, toDate) {
   const npcSettlements = Object.values(world.npcLife).map((npc) => ({
     npcId: npc.id,
@@ -801,6 +870,12 @@ function buildTimeSettlements(world, days, toDate) {
     businessSettlements,
     protectionSettlements,
     surveillanceSettlements,
+    regionSettlements: Object.values(world.regions)
+      .filter((region) => region.mode === "aggregate")
+      .map((region) => ({
+        regionId: region.id,
+        nextRegion: settleAggregateRegion(region, days, {}, toDate),
+      })),
   };
 }
 
@@ -844,6 +919,165 @@ export function changeDistrictCondition(
     subjects: [districtId],
     location: districtId,
     payload: { districtId, condition },
+    visibility: "local",
+  });
+}
+
+export function createRegion(
+  world,
+  {
+    expectedRevision,
+    regionId,
+    label,
+    mode = "full",
+    populationBand = "urban",
+    businessCount = 0,
+    policePressure = 20,
+    marketPressure = 50,
+    logisticsPressure = 20,
+    condition = "stable",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(regionId, "regionId");
+  assertNonEmptyString(label, "label");
+  if (!["full", "aggregate"].includes(mode)) throw new InvalidCommandError(`unsupported region simulation mode: ${mode}`);
+  assertNonEmptyString(populationBand, "populationBand");
+  assertInteger(businessCount, "businessCount");
+  assertRange(policePressure, "policePressure", 0, 100);
+  assertRange(marketPressure, "marketPressure", 0, 100);
+  assertRange(logisticsPressure, "logisticsPressure", 0, 100);
+  if (!["stable", "strained", "degraded"].includes(condition)) {
+    throw new InvalidCommandError(`unsupported region condition: ${condition}`);
+  }
+  if (world.regions[regionId]) throw new InvalidCommandError(`region already exists: ${regionId}`);
+  const region = {
+    id: regionId,
+    label,
+    mode,
+    populationBand,
+    businessCount,
+    policePressure,
+    marketPressure,
+    logisticsPressure,
+    condition,
+    offscreenDays: 0,
+    scars: [],
+    history: [{ type: "created", date: world.date, mode }],
+    lastSettledDate: world.date,
+  };
+  return commit(world, {
+    eventType: "region.created",
+    actors: ["system:region"],
+    subjects: [regionId],
+    location: regionId,
+    payload: { region },
+    visibility: "local",
+  });
+}
+
+export function createCorridor(
+  world,
+  {
+    expectedRevision,
+    corridorId,
+    fromRegionId,
+    toRegionId,
+    travelDays,
+    transportFriction,
+    legalPressure,
+    capacity = 50,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(corridorId, "corridorId");
+  assertNonEmptyString(fromRegionId, "fromRegionId");
+  assertNonEmptyString(toRegionId, "toRegionId");
+  if (fromRegionId === toRegionId) throw new InvalidCommandError("corridor endpoints must differ");
+  assertRange(travelDays, "travelDays", 1, 30);
+  assertRange(transportFriction, "transportFriction", 0, 100);
+  assertRange(legalPressure, "legalPressure", 0, 100);
+  assertRange(capacity, "capacity", 1, 100);
+  if (!world.regions[fromRegionId] || !world.regions[toRegionId]) {
+    throw new InvalidCommandError("corridor endpoints must reference known regions");
+  }
+  if (world.corridors[corridorId]) throw new InvalidCommandError(`corridor already exists: ${corridorId}`);
+  const corridor = {
+    id: corridorId,
+    fromRegionId,
+    toRegionId,
+    travelDays,
+    transportFriction,
+    legalPressure,
+    capacity,
+    status: transportFriction >= 80 || legalPressure >= 80 ? "restricted" : "open",
+    history: [{ type: "created", date: world.date }],
+  };
+  return commit(world, {
+    eventType: "corridor.created",
+    actors: ["system:region"],
+    subjects: [corridorId, fromRegionId, toRegionId],
+    location: fromRegionId,
+    payload: { corridor },
+    visibility: "local",
+  });
+}
+
+export function changeRegionSimulationMode(world, { expectedRevision, regionId, mode }) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(regionId, "regionId");
+  if (!["full", "aggregate"].includes(mode)) throw new InvalidCommandError(`unsupported region simulation mode: ${mode}`);
+  const region = world.regions[regionId];
+  if (!region) throw new InvalidCommandError(`unknown region: ${regionId}`);
+  if (region.mode === mode) throw new InvalidCommandError(`region already uses simulation mode: ${mode}`);
+  return commit(world, {
+    eventType: "region.mode_changed",
+    actors: ["system:region"],
+    subjects: [regionId],
+    location: regionId,
+    payload: { regionId, previousMode: region.mode, nextMode: mode },
+    visibility: "local",
+  });
+}
+
+export function advanceAggregateRegion(
+  world,
+  {
+    expectedRevision,
+    regionId,
+    days,
+    marketShock = 0,
+    policeShock = 0,
+    logisticsShock = 0,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(regionId, "regionId");
+  assertInteger(days, "days", 1);
+  if (days > 365) throw new InvalidCommandError("aggregate region settlement cannot exceed 365 days");
+  const region = world.regions[regionId];
+  if (!region) throw new InvalidCommandError(`unknown region: ${regionId}`);
+  if (region.mode !== "aggregate") throw new InvalidCommandError(`region is not in aggregate mode: ${regionId}`);
+  for (const [name, value] of Object.entries({ marketShock, policeShock, logisticsShock })) {
+    if (!Number.isInteger(value) || value < -100 || value > 100) {
+      throw new InvalidCommandError(`${name} must be an integer between -100 and 100`);
+    }
+  }
+  const toDate = addDays(world.date, days);
+  const nextRegion = settleAggregateRegion(region, days, { marketShock, policeShock, logisticsShock }, toDate);
+  return commit(world, {
+    eventType: "region.aggregate_settled",
+    actors: ["system:aggregate-region"],
+    subjects: [regionId],
+    location: regionId,
+    payload: {
+      regionId,
+      fromDate: world.date,
+      toDate,
+      days,
+      shocks: { marketShock, policeShock, logisticsShock },
+      nextRegion,
+    },
     visibility: "local",
   });
 }

@@ -298,3 +298,22 @@ Safety boundary:
 Still open:
 
 - aggregate-region simulation, co-op settlement, real network deployment, production acceptance, and the explicitly deferred online underworld.
+
+## Episode 16 — Aggregate regional continuity
+
+Implemented:
+
+- fictionalized Sofia and Black Sea coastal region records with explicit `full` or `aggregate` simulation modes;
+- a bounded Sofia/coastal corridor with travel time, transport friction, legal pressure, capacity, and restricted/open status;
+- deterministic aggregate settlement with market, police, and logistics shocks, offscreen days, condition, scars, and history;
+- world-time integration that settles aggregate regions while leaving full regions on the detailed path;
+- mode transitions, public qualitative region/corridor projection, snapshot/replay, and stale/mode-boundary rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 52 tests, including four aggregate-region tests;
+- `region.test.mjs` proves two-region setup, corridor bounds, deterministic offscreen shocks, time settlement, public redaction, mode transitions, and restore equality.
+
+Still open:
+
+- co-op settlement, persistent online breadth, real network deployment, production acceptance, and the explicitly deferred online underworld.
