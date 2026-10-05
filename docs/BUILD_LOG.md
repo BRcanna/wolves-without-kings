@@ -779,6 +779,25 @@ Boundary:
 
 - this is an offline fictional authoring contract, not Cartographer/VANTA production integration or unrestricted procedural generation.
 
+## Episode 38 — Bounded persistent online shard contract
+
+Implemented:
+
+- bounded player session join/leave state without property deletion;
+- NPC baseline population and liquidity so player activity is not the only economic actor;
+- capped weekly player market influence with source attribution and reset at shard settlement;
+- public shard projection for markets, baselines, organizations, properties, and active sessions;
+- preservation of the existing offline organization, market, property-conflict, bounded-session, and snapshot paths.
+
+Acceptance evidence:
+
+- `npm test` passes 140 tests, including three online-shard tests;
+- `underworld.test.mjs` proves session continuity, property survival, NPC baseline liquidity, influence caps, weekly reset, and public projection.
+
+Boundary:
+
+- this is an in-process shard contract, not production sockets, auth/encryption, durable storage, moderation, anti-cheat, failover, availability, or deployment proof.
+
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

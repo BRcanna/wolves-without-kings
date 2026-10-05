@@ -124,6 +124,9 @@ export function createUnderworldState({ shardId = "shard:sofia-coast", serverEra
     properties: {},
     territoryClaims: {},
     playerCharacters: {},
+    playerSessions: {},
+    npcPopulation: {},
+    marketInfluenceLedger: {},
     seasonHistory: [],
     physicalSessions: {},
     events: [],
@@ -159,7 +162,7 @@ export function registerOrganization(
 
 export function registerMarket(
   state,
-  { expectedRevision, marketId, regionId, commodityClass, baseIndex = 100, pressure = 50 },
+  { expectedRevision, marketId, regionId, commodityClass, baseIndex = 100, pressure = 50, npcBaselineLiquidity = 70 },
 ) {
   assertRevision(state, expectedRevision);
   assertNonEmpty(marketId, "marketId");
@@ -169,6 +172,7 @@ export function registerMarket(
   }
   assertInteger(baseIndex, "baseIndex", 1, 1000);
   assertInteger(pressure, "pressure", 0, 100);
+  assertInteger(npcBaselineLiquidity, "npcBaselineLiquidity", 1, 100);
   if (state.markets[marketId]) throw new UnderworldValidationError(`market already exists: ${marketId}`);
   const next = clone(state);
   next.markets[marketId] = {
@@ -178,12 +182,110 @@ export function registerMarket(
     baseIndex,
     pressure,
     index: baseIndex,
+    npcBaselineLiquidity,
     history: [{ week: state.serverWeek, pressure, index: baseIndex }],
   };
   return appendEvent(next, {
     eventType: "underworld.market_registered",
     subjectIds: [marketId, regionId],
     payload: { marketId, regionId, commodityClass, baseIndex },
+  });
+}
+
+export function registerNpcBaseline(
+  state,
+  { expectedRevision, regionId, populationBand = "moderate", liquidity = 70 },
+) {
+  assertRevision(state, expectedRevision);
+  assertNonEmpty(regionId, "regionId");
+  assertNonEmpty(populationBand, "populationBand");
+  assertInteger(liquidity, "liquidity", 1, 100);
+  if (state.npcPopulation[regionId]) throw new UnderworldValidationError(`NPC baseline already exists: ${regionId}`);
+  const next = clone(state);
+  next.npcPopulation[regionId] = {
+    regionId,
+    populationBand,
+    liquidity,
+    history: [{ week: state.serverWeek, liquidity }],
+  };
+  return appendEvent(next, {
+    eventType: "underworld.npc_baseline_registered",
+    subjectIds: [regionId],
+    payload: { regionId, populationBand, liquidity },
+  });
+}
+
+export function joinPlayerSession(
+  state,
+  { expectedRevision, sessionId, characterId, regionId },
+) {
+  assertRevision(state, expectedRevision);
+  assertNonEmpty(sessionId, "sessionId");
+  assertNonEmpty(characterId, "characterId");
+  assertNonEmpty(regionId, "regionId");
+  if (state.playerSessions[sessionId]?.status === "active") throw new UnderworldValidationError(`session already active: ${sessionId}`);
+  if (state.playerCharacters[characterId]?.status === "active") throw new UnderworldValidationError(`character already active: ${characterId}`);
+  if (Object.values(state.playerSessions).filter((session) => session.status === "active").length >= 64) throw new UnderworldValidationError("shard active session cap reached");
+  const next = clone(state);
+  next.playerCharacters[characterId] = { id: characterId, regionId, sessionId, status: "active", joinedWeek: state.serverWeek };
+  next.playerSessions[sessionId] = { sessionId, characterId, regionId, status: "active", joinedWeek: state.serverWeek };
+  return appendEvent(next, {
+    eventType: "underworld.player_joined",
+    actorId: characterId,
+    subjectIds: [sessionId, characterId, regionId],
+    payload: { sessionId, characterId, regionId },
+  });
+}
+
+export function leavePlayerSession(
+  state,
+  { expectedRevision, sessionId, reason = "disconnect" },
+) {
+  assertRevision(state, expectedRevision);
+  assertNonEmpty(sessionId, "sessionId");
+  assertNonEmpty(reason, "reason");
+  const session = state.playerSessions[sessionId];
+  if (!session || session.status !== "active") throw new UnderworldValidationError(`session is not active: ${sessionId}`);
+  const next = clone(state);
+  next.playerSessions[sessionId].status = "offline";
+  next.playerSessions[sessionId].leftWeek = state.serverWeek;
+  next.playerSessions[sessionId].reason = reason;
+  next.playerCharacters[session.characterId].status = "offline";
+  return appendEvent(next, {
+    eventType: "underworld.player_left",
+    actorId: session.characterId,
+    subjectIds: [sessionId, session.characterId],
+    payload: { sessionId, reason, propertySurvival: "unchanged" },
+  });
+}
+
+export function applyPlayerMarketInfluence(
+  state,
+  { expectedRevision, sessionId, marketId, pressureDelta },
+) {
+  assertRevision(state, expectedRevision);
+  assertNonEmpty(sessionId, "sessionId");
+  const session = state.playerSessions[sessionId];
+  if (!session || session.status !== "active") throw new UnderworldValidationError(`session is not active: ${sessionId}`);
+  const market = requireMarket(state, marketId);
+  assertInteger(pressureDelta, "pressureDelta", -50, 50);
+  const ledger = state.marketInfluenceLedger[marketId]?.week === state.serverWeek
+    ? state.marketInfluenceLedger[marketId]
+    : { week: state.serverWeek, appliedDelta: 0, contributorCount: 0 };
+  const remaining = 10 - Math.abs(ledger.appliedDelta);
+  const appliedDelta = Math.sign(pressureDelta) * Math.min(Math.abs(pressureDelta), Math.max(0, remaining));
+  if (appliedDelta === 0) throw new UnderworldValidationError(`player market influence cap reached: ${marketId}`);
+  const next = clone(state);
+  const nextMarket = next.markets[marketId];
+  nextMarket.pressure = bounded(nextMarket.pressure + appliedDelta);
+  nextMarket.index = Math.max(1, Math.round(nextMarket.baseIndex * (0.6 + nextMarket.pressure / 100)));
+  nextMarket.history.push({ week: state.serverWeek, pressure: nextMarket.pressure, index: nextMarket.index, shock: appliedDelta, source: "player-capped" });
+  next.marketInfluenceLedger[marketId] = { week: state.serverWeek, appliedDelta: ledger.appliedDelta + appliedDelta, contributorCount: ledger.contributorCount + 1 };
+  return appendEvent(next, {
+    eventType: "underworld.player_market_influence",
+    actorId: session.characterId,
+    subjectIds: [sessionId, marketId],
+    payload: { requestedDelta: pressureDelta, appliedDelta, weeklyCap: 10, npcBaselineLiquidity: market.npcBaselineLiquidity },
   });
 }
 
@@ -306,6 +408,7 @@ export function settleUnderworldWeek(
   const next = clone(state);
   next.serverWeek += 1;
   next.serverTick += 7;
+  next.marketInfluenceLedger = {};
   const marketUpdates = [];
   for (const [marketId, market] of Object.entries(next.markets)) {
     const shock = marketShocks[marketId] ?? 0;
@@ -383,6 +486,7 @@ export function projectUnderworld(state) {
       pressureBand: pressureBand(market.pressure),
       indexBand: market.index >= 140 ? "high" : market.index >= 80 ? "moderate" : "low",
     })),
+    npcBaselines: Object.values(state.npcPopulation).map((baseline) => ({ regionId: baseline.regionId, populationBand: baseline.populationBand, liquidityBand: pressureBand(baseline.liquidity) })),
     organizations: Object.values(state.organizations).map((organization) => ({
       id: organization.id,
       headquartersRegionId: organization.headquartersRegionId,
@@ -397,7 +501,8 @@ export function projectUnderworld(state) {
       status: property.status,
     })),
     physicalSessionCount: Object.keys(state.physicalSessions).length,
-    omittedFields: ["pressure", "index", "history", "playerCharacters", "events", "lastEventHash"],
+    activePlayerCount: Object.values(state.playerSessions).filter((session) => session.status === "active").length,
+    omittedFields: ["pressure", "index", "history", "playerCharacters", "playerSessions", "marketInfluenceLedger", "events", "lastEventHash"],
   };
 }
 

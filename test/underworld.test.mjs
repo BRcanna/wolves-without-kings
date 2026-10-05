@@ -4,10 +4,14 @@ import assert from "node:assert/strict";
 import {
   UnderworldStaleRevisionError,
   UnderworldValidationError,
+  applyPlayerMarketInfluence,
   claimProperty,
   createUnderworldState,
+  joinPlayerSession,
+  leavePlayerSession,
   projectUnderworld,
   queueOrganizationWork,
+  registerNpcBaseline,
   registerMarket,
   registerOrganization,
   registerProperty,
@@ -131,4 +135,37 @@ test("Underworld rejects unbounded sessions, stale writes, and tampered snapshot
     () => restoreUnderworld({ snapshotVersion: 1, state: { ...state, lastEventHash: "tampered" } }),
     UnderworldValidationError,
   );
+});
+
+test("online shard sessions join and leave without changing persistent property ownership", () => {
+  let state = createUnderworldState();
+  state = registerOrganization(state, { expectedRevision: state.revision, orgId: "organization:lanterns", headquartersRegionId: "region:coast" });
+  state = registerProperty(state, { expectedRevision: state.revision, propertyId: "property:club", regionId: "region:coast", ownerOrgId: "organization:lanterns" });
+  state = joinPlayerSession(state, { expectedRevision: state.revision, sessionId: "session:one", characterId: "character:one", regionId: "region:coast" });
+  state = leavePlayerSession(state, { expectedRevision: state.revision, sessionId: "session:one", reason: "offline" });
+  assert.equal(state.properties["property:club"].ownerOrgId, "organization:lanterns");
+  assert.equal(state.playerSessions["session:one"].status, "offline");
+});
+
+test("NPC baseline liquidity limits player market influence to a capped weekly contribution", () => {
+  let state = createUnderworldState();
+  state = registerNpcBaseline(state, { expectedRevision: state.revision, regionId: "region:coast", populationBand: "high", liquidity: 80 });
+  state = registerMarket(state, { expectedRevision: state.revision, marketId: "market:coast", regionId: "region:coast", commodityClass: "vehicle-demand", pressure: 50, npcBaselineLiquidity: 80 });
+  state = joinPlayerSession(state, { expectedRevision: state.revision, sessionId: "session:one", characterId: "character:one", regionId: "region:coast" });
+  state = applyPlayerMarketInfluence(state, { expectedRevision: state.revision, sessionId: "session:one", marketId: "market:coast", pressureDelta: 50 });
+  assert.equal(state.markets["market:coast"].pressure, 60);
+  assert.throws(() => applyPlayerMarketInfluence(state, { expectedRevision: state.revision, sessionId: "session:one", marketId: "market:coast", pressureDelta: 1 }), /cap reached/);
+  assert.equal(projectUnderworld(state).npcBaselines[0].liquidityBand, "high");
+});
+
+test("weekly settlement resets player influence budget while preserving offline NPC and session boundaries", () => {
+  let state = createUnderworldState();
+  state = registerNpcBaseline(state, { expectedRevision: state.revision, regionId: "region:sofia", populationBand: "moderate" });
+  state = registerMarket(state, { expectedRevision: state.revision, marketId: "market:sofia", regionId: "region:sofia", commodityClass: "legitimate-goods" });
+  state = joinPlayerSession(state, { expectedRevision: state.revision, sessionId: "session:one", characterId: "character:one", regionId: "region:sofia" });
+  state = applyPlayerMarketInfluence(state, { expectedRevision: state.revision, sessionId: "session:one", marketId: "market:sofia", pressureDelta: 8 });
+  state = settleUnderworldWeek(state, { expectedRevision: state.revision });
+  assert.equal(state.serverWeek, 1);
+  assert.deepEqual(state.marketInfluenceLedger, {});
+  assert.equal(state.playerSessions["session:one"].status, "active");
 });
