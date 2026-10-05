@@ -8,7 +8,9 @@
 | World time is transactional | time-advance test | PASS |
 | Save/restore preserves history | snapshot/restore equality test | PASS |
 | Tampered history is rejected | restore tamper test | PASS |
-| One authored district | no implementation yet | OPEN |
+| One authored district | `district.mjs`, fixture integrity tests | PASS |
+| Layered deterministic traversal | traversal path tests for walk/climb/service boundaries | PASS |
+| Bounded social relationship projection | `resolveSocialContact`, projection test | PASS |
 | Deep NPC/relationship simulation | no implementation yet | OPEN |
 | Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |

@@ -85,6 +85,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
   return {
     schemaVersion: ENGINE_SCHEMA_VERSION,
     worldId,
+    startDate,
     date: startDate,
     tick: 0,
     revision: 0,
@@ -95,6 +96,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
       label: "South Sofia (fictionalized)",
       condition: "stable",
     },
+    relationships: {},
     events: [],
   };
 }
@@ -156,6 +158,13 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
     next.district = {
       ...next.district,
       condition: event.payload.condition,
+    };
+  } else if (event.eventType === "social.contact_resolved") {
+    const relationshipId = event.payload.relationshipId;
+    next.relationships[relationshipId] = {
+      trust: event.payload.nextTrust,
+      respect: event.payload.nextRespect,
+      lastEventId: event.eventId,
     };
   }
 
@@ -221,6 +230,46 @@ export function changeDistrictCondition(
   });
 }
 
+export function resolveSocialContact(
+  world,
+  {
+    expectedRevision,
+    actorId,
+    subjectId,
+    locationId,
+    outcome = "uncertain",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(subjectId, "subjectId");
+  assertNonEmptyString(locationId, "locationId");
+  if (!["welcomed", "declined", "uncertain"].includes(outcome)) {
+    throw new InvalidCommandError(`unsupported social contact outcome: ${outcome}`);
+  }
+  const relationshipId = `${actorId}|${subjectId}`;
+  const previous = world.relationships[relationshipId] ?? { trust: 0, respect: 0 };
+  const delta = { welcomed: 1, declined: -1, uncertain: 0 }[outcome];
+  const nextTrust = Math.max(-5, Math.min(5, previous.trust + delta));
+  const nextRespect = Math.max(-5, Math.min(5, previous.respect + (outcome === "welcomed" ? 1 : 0)));
+  return commit(world, {
+    eventType: "social.contact_resolved",
+    actors: [actorId],
+    subjects: [subjectId],
+    location: locationId,
+    payload: {
+      relationshipId,
+      outcome,
+      previousTrust: previous.trust,
+      nextTrust,
+      previousRespect: previous.respect,
+      nextRespect,
+      informationScope: "local-observation",
+    },
+    visibility: "local",
+  });
+}
+
 export function recordEvent(
   world,
   {
@@ -271,7 +320,7 @@ export function restore(snapshotValue) {
   if (!savedWorld || savedWorld.schemaVersion !== ENGINE_SCHEMA_VERSION) {
     throw new InvalidCommandError("unsupported engine schema version");
   }
-  const base = createInitialWorld({ worldId: savedWorld.worldId, startDate: savedWorld.events.length ? savedWorld.events[0].payload.fromDate ?? savedWorld.date : savedWorld.date });
+  const base = createInitialWorld({ worldId: savedWorld.worldId, startDate: savedWorld.startDate });
   let rebuilt = base;
   for (const event of savedWorld.events) rebuilt = reduceEvent(rebuilt, event);
   if (canonicalJson(rebuilt) !== canonicalJson(savedWorld)) {

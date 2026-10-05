@@ -8,6 +8,7 @@ import {
   changeDistrictCondition,
   createInitialWorld,
   recordEvent,
+  resolveSocialContact,
   restore,
   snapshot,
 } from "../src/wolves-without-kings/engine.mjs";
@@ -61,6 +62,25 @@ test("save and restore rebuild the same world from the event history", () => {
   const restored = restore(snapshot(world));
 
   assert.deepEqual(restored, world);
+});
+
+test("social contact produces a deterministic relationship projection", () => {
+  const world = createInitialWorld();
+  const next = resolveSocialContact(world, {
+    expectedRevision: world.revision,
+    actorId: "character:player",
+    subjectId: "npc:broker-01",
+    locationId: "loc:night-market",
+    outcome: "welcomed",
+  });
+
+  assert.deepEqual(next.relationships["character:player|npc:broker-01"], {
+    trust: 1,
+    respect: 1,
+    lastEventId: "evt-000001",
+  });
+  assert.equal(next.events[0].eventType, "social.contact_resolved");
+  assert.equal(next.events[0].payload.informationScope, "local-observation");
 });
 
 test("tampered event history is rejected during restore", () => {

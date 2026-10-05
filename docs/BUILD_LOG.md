@@ -24,3 +24,20 @@ Not proven yet:
 - character, NPC, relationship, organization, economy, action, police-case, renderer, or online systems;
 - real-world cultural/legal review;
 - production performance or hardware acceptance.
+
+## Episode 1 — Authored district fixture
+
+Implemented:
+
+- fictionalized South Sofia district fixture with stable location and entity IDs;
+- street, interior, roof, and service traversal layers;
+- deterministic traversal search with explicit movement modes;
+- one local-observation social contact that projects trust and respect through the event ledger.
+
+Acceptance evidence:
+
+- `npm test` covers fixture integrity, deterministic traversal, invalid fixture rejection, relationship projection, and all Phase 0 gates.
+
+Still open:
+
+- character condition, hidden skills, familiarity, NPC life simulation, economy, action, police cases, and online systems.
