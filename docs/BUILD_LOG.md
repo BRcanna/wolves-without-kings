@@ -405,3 +405,27 @@ Safety boundary:
 Still open:
 
 - prison/re-entry state, remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 21 — Time-bearing prison and re-entry state
+
+Implemented:
+
+- sentence, facility, cell block, time served, prison reputation, prison relationships, outside relationships, visitation, prison work, status marks, injury, and re-entry state;
+- compressed or playable time settlement that advances the simulation date and evolves prison life;
+- outside-world drift bands for relationships, businesses, markets, and organization control during multi-year absence;
+- release transition with explicit re-entry differences rather than a fail-screen reset;
+- public projection that omits relationship internals, outside contacts, injury, work history, and event-chain details;
+- snapshot/replay, stale/overrun/released-state rejection, and tamper detection.
+
+Acceptance evidence:
+
+- `npm test` passes 71 tests, including four prison/re-entry tests;
+- `prison.test.mjs` proves a three-year sentence, outside-world drift, prison/street separation, release state, bounds, restore equality, and tamper rejection.
+
+Safety boundary:
+
+- prison outcomes use abstract social/time labels only; they do not encode real-world institutional, evasion, or violence procedures.
+
+Still open:
+
+- remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
