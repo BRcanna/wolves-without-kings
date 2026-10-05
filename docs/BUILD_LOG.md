@@ -146,3 +146,22 @@ Acceptance evidence:
 Still open:
 
 - renderer-facing projections, online boundary audit, remaining action families, and production acceptance.
+
+## Episode 8 — Renderer-facing and online-safe projections
+
+Implemented:
+
+- explicit public, observer, institutional, and local-debug projection scopes;
+- qualitative self-skill projection without raw practice values;
+- observer-scoped beliefs and surveillance records;
+- agency-scoped case evidence, witness knowledge, jurisdiction, and authorized actions;
+- privacy tests proving public transport omits hidden competence, private beliefs, global case confidence, full agency views, and server-only surveillance state;
+- `docs/ONLINE_BOUNDARY.md` defining what is and is not an online claim.
+
+Acceptance evidence:
+
+- `npm test` passes 26 tests, including projection privacy and fail-closed scope validation.
+
+Still open:
+
+- remaining action families, renderer implementation, online service implementation, and production acceptance.
