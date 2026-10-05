@@ -23,6 +23,7 @@
 | Protection/extortion relationship economy and rival-claim state | `protection.test.mjs`, `SECTION_16_PROTECTION.md` | PASS |
 | Aggregate region continuity, simulation modes, and Sofia/coastal corridor | `region.test.mjs`, `SECTION_18_AGGREGATE_REGIONS.md` | PASS |
 | Drop-in/drop-out co-op join, disconnect, ownership settlement, and host continuity | `coop.test.mjs`, `SECTION_19_COOP.md` | PASS |
+| One-week persistent Underworld macro state with shared markets, offline work, property conflict, and bounded physical sessions | `underworld.test.mjs`, `SECTION_20_UNDERWORLD.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

@@ -337,3 +337,28 @@ Acceptance evidence:
 Still open:
 
 - persistent online underworld breadth, real network deployment, authentication/encryption, production acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 18 — Persistent Underworld macro proof
+
+Implemented:
+
+- fictionalized shard state with server era, weekly tick, organizations, shared market classes, properties, territory claims, season history, and bounded physical-session summaries;
+- offline-eligible organization work that advances during a server-week settlement even when no physical session is active;
+- shared market shocks with deterministic pressure/index changes and qualitative public bands;
+- property conflict state that preserves one canonical owner while recording contested claimants;
+- a maximum of 16 physical sessions per weekly settlement and a maximum of 8 participants per session;
+- hash-linked weekly events, public macro projection, snapshot restore, and tamper/stale/bounds rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 60 tests, including four persistent-Underworld tests;
+- `underworld.test.mjs` proves one-week market/work/session settlement, property conflict, public redaction, bounded sessions, stale rejection, and snapshot integrity.
+
+Safety and evidence boundary:
+
+- shared commodity classes and organization outcomes are abstract fictional simulation labels; this episode does not provide real-world criminal logistics or operational guidance;
+- this is an in-process one-week proof, not a production MMO, live service, or availability claim.
+
+Still open:
+
+- dynasty/successor state, full content scale, real network deployment, authentication/encryption, moderation, production acceptance, and the explicitly deferred online MMO layer.
