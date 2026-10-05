@@ -497,6 +497,29 @@ Still open:
 
 - remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 28 — Content-pack admission and era variants
+
+Implemented:
+
+- transactional authored-pack admission for regions, NPCs, businesses, and organizations;
+- stable IDs with cross-reference validation before mutation;
+- era variants attached to stable base content and activated without replacing canonical identity;
+- public pack projection with counts and active era while authoring metadata, event history, source revisions, and unactivated variants remain private;
+- hash-linked snapshots and fail-closed stale, duplicate, missing-reference, and tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 99 tests, including four content-admission tests;
+- `content.test.mjs` proves cross-reference validation, stable era activation, no-partial-admission behavior, public projection, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional content-authoring registry. It does not claim factual geography, real-person likeness, or production-ready asset validation.
+
+Still open:
+
+- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 27 — World aging and environmental memory
 
 Implemented:
