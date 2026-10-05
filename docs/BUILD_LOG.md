@@ -758,6 +758,27 @@ Boundary:
 
 - this is a fictionalized economic contract, not real-world procurement, trafficking, concealment, evasion, or financial-crime procedure.
 
+## Episode 37 — Reversible procedural authoring and admission
+
+Implemented:
+
+- seed/history-stable procedural candidate proposals;
+- structure-before-function-before-history/economy/social/crime layer ordering;
+- entry-to-exit topology validation before admission;
+- evidence-gated expansion with admission receipts;
+- reversible admission without deleting stable authored identity;
+- public authoring projection with exact topology, notes, evidence sources, and digests redacted;
+- snapshot, stale-write, missing-evidence, invalid-topology, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 137 tests, including five procedural-authoring tests;
+- `authoring.test.mjs` proves deterministic proposal identity, evidence-gated admission, reversible receipts, topology safety, public redaction, and snapshot integrity.
+
+Boundary:
+
+- this is an offline fictional authoring contract, not Cartographer/VANTA production integration or unrestricted procedural generation.
+
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

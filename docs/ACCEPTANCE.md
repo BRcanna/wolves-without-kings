@@ -42,6 +42,7 @@
 | Pauseable offline campaign lifecycle, opportunity drift, systemic settlement, ending, and successor boundary | `campaign.test.mjs`, `SECTION_36_SINGLE_PLAYER_CAMPAIGN.md` | PASS |
 | Full/Aggregate offscreen continuity, promoted entities, scheduled materialization, uncertainty, and reconciliation | `offscreen.test.mjs`, `SECTION_37_OFFSCREEN_SIMULATION.md` | PASS |
 | Regional supply/demand ecology, bounded market flow, source/sink shocks, resilience, and public price bands | `market-ecology.test.mjs`, `SECTION_38_MARKET_ECOLOGY.md` | PASS |
+| Seed-stable procedural proposals, layer ordering, evidence-gated admission, reversible receipts, and topology validation | `authoring.test.mjs`, `SECTION_39_PROCEDURAL_AUTHORING.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
