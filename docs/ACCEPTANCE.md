@@ -50,6 +50,7 @@
 | Belief-scoped NPC planning, need/obligation competition, repeated-only capped adaptation, order discretion, and privacy-safe projection | `npc-ai.test.mjs`, `SECTION_44_NPC_AI.md` | PASS |
 | Order-independent event projection fan-out, idempotent retries, conflicting duplicate rejection, and qualitative public summaries | `event-projections.test.mjs`, `SECTION_45_EVENT_PROJECTIONS.md` | PASS |
 | Atomic authoritative event batches, stale preflight rejection, all-or-nothing failure, and save/restore compatibility | `atomic-batch.test.mjs`, `SECTION_46_ATOMIC_BATCHES.md` | PASS |
+| Functional content locations, access routes, schedules, era identity, and pre-commit reference validation | `content-pipeline.test.mjs`, `SECTION_47_CONTENT_PIPELINE.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

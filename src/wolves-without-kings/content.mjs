@@ -99,6 +99,9 @@ export function createContentRegistry({ packId, simulationDate = "1998-01-01", a
     npcs: {},
     businesses: {},
     organizations: {},
+    locations: {},
+    routes: {},
+    scheduleTemplates: {},
     eraVariants: {},
     events: [],
   };
@@ -106,17 +109,31 @@ export function createContentRegistry({ packId, simulationDate = "1998-01-01", a
 
 export function admitContentPack(
   state,
-  { expectedRevision, actorId = "system:content", regions = [], npcs = [], businesses = [], organizations = [], eraVariants = {} },
+  {
+    expectedRevision,
+    actorId = "system:content",
+    regions = [],
+    npcs = [],
+    businesses = [],
+    organizations = [],
+    locations = [],
+    routes = [],
+    scheduleTemplates = [],
+    eraVariants = {},
+  },
 ) {
   assertRevision(state, expectedRevision);
   assertNonEmpty(actorId, "actorId");
-  for (const [field, value] of [["regions", regions], ["npcs", npcs], ["businesses", businesses], ["organizations", organizations]]) assertArray(value, field);
+  for (const [field, value] of [["regions", regions], ["npcs", npcs], ["businesses", businesses], ["organizations", organizations], ["locations", locations], ["routes", routes], ["scheduleTemplates", scheduleTemplates]]) assertArray(value, field);
   assertObject(eraVariants, "eraVariants");
   const normalized = {
     regions: regions.map((entity, index) => normalizeEntity(entity, `regions[${index}]`, ["label"])),
     npcs: npcs.map((entity, index) => normalizeEntity(entity, `npcs[${index}]`, ["displayName", "regionId"])),
     businesses: businesses.map((entity, index) => normalizeEntity(entity, `businesses[${index}]`, ["label", "regionId"])),
     organizations: organizations.map((entity, index) => normalizeEntity(entity, `organizations[${index}]`, ["displayName"])),
+    locations: locations.map((entity, index) => normalizeEntity(entity, `locations[${index}]`, ["regionId", "layer"])),
+    routes: routes.map((entity, index) => normalizeEntity(entity, `routes[${index}]`, ["fromLocationId", "toLocationId"])),
+    scheduleTemplates: scheduleTemplates.map((entity, index) => normalizeEntity(entity, `scheduleTemplates[${index}]`, ["actorId", "locationId"])),
   };
   for (const [field, entities] of Object.entries(normalized)) {
     assertUniqueIds(entities, field.slice(0, -1));
@@ -125,8 +142,26 @@ export function admitContentPack(
   const regionIds = new Set([...Object.keys(state.regions), ...normalized.regions.map((entity) => entity.id)]);
   const organizationIds = new Set([...Object.keys(state.organizations), ...normalized.organizations.map((entity) => entity.id)]);
   const businessIds = new Set([...Object.keys(state.businesses), ...normalized.businesses.map((entity) => entity.id)]);
+  const locationIds = new Set([...Object.keys(state.locations), ...normalized.locations.map((entity) => entity.id)]);
+  const actorIds = new Set([...Object.keys(state.npcs), ...normalized.npcs.map((entity) => entity.id), ...Object.keys(state.organizations), ...normalized.organizations.map((entity) => entity.id)]);
   for (const npc of normalized.npcs) if (!regionIds.has(npc.regionId)) throw new ContentValidationError(`NPC references unknown region: ${npc.id}`);
   for (const business of normalized.businesses) if (!regionIds.has(business.regionId)) throw new ContentValidationError(`business references unknown region: ${business.id}`);
+  for (const location of normalized.locations) {
+    if (!regionIds.has(location.regionId)) throw new ContentValidationError(`location references unknown region: ${location.id}`);
+    if (!Array.isArray(location.accessModes) || location.accessModes.length === 0 || location.accessModes.some((mode) => typeof mode !== "string" || mode.trim() === "")) throw new ContentValidationError(`location accessModes must contain labels: ${location.id}`);
+  }
+  for (const route of normalized.routes) {
+    if (!locationIds.has(route.fromLocationId) || !locationIds.has(route.toLocationId)) throw new ContentValidationError(`route references unknown location: ${route.id}`);
+    if (route.fromLocationId === route.toLocationId) throw new ContentValidationError(`route endpoints must differ: ${route.id}`);
+    if (!Array.isArray(route.movementModes) || route.movementModes.length === 0 || route.movementModes.some((mode) => typeof mode !== "string" || mode.trim() === "")) throw new ContentValidationError(`route movementModes must contain labels: ${route.id}`);
+  }
+  for (const schedule of normalized.scheduleTemplates) {
+    if (!actorIds.has(schedule.actorId)) throw new ContentValidationError(`schedule references unknown actor: ${schedule.id}`);
+    if (!locationIds.has(schedule.locationId)) throw new ContentValidationError(`schedule references unknown location: ${schedule.id}`);
+    assertInteger(schedule.startHour, `scheduleTemplates.${schedule.id}.startHour`, 0, 23);
+    assertInteger(schedule.endHour, `scheduleTemplates.${schedule.id}.endHour`, 0, 23);
+    if (schedule.startHour === schedule.endHour) throw new ContentValidationError(`schedule must have a non-zero window: ${schedule.id}`);
+  }
   for (const organization of normalized.organizations) {
     for (const regionId of organization.regionIds ?? []) if (!regionIds.has(regionId)) throw new ContentValidationError(`organization references unknown region: ${organization.id}`);
     for (const memberId of organization.memberIds ?? []) {
@@ -137,7 +172,7 @@ export function admitContentPack(
     assertArray(variants, `eraVariants.${era}`);
     for (const [index, variant] of variants.entries()) {
       const normalizedVariant = normalizeEntity(variant, `eraVariants.${era}[${index}]`, ["baseId"]);
-      if (!regionIds.has(normalizedVariant.baseId) && !organizationIds.has(normalizedVariant.baseId) && !businessIds.has(normalizedVariant.baseId)) {
+      if (!regionIds.has(normalizedVariant.baseId) && !organizationIds.has(normalizedVariant.baseId) && !businessIds.has(normalizedVariant.baseId) && !locationIds.has(normalizedVariant.baseId) && !normalized.routes.some((route) => route.id === normalizedVariant.baseId) && !normalized.scheduleTemplates.some((schedule) => schedule.id === normalizedVariant.baseId)) {
         throw new ContentValidationError(`era variant references unknown base content: ${normalizedVariant.baseId}`);
       }
     }
@@ -181,6 +216,9 @@ export function projectContent(state) {
       npcs: Object.keys(state.npcs).length,
       businesses: Object.keys(state.businesses).length,
       organizations: Object.keys(state.organizations).length,
+      locations: Object.keys(state.locations).length,
+      routes: Object.keys(state.routes).length,
+      scheduleTemplates: Object.keys(state.scheduleTemplates).length,
     },
     activeEraVariantCount: activeVariants.length,
     regionLabels: Object.values(state.regions).map((region) => ({ id: region.id, label: region.label })),

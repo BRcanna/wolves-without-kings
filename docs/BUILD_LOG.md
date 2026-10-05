@@ -941,3 +941,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 45 — Functional content admission
+
+Implemented:
+
+- functional location identities with region and access-mode references;
+- directed route identities with endpoint and movement-mode validation;
+- actor schedule templates with known actors, known locations, and non-zero hour windows;
+- pre-commit rejection for broken references, missing access labels, and impossible schedules;
+- stable era variants for functional content identities.
+
+Acceptance evidence:
+
+- `npm test` passes 166 tests, including three content-pipeline tests;
+- `content-pipeline.test.mjs` proves functional admission, broken-reference rejection, schedule validation, and no partial commit;
+- `npm run verify` continues to report `docuseries-verify: PASS`.
+
+Boundary:
+
+- this is a fictional local content-admission contract, not production asset import, visual reachability, dialogue/audio, or cultural-review proof.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
