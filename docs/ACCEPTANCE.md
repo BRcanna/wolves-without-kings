@@ -30,6 +30,7 @@
 | Observer-scoped tattoos, visible status, prison context, aging, and misuse boundary | `tattoos.test.mjs`, `SECTION_24_TATTOOS_RANK.md` | PASS |
 | Organization doctrine, value-mediated compliance, coalition succession, and public governance projection | `doctrine.test.mjs`, `SECTION_25_DOCTRINE_SUCCESSION.md` | PASS |
 | Abstract commodity supply shock, doctrine policy, health externality, and redacted drug-market projection | `drug-economy.test.mjs`, `SECTION_26_DRUG_ECONOMY.md` | PASS |
+| Abstract route planning, changing route conditions, stale-plan rejection, and qualitative logistics projection | `logistics.test.mjs`, `SECTION_27_LOGISTICS.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

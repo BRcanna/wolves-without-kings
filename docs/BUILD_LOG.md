@@ -452,6 +452,28 @@ Still open:
 
 - smuggling/logistics, legitimate fronts/money, remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 25 — Abstract route logistics
+
+Implemented:
+
+- fictional route state with coarse segments, access requirements, travel-time, weather/hazard costs, border state, contacts, fallback count, and versioned conditions;
+- planned transit risk bands using familiarity, vehicle fit, contact reliability, and institutional pressure;
+- explicit proceed, delay, reroute, and cancel outcomes;
+- stale-plan rejection after route changes, replan-required behavior, route aging to obsolete, qualitative public projection, hash-linked snapshots, and fail-closed invalid writes.
+
+Acceptance evidence:
+
+- `npm test` passes 87 tests, including four logistics tests;
+- `logistics.test.mjs` proves causal transit outcomes, changed-route invalidation, time aging, redaction, and snapshot integrity.
+
+Safety boundary:
+
+- routes and cargo are fictionalized labels. This episode does not encode real-world geography, concealment, border evasion, trafficking, contact handling, or operational procedure.
+
+Still open:
+
+- legitimate fronts/money, remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 23 — Organization doctrine and succession
 
 Implemented:
