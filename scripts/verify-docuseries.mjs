@@ -20,8 +20,8 @@ const acceptance = readRequired("docs/ACCEPTANCE.md");
 const buildLog = readRequired("docs/BUILD_LOG.md");
 const preview = JSON.parse(readRequired("web/scenario.json"));
 
-if (!readme.includes("Sections 3–45")) {
-  fail("README does not declare the current Sections 3–45 build scope");
+if (!readme.includes("Sections 3–46")) {
+  fail("README does not declare the current Sections 3–46 build scope");
 }
 
 for (const scriptName of ["test", "preview:build", "verify"]) {

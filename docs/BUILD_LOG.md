@@ -917,3 +917,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 44 — Atomic authoritative mutation batches
+
+Implemented:
+
+- bounded declarative event proposals through the existing authority path;
+- deterministic batch identity and contiguous event lineage;
+- stale preflight rejection before proposal evaluation;
+- all-or-nothing validation with no partial caller mutation;
+- save/restore compatibility for batched history.
+
+Acceptance evidence:
+
+- `npm test` passes 163 tests, including four atomic-batch tests;
+- `atomic-batch.test.mjs` proves contiguous commits, shared batch identity, stale preflight, all-or-nothing failure, and snapshot compatibility;
+- `npm run verify` continues to report `docuseries-verify: PASS`.
+
+Boundary:
+
+- this is an in-process transaction contract, not database transactions, distributed commit, production sockets, or external-side-effect rollback.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
