@@ -24,8 +24,8 @@
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
 | Scope-filtered renderer-facing projection and privacy boundary | `projection.test.mjs`, `ONLINE_BOUNDARY.md` | PASS |
+| Bounded traversal and melee action outcomes | `action.test.mjs` | PASS |
 | Renderer implementation, online service, and production acceptance | no implementation yet | OPEN |
-| Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 
 This matrix is evidence for the current foundation slice, not a claim that the overall docuseries goal is complete.

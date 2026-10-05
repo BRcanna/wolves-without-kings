@@ -165,3 +165,20 @@ Acceptance evidence:
 Still open:
 
 - remaining action families, renderer implementation, online service implementation, and production acceptance.
+
+## Episode 9 — Bounded action outcomes
+
+Implemented:
+
+- evented traversal outcomes with layered route IDs, familiarity, noise, risk, and condition cost;
+- evented melee outcomes with style, group participants, stamina, injury, environment contact, witness count, and disengagement;
+- atomic bounded character-condition consequences;
+- fail-closed invalid action outcomes with no partial mutation.
+
+Acceptance evidence:
+
+- `npm test` passes 28 tests, including traversal and melee action contracts.
+
+Still open:
+
+- vehicle/action edge cases, renderer implementation, online service implementation, and production acceptance.

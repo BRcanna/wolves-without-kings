@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–10 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, and scope-filtered projections.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–11 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, and bounded action outcomes.
 
 ## Current build slice
 
@@ -22,6 +22,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Vertical slice: three different histories reach a replayable year-one endpoint with 30 NPCs, 3 businesses, 2 organizations, 1 market, and 1 case.
 - Surveillance: learned routines carry confidence, staleness, witness uncertainty, access state, and counter-surveillance state.
 - Projection boundary: public, observer, institutional, and debug views are explicit and privacy-tested.
+- Action outcomes: traversal and melee preserve route knowledge, risk, witnesses, injury, and nonterminal outcomes.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
@@ -40,4 +41,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Audit the remaining action families and keep online breadth deferred until the local authority path has stronger acceptance evidence.
+Audit vehicle/action edge cases and keep online breadth deferred until the local authority path has stronger acceptance evidence.

@@ -243,6 +243,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     cases: {},
     businesses: {},
     surveillance: {},
+    actions: [],
     events: [],
   };
 }
@@ -618,6 +619,17 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
       ...clone(event.payload.nextRecord),
       lastEventId: event.eventId,
     };
+  } else if (event.eventType === "action.traversal_resolved") {
+    next.actions.push(clone(event.payload.action));
+  } else if (event.eventType === "action.melee_resolved") {
+    next.actions.push(clone(event.payload.action));
+    const character = next.characters[event.payload.actorId];
+    if (character && event.payload.nextCondition) {
+      character.condition = {
+        ...event.payload.nextCondition,
+        lastEventId: event.eventId,
+      };
+    }
   }
 
   next.events.push(clone(event));
@@ -2255,6 +2267,127 @@ export function interruptSurveillance(
     location: record.locationId,
     payload: { surveillanceId, nextRecord, outcome },
     visibility: "observer-scoped",
+  });
+}
+
+export function resolveTraversalAction(
+  world,
+  {
+    expectedRevision,
+    actionId,
+    actorId,
+    fromLocationId,
+    toLocationId,
+    routeIds,
+    mode = "walk",
+    noise = 0,
+    risk = 0,
+    conditionCost = 0,
+    familiarity = "unknown",
+    outcome = "completed",
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(actionId, "actionId");
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(fromLocationId, "fromLocationId");
+  assertNonEmptyString(toLocationId, "toLocationId");
+  const normalizedRoutes = normalizeStringArray(routeIds, "routeIds");
+  if (normalizedRoutes.length === 0) throw new InvalidCommandError("routeIds must contain at least one route");
+  assertNonEmptyString(mode, "mode");
+  assertRange(noise, "noise", 0, 100);
+  assertRange(risk, "risk", 0, 100);
+  assertRange(conditionCost, "conditionCost", 0, 100);
+  if (!["known", "partial", "unknown"].includes(familiarity)) {
+    throw new InvalidCommandError(`unsupported traversal familiarity: ${familiarity}`);
+  }
+  if (!["completed", "interrupted", "blocked"].includes(outcome)) {
+    throw new InvalidCommandError(`unsupported traversal outcome: ${outcome}`);
+  }
+  const action = {
+    id: actionId,
+    type: "traversal",
+    actorId,
+    fromLocationId,
+    toLocationId,
+    routeIds: normalizedRoutes,
+    mode,
+    noise,
+    risk,
+    conditionCost,
+    familiarity,
+    outcome,
+    date: world.date,
+  };
+  return commit(world, {
+    eventType: "action.traversal_resolved",
+    actors: [actorId],
+    subjects: [actionId, fromLocationId, toLocationId],
+    location: toLocationId,
+    payload: { action },
+    visibility: "local",
+  });
+}
+
+export function resolveMeleeEncounter(
+  world,
+  {
+    expectedRevision,
+    actionId,
+    actorId,
+    opponentIds,
+    style = "improvised",
+    outcome,
+    locationId,
+    staminaCost = 0,
+    injuryDelta = 0,
+    environmentContact = null,
+    witnessCount = 0,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(actionId, "actionId");
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(locationId, "locationId");
+  const opponents = normalizeIds(opponentIds, "opponentIds");
+  if (opponents.length === 0) throw new InvalidCommandError("opponentIds must contain at least one opponent");
+  assertNonEmptyString(style, "style");
+  if (!["escaped", "disengaged", "injured", "dominant"].includes(outcome)) {
+    throw new InvalidCommandError(`unsupported melee outcome: ${outcome}`);
+  }
+  assertRange(staminaCost, "staminaCost", 0, 100);
+  assertRange(injuryDelta, "injuryDelta", 0, 100);
+  assertRange(witnessCount, "witnessCount", 0, 100);
+  if (environmentContact !== null) assertNonEmptyString(environmentContact, "environmentContact");
+  const character = world.characters[actorId];
+  const nextCondition = character
+    ? {
+        fatigue: Math.min(100, character.condition.fatigue + staminaCost),
+        injury: Math.min(100, character.condition.injury + injuryDelta),
+        healthState: injuryDelta > 0 ? "injured" : character.condition.healthState,
+      }
+    : null;
+  const action = {
+    id: actionId,
+    type: "melee",
+    actorId,
+    opponentIds: opponents,
+    style,
+    outcome,
+    locationId,
+    staminaCost,
+    injuryDelta,
+    environmentContact,
+    witnessCount,
+    date: world.date,
+  };
+  return commit(world, {
+    eventType: "action.melee_resolved",
+    actors: [actorId, ...opponents],
+    subjects: [actionId],
+    location: locationId,
+    payload: { action, actorId, nextCondition },
+    visibility: "local",
   });
 }
 
