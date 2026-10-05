@@ -2,6 +2,20 @@ import { createHash } from "node:crypto";
 
 export const ENGINE_SCHEMA_VERSION = 1;
 export const CHARACTER_SKILLS = ["driving", "fighting", "lock_work", "intimidation", "negotiation"];
+export const NPC_NEEDS = ["sleep", "food", "family", "social", "medical", "money", "safety"];
+export const RELATIONSHIP_AXES = [
+  "trust",
+  "respect",
+  "fear",
+  "loyalty",
+  "debt",
+  "obligation",
+  "familiarity",
+  "suspicion",
+  "affection",
+  "resentment",
+  "dependence",
+];
 
 export class StaleRevisionError extends Error {
   constructor(expectedRevision, actualRevision) {
@@ -86,6 +100,106 @@ function normalizeIds(value, field) {
   return [...value];
 }
 
+function normalizeStringArray(value, field) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item.trim() === "")) {
+    throw new InvalidCommandError(`${field} must be an array of non-empty strings`);
+  }
+  return [...new Set(value)];
+}
+
+function normalizeRoutineBlocks(value) {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new InvalidCommandError("routineBlocks must contain at least one block");
+  }
+  return value.map((block, index) => {
+    if (!block || typeof block !== "object" || Array.isArray(block)) {
+      throw new InvalidCommandError(`routineBlocks[${index}] must be an object`);
+    }
+    assertNonEmptyString(block.id, `routineBlocks[${index}].id`);
+    assertNonEmptyString(block.label, `routineBlocks[${index}].label`);
+    assertNonEmptyString(block.locationId, `routineBlocks[${index}].locationId`);
+    if (block.need !== undefined && !NPC_NEEDS.includes(block.need)) {
+      throw new InvalidCommandError(`unsupported routine need: ${block.need}`);
+    }
+    return {
+      id: block.id,
+      label: block.label,
+      locationId: block.locationId,
+      need: block.need ?? null,
+      threatSafe: block.threatSafe !== false,
+    };
+  });
+}
+
+function defaultNpcNeeds() {
+  return Object.fromEntries(NPC_NEEDS.map((need) => [need, 0]));
+}
+
+function defaultRelationship() {
+  return {
+    trust: 0,
+    respect: 0,
+    fear: 0,
+    loyalty: 0,
+    debt: 0,
+    obligation: 0,
+    familiarity: 0,
+    suspicion: 0,
+    affection: 0,
+    resentment: 0,
+    dependence: 0,
+    relationshipAgeDays: 0,
+    sharedEvents: [],
+  };
+}
+
+function clampAxis(value, axis) {
+  const maximum = ["debt", "obligation", "familiarity", "dependence"].includes(axis) ? 100 : 100;
+  return Math.max(0, Math.min(maximum, value));
+}
+
+function settleNpcForDays(npc, days) {
+  const next = clone(npc);
+  const safeBlocks = next.routineBlocks.filter((block) => next.threatLevel === 0 || block.threatSafe);
+  const blocks = safeBlocks.length > 0 ? safeBlocks : next.routineBlocks;
+  for (let day = 0; day < days; day += 1) {
+    next.lifeDays += 1;
+    next.routineIndex = next.lifeDays % blocks.length;
+    const block = blocks[next.routineIndex];
+    next.currentRoutineId = block.id;
+    next.currentLocationId = block.locationId;
+    next.scheduleMode = next.threatLevel > 0 ? "threat-adjusted" : "normal";
+    for (const need of NPC_NEEDS) next.needs[need] = Math.min(100, next.needs[need] + 1);
+    if (block.need) next.needs[block.need] = Math.max(0, next.needs[block.need] - 5);
+    if (next.activeLongAction) {
+      next.activeLongAction.elapsedDays += 1;
+      if (next.activeLongAction.elapsedDays >= next.activeLongAction.durationDays) {
+        next.completedActions.push({
+          id: next.activeLongAction.id,
+          completedOnLifeDay: next.lifeDays,
+        });
+        next.activeLongAction = null;
+      }
+    }
+  }
+  return next;
+}
+
+function enrichRelationship(previous) {
+  return { ...defaultRelationship(), ...clone(previous), sharedEvents: [...(previous.sharedEvents ?? [])] };
+}
+
+function refreshWorkAvailability(organization) {
+  for (const item of Object.values(organization.workItems)) {
+    if (item.status === "completed" || item.status === "active") continue;
+    const dependenciesReady = item.dependencies.every(
+      (dependencyId) => organization.workItems[dependencyId]?.status === "completed",
+    );
+    if (dependenciesReady && item.status === "blocked") item.status = "available";
+  }
+}
+
 export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-01" } = {}) {
   assertNonEmptyString(worldId, "worldId");
   assertDate(startDate, "startDate");
@@ -105,6 +219,10 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     },
     relationships: {},
     characters: {},
+    npcLife: {},
+    rumors: {},
+    beliefs: {},
+    organizations: {},
     events: [],
   };
 }
@@ -162,6 +280,44 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
   if (event.eventType === "world.time_advanced") {
     next.date = event.payload.toDate;
     next.tick = event.payload.toTick;
+    for (const settlement of event.payload.npcSettlements ?? []) {
+      const npc = next.npcLife[settlement.npcId];
+      if (npc) {
+        next.npcLife[settlement.npcId] = {
+          ...settlement.nextNpc,
+          lastEventId: event.eventId,
+        };
+      }
+    }
+    for (const beliefSettlement of event.payload.beliefSettlements ?? []) {
+      const observerBeliefs = next.beliefs[beliefSettlement.observerId];
+      if (observerBeliefs?.[beliefSettlement.rumorId]) {
+        observerBeliefs[beliefSettlement.rumorId] = {
+          ...observerBeliefs[beliefSettlement.rumorId],
+          stalenessDays: beliefSettlement.stalenessDays,
+          lastUpdatedEventId: event.eventId,
+        };
+      }
+    }
+    for (const relationshipSettlement of event.payload.relationshipSettlements ?? []) {
+      const relationship = next.relationships[relationshipSettlement.relationshipId];
+      if (relationship?.sharedEvents) {
+        relationship.relationshipAgeDays = relationshipSettlement.relationshipAgeDays;
+        relationship.lastEventId = event.eventId;
+      }
+    }
+    for (const workSettlement of event.payload.workSettlements ?? []) {
+      const organization = next.organizations[workSettlement.organizationId];
+      const item = organization?.workItems[workSettlement.workItemId];
+      if (item) {
+        organization.workItems[workSettlement.workItemId] = {
+          ...item,
+          ...workSettlement.nextItem,
+          lastEventId: event.eventId,
+        };
+        refreshWorkAvailability(organization);
+      }
+    }
   } else if (event.eventType === "district.condition_changed") {
     next.district = {
       ...next.district,
@@ -198,6 +354,86 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
       healthState: event.payload.nextHealthState,
       lastEventId: event.eventId,
     };
+  } else if (event.eventType === "npc.life_started") {
+    next.npcLife[event.payload.npc.id] = {
+      ...clone(event.payload.npc),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "npc.life_updated") {
+    next.npcLife[event.payload.npcId] = {
+      ...clone(event.payload.nextNpc),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "npc.life_interrupted") {
+    next.npcLife[event.payload.npcId] = {
+      ...clone(event.payload.nextNpc),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "relationship.updated") {
+    next.relationships[event.payload.relationshipId] = {
+      ...clone(event.payload.nextRelationship),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "rumor.created") {
+    next.rumors[event.payload.rumor.id] = {
+      ...clone(event.payload.rumor),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "belief.heard") {
+    if (!next.beliefs[event.payload.observerId]) next.beliefs[event.payload.observerId] = {};
+    next.beliefs[event.payload.observerId][event.payload.rumorId] = {
+      ...clone(event.payload.nextBelief),
+      lastUpdatedEventId: event.eventId,
+    };
+  } else if (event.eventType === "organization.created") {
+    next.organizations[event.payload.organization.id] = {
+      ...clone(event.payload.organization),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "organization.work_graph_created") {
+    const organization = next.organizations[event.payload.organizationId];
+    organization.workItems = clone(event.payload.workItems);
+    refreshWorkAvailability(organization);
+    organization.lastEventId = event.eventId;
+  } else if (event.eventType === "organization.member_availability_changed") {
+    const organization = next.organizations[event.payload.organizationId];
+    organization.members[event.payload.memberId].availability = event.payload.availability;
+    organization.lastEventId = event.eventId;
+  } else if (event.eventType === "organization.work_claimed") {
+    const organization = next.organizations[event.payload.organizationId];
+    organization.workItems[event.payload.workItemId] = {
+      ...organization.workItems[event.payload.workItemId],
+      status: "active",
+      claimOwner: event.payload.memberId,
+      leaseUntil: event.payload.leaseUntil,
+      attempts: event.payload.attempts,
+      recoveryState: "none",
+      lastEventId: event.eventId,
+    };
+    organization.lastEventId = event.eventId;
+  } else if (event.eventType === "organization.work_completed") {
+    const organization = next.organizations[event.payload.organizationId];
+    organization.workItems[event.payload.workItemId] = {
+      ...organization.workItems[event.payload.workItemId],
+      status: "completed",
+      claimOwner: null,
+      leaseUntil: null,
+      reviewState: event.payload.reviewState,
+      recoveryState: "none",
+      completedOn: event.payload.completedOn,
+      lastEventId: event.eventId,
+    };
+    refreshWorkAvailability(organization);
+    organization.lastEventId = event.eventId;
+  } else if (event.eventType === "organization.work_recovered") {
+    const organization = next.organizations[event.payload.organizationId];
+    organization.workItems[event.payload.workItemId] = {
+      ...organization.workItems[event.payload.workItemId],
+      ...clone(event.payload.nextItem),
+      lastEventId: event.eventId,
+    };
+    refreshWorkAvailability(organization);
+    organization.lastEventId = event.eventId;
   }
 
   next.events.push(clone(event));
@@ -220,11 +456,54 @@ function assertExpectedRevision(world, command) {
   }
 }
 
+function buildTimeSettlements(world, days, toDate) {
+  const npcSettlements = Object.values(world.npcLife).map((npc) => ({
+    npcId: npc.id,
+    nextNpc: settleNpcForDays(npc, days),
+  }));
+  const beliefSettlements = [];
+  for (const [observerId, observerBeliefs] of Object.entries(world.beliefs)) {
+    for (const [rumorId, belief] of Object.entries(observerBeliefs)) {
+      beliefSettlements.push({
+        observerId,
+        rumorId,
+        stalenessDays: belief.stalenessDays + days,
+      });
+    }
+  }
+  const relationshipSettlements = Object.entries(world.relationships)
+    .filter(([, relationship]) => relationship.sharedEvents)
+    .map(([relationshipId, relationship]) => ({
+      relationshipId,
+      relationshipAgeDays: relationship.relationshipAgeDays + days,
+    }));
+  const workSettlements = [];
+  for (const [organizationId, organization] of Object.entries(world.organizations)) {
+    for (const [workItemId, item] of Object.entries(organization.workItems)) {
+      if (item.status === "active" && item.leaseUntil && item.leaseUntil < toDate) {
+        workSettlements.push({
+          organizationId,
+          workItemId,
+          nextItem: {
+            status: "recovery",
+            claimOwner: null,
+            leaseUntil: null,
+            recoveryState: "required",
+            lastTransitionReason: "lease-expired",
+          },
+        });
+      }
+    }
+  }
+  return { npcSettlements, beliefSettlements, relationshipSettlements, workSettlements };
+}
+
 export function advanceTime(world, { expectedRevision, days, actorId = "system:time" }) {
   assertExpectedRevision(world, { expectedRevision });
   assertInteger(days, "days", 1);
   assertNonEmptyString(actorId, "actorId");
   const toDate = addDays(world.date, days);
+  const settlements = buildTimeSettlements(world, days, toDate);
   return commit(world, {
     eventType: "world.time_advanced",
     actors: [actorId],
@@ -236,6 +515,7 @@ export function advanceTime(world, { expectedRevision, days, actorId = "system:t
       fromTick: world.tick,
       toTick: world.tick + days,
       days,
+      ...settlements,
     },
     visibility: "local",
   });
@@ -448,6 +728,478 @@ export function changeCharacterCondition(
       nextInjury,
       previousHealthState: character.condition.healthState,
       nextHealthState,
+    },
+    visibility: "local",
+  });
+}
+
+function requireNpc(world, npcId) {
+  assertNonEmptyString(npcId, "npcId");
+  const npc = world.npcLife[npcId];
+  if (!npc) throw new InvalidCommandError(`unknown NPC: ${npcId}`);
+  return npc;
+}
+
+export function createNpc(
+  world,
+  {
+    expectedRevision,
+    npcId,
+    displayName,
+    home,
+    occupation = "resident",
+    routineBlocks = null,
+    threatLevel = 0,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(npcId, "npcId");
+  assertNonEmptyString(displayName, "displayName");
+  assertNonEmptyString(home, "home");
+  assertNonEmptyString(occupation, "occupation");
+  assertRange(threatLevel, "threatLevel", 0, 100);
+  if (world.npcLife[npcId]) throw new InvalidCommandError(`NPC already exists: ${npcId}`);
+  const normalizedBlocks = normalizeRoutineBlocks(
+    routineBlocks ?? [
+      { id: "rest", label: "Rest", locationId: home, need: "sleep" },
+      { id: "work", label: occupation, locationId: home, need: "money" },
+      { id: "social", label: "Social time", locationId: home, need: "social" },
+    ],
+  );
+  const firstBlock = normalizedBlocks[0];
+  const npc = {
+    id: npcId,
+    displayName,
+    home,
+    occupation,
+    routineBlocks: normalizedBlocks,
+    routineIndex: 0,
+    currentRoutineId: firstBlock.id,
+    currentLocationId: firstBlock.locationId,
+    scheduleMode: threatLevel > 0 ? "threat-adjusted" : "normal",
+    threatLevel,
+    lifeDays: 0,
+    needs: defaultNpcNeeds(),
+    activeLongAction: null,
+    completedActions: [],
+    interruptions: 0,
+  };
+  return commit(world, {
+    eventType: "npc.life_started",
+    actors: [npcId],
+    subjects: [npcId],
+    location: home,
+    payload: { npc },
+    visibility: "local",
+  });
+}
+
+export function setNpcThreat(world, { expectedRevision, npcId, threatLevel }) {
+  assertExpectedRevision(world, { expectedRevision });
+  const npc = requireNpc(world, npcId);
+  assertRange(threatLevel, "threatLevel", 0, 100);
+  const nextNpc = {
+    ...clone(npc),
+    threatLevel,
+    scheduleMode: threatLevel > 0 ? "threat-adjusted" : "normal",
+  };
+  return commit(world, {
+    eventType: "npc.life_updated",
+    actors: [npcId],
+    subjects: [npcId],
+    location: npc.home,
+    payload: { npcId, nextNpc, reason: "threat-level-changed" },
+    visibility: "local",
+  });
+}
+
+export function startNpcLongAction(
+  world,
+  { expectedRevision, npcId, actionId, label, durationDays },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const npc = requireNpc(world, npcId);
+  assertNonEmptyString(actionId, "actionId");
+  assertNonEmptyString(label, "label");
+  assertRange(durationDays, "durationDays", 1, 365);
+  if (npc.activeLongAction) throw new InvalidCommandError(`NPC already has an active long action: ${npcId}`);
+  const nextNpc = {
+    ...clone(npc),
+    activeLongAction: {
+      id: actionId,
+      label,
+      startedOn: world.date,
+      durationDays,
+      elapsedDays: 0,
+      status: "active",
+    },
+  };
+  return commit(world, {
+    eventType: "npc.life_updated",
+    actors: [npcId],
+    subjects: [npcId],
+    location: npc.currentLocationId,
+    payload: { npcId, nextNpc, reason: "long-action-started" },
+    visibility: "local",
+  });
+}
+
+export function interruptNpcLongAction(world, { expectedRevision, npcId, reason = "interrupted" }) {
+  assertExpectedRevision(world, { expectedRevision });
+  const npc = requireNpc(world, npcId);
+  assertNonEmptyString(reason, "reason");
+  if (!npc.activeLongAction) throw new InvalidCommandError(`NPC has no active long action: ${npcId}`);
+  const nextNpc = {
+    ...clone(npc),
+    activeLongAction: null,
+    interruptions: npc.interruptions + 1,
+  };
+  return commit(world, {
+    eventType: "npc.life_interrupted",
+    actors: [npcId],
+    subjects: [npcId],
+    location: npc.currentLocationId,
+    payload: {
+      npcId,
+      nextNpc,
+      interruptedActionId: npc.activeLongAction.id,
+      reason,
+    },
+    visibility: "local",
+  });
+}
+
+export function updateRelationship(
+  world,
+  {
+    expectedRevision,
+    actorId,
+    subjectId,
+    deltas = {},
+    sharedEventType = null,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(subjectId, "subjectId");
+  const relationshipId = `${actorId}|${subjectId}`;
+  const previous = enrichRelationship(world.relationships[relationshipId] ?? {});
+  const nextRelationship = clone(previous);
+  for (const [axis, delta] of Object.entries(deltas)) {
+    if (!RELATIONSHIP_AXES.includes(axis)) throw new InvalidCommandError(`unsupported relationship axis: ${axis}`);
+    assertInteger(delta, `deltas.${axis}`);
+    nextRelationship[axis] = clampAxis(previous[axis] + delta, axis);
+  }
+  if (sharedEventType !== null) {
+    assertNonEmptyString(sharedEventType, "sharedEventType");
+    nextRelationship.sharedEvents.push({ type: sharedEventType, date: world.date });
+  }
+  return commit(world, {
+    eventType: "relationship.updated",
+    actors: [actorId],
+    subjects: [subjectId],
+    payload: {
+      relationshipId,
+      previousRelationship: previous,
+      nextRelationship,
+      informationScope: "relationship-participants",
+    },
+    visibility: "local",
+  });
+}
+
+export function createRumor(
+  world,
+  {
+    expectedRevision,
+    rumorId,
+    sourceId,
+    subjectId,
+    topic,
+    retelling,
+    truthStatus = "unknown",
+    locationId = null,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(rumorId, "rumorId");
+  assertNonEmptyString(sourceId, "sourceId");
+  assertNonEmptyString(subjectId, "subjectId");
+  assertNonEmptyString(topic, "topic");
+  assertNonEmptyString(retelling, "retelling");
+  if (!["unknown", "true", "false", "contested"].includes(truthStatus)) {
+    throw new InvalidCommandError(`unsupported rumor truth status: ${truthStatus}`);
+  }
+  if (locationId !== null) assertNonEmptyString(locationId, "locationId");
+  if (world.rumors[rumorId]) throw new InvalidCommandError(`rumor already exists: ${rumorId}`);
+  const rumor = {
+    id: rumorId,
+    sourceId,
+    subjectId,
+    topic,
+    originRetelling: retelling,
+    truthStatus,
+    originDate: world.date,
+  };
+  return commit(world, {
+    eventType: "rumor.created",
+    actors: [sourceId],
+    subjects: [subjectId, rumorId],
+    location: locationId,
+    payload: { rumor },
+    visibility: "local",
+  });
+}
+
+export function hearRumor(
+  world,
+  {
+    expectedRevision,
+    observerId,
+    rumorId,
+    sourceId,
+    retelling = null,
+    confidence = 50,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(observerId, "observerId");
+  assertNonEmptyString(rumorId, "rumorId");
+  assertNonEmptyString(sourceId, "sourceId");
+  assertRange(confidence, "confidence", 0, 100);
+  const rumor = world.rumors[rumorId];
+  if (!rumor) throw new InvalidCommandError(`unknown rumor: ${rumorId}`);
+  if (retelling !== null) assertNonEmptyString(retelling, "retelling");
+  const previous = world.beliefs[observerId]?.[rumorId] ?? null;
+  const nextBelief = {
+    rumorId,
+    observerId,
+    sourceId,
+    retelling: retelling ?? rumor.originRetelling,
+    confidence,
+    truthStatus: "unknown",
+    heardOn: world.date,
+    stalenessDays: 0,
+  };
+  return commit(world, {
+    eventType: "belief.heard",
+    actors: [sourceId],
+    subjects: [observerId, rumorId],
+    payload: { observerId, rumorId, previousBelief: previous, nextBelief },
+    visibility: "observer-scoped",
+  });
+}
+
+function requireOrganization(world, organizationId) {
+  assertNonEmptyString(organizationId, "organizationId");
+  const organization = world.organizations[organizationId];
+  if (!organization) throw new InvalidCommandError(`unknown organization: ${organizationId}`);
+  return organization;
+}
+
+function requireWorkItem(organization, workItemId) {
+  assertNonEmptyString(workItemId, "workItemId");
+  const item = organization.workItems[workItemId];
+  if (!item) throw new InvalidCommandError(`unknown work item: ${workItemId}`);
+  return item;
+}
+
+export function createOrganization(
+  world,
+  { expectedRevision, organizationId, displayName, doctrine = "trust-and-competence", members = [] },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(organizationId, "organizationId");
+  assertNonEmptyString(displayName, "displayName");
+  assertNonEmptyString(doctrine, "doctrine");
+  if (!Array.isArray(members)) throw new InvalidCommandError("members must be an array");
+  if (world.organizations[organizationId]) {
+    throw new InvalidCommandError(`organization already exists: ${organizationId}`);
+  }
+  const normalizedMembers = {};
+  for (const member of members) {
+    if (!member || typeof member !== "object" || Array.isArray(member)) {
+      throw new InvalidCommandError("organization members must be objects");
+    }
+    assertNonEmptyString(member.memberId, "member.memberId");
+    assertNonEmptyString(member.role, "member.role");
+    if (normalizedMembers[member.memberId]) {
+      throw new InvalidCommandError(`duplicate organization member: ${member.memberId}`);
+    }
+    normalizedMembers[member.memberId] = {
+      memberId: member.memberId,
+      role: member.role,
+      capabilities: normalizeStringArray(member.capabilities, "member.capabilities"),
+      availability: member.availability ?? "available",
+      locationId: member.locationId ?? null,
+    };
+    if (!["available", "unavailable", "arrested", "injured", "disconnected"].includes(normalizedMembers[member.memberId].availability)) {
+      throw new InvalidCommandError(`unsupported member availability: ${normalizedMembers[member.memberId].availability}`);
+    }
+    if (normalizedMembers[member.memberId].locationId !== null) {
+      assertNonEmptyString(normalizedMembers[member.memberId].locationId, "member.locationId");
+    }
+  }
+  const organization = {
+    id: organizationId,
+    displayName,
+    doctrine,
+    members: normalizedMembers,
+    workItems: {},
+  };
+  return commit(world, {
+    eventType: "organization.created",
+    actors: [organizationId],
+    subjects: [organizationId],
+    payload: { organization },
+    visibility: "local",
+  });
+}
+
+export function createWorkGraph(world, { expectedRevision, organizationId, workItems }) {
+  assertExpectedRevision(world, { expectedRevision });
+  const organization = requireOrganization(world, organizationId);
+  if (!Array.isArray(workItems) || workItems.length === 0) {
+    throw new InvalidCommandError("workItems must contain at least one item");
+  }
+  const normalized = {};
+  for (const workItem of workItems) {
+    if (!workItem || typeof workItem !== "object" || Array.isArray(workItem)) {
+      throw new InvalidCommandError("work items must be objects");
+    }
+    assertNonEmptyString(workItem.workItemId, "workItem.workItemId");
+    assertNonEmptyString(workItem.label, "workItem.label");
+    if (normalized[workItem.workItemId] || organization.workItems[workItem.workItemId]) {
+      throw new InvalidCommandError(`duplicate work item: ${workItem.workItemId}`);
+    }
+    const dependencies = normalizeStringArray(workItem.dependencies, "workItem.dependencies");
+    if (dependencies.includes(workItem.workItemId)) {
+      throw new InvalidCommandError(`work item cannot depend on itself: ${workItem.workItemId}`);
+    }
+    normalized[workItem.workItemId] = {
+      id: workItem.workItemId,
+      label: workItem.label,
+      dependencies,
+      requiredCapabilities: normalizeStringArray(workItem.requiredCapabilities, "workItem.requiredCapabilities"),
+      exclusionGroup: workItem.exclusionGroup ?? null,
+      status: "blocked",
+      claimOwner: null,
+      leaseUntil: null,
+      attempts: 0,
+      recoveryState: "none",
+      reviewState: "pending",
+      completedOn: null,
+    };
+    if (normalized[workItem.workItemId].exclusionGroup !== null) {
+      assertNonEmptyString(normalized[workItem.workItemId].exclusionGroup, "workItem.exclusionGroup");
+    }
+  }
+  const allIds = new Set([...Object.keys(organization.workItems), ...Object.keys(normalized)]);
+  for (const item of Object.values(normalized)) {
+    for (const dependency of item.dependencies) {
+      if (!allIds.has(dependency)) throw new InvalidCommandError(`unknown work dependency: ${dependency}`);
+    }
+  }
+  return commit(world, {
+    eventType: "organization.work_graph_created",
+    actors: [organizationId],
+    subjects: Object.keys(normalized),
+    payload: { organizationId, workItems: normalized },
+    visibility: "local",
+  });
+}
+
+export function changeMemberAvailability(
+  world,
+  { expectedRevision, organizationId, memberId, availability },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const organization = requireOrganization(world, organizationId);
+  assertNonEmptyString(memberId, "memberId");
+  if (!organization.members[memberId]) throw new InvalidCommandError(`unknown organization member: ${memberId}`);
+  if (!["available", "unavailable", "arrested", "injured", "disconnected"].includes(availability)) {
+    throw new InvalidCommandError(`unsupported member availability: ${availability}`);
+  }
+  return commit(world, {
+    eventType: "organization.member_availability_changed",
+    actors: [memberId],
+    subjects: [organizationId, memberId],
+    payload: { organizationId, memberId, availability },
+    visibility: "local",
+  });
+}
+
+export function claimWorkItem(
+  world,
+  { expectedRevision, organizationId, workItemId, memberId, leaseDays = 1 },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const organization = requireOrganization(world, organizationId);
+  const item = requireWorkItem(organization, workItemId);
+  assertNonEmptyString(memberId, "memberId");
+  assertRange(leaseDays, "leaseDays", 1, 30);
+  const member = organization.members[memberId];
+  if (!member) throw new InvalidCommandError(`unknown organization member: ${memberId}`);
+  if (!["available", "recovery"].includes(item.status)) {
+    throw new InvalidCommandError(`work item is not claimable: ${workItemId}`);
+  }
+  if (member.availability !== "available") {
+    throw new InvalidCommandError(`member is not available: ${memberId}`);
+  }
+  if (!item.dependencies.every((dependencyId) => organization.workItems[dependencyId]?.status === "completed")) {
+    throw new InvalidCommandError(`work dependencies are incomplete: ${workItemId}`);
+  }
+  if (item.requiredCapabilities.some((capability) => !member.capabilities.includes(capability))) {
+    throw new InvalidCommandError(`member lacks required capability for ${workItemId}`);
+  }
+  if (item.exclusionGroup && Object.values(organization.workItems).some((other) => (
+    other.id !== item.id
+    && other.status === "active"
+    && other.claimOwner === memberId
+    && other.exclusionGroup === item.exclusionGroup
+  ))) {
+    throw new InvalidCommandError(`member is excluded from simultaneous work group: ${item.exclusionGroup}`);
+  }
+  return commit(world, {
+    eventType: "organization.work_claimed",
+    actors: [memberId],
+    subjects: [organizationId, workItemId],
+    location: member.locationId,
+    payload: {
+      organizationId,
+      workItemId,
+      memberId,
+      leaseUntil: addDays(world.date, leaseDays),
+      attempts: item.attempts + 1,
+    },
+    visibility: "local",
+  });
+}
+
+export function completeWorkItem(
+  world,
+  { expectedRevision, organizationId, workItemId, memberId, reviewState = "accepted" },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const organization = requireOrganization(world, organizationId);
+  const item = requireWorkItem(organization, workItemId);
+  assertNonEmptyString(memberId, "memberId");
+  if (item.status !== "active" || item.claimOwner !== memberId) {
+    throw new InvalidCommandError(`member does not own active work item: ${workItemId}`);
+  }
+  if (!["accepted", "disputed"].includes(reviewState)) {
+    throw new InvalidCommandError(`unsupported review state: ${reviewState}`);
+  }
+  return commit(world, {
+    eventType: "organization.work_completed",
+    actors: [memberId],
+    subjects: [organizationId, workItemId],
+    payload: {
+      organizationId,
+      workItemId,
+      memberId,
+      reviewState,
+      completedOn: world.date,
     },
     visibility: "local",
   });

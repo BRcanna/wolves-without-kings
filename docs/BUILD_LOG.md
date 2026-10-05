@@ -58,3 +58,21 @@ Acceptance evidence:
 Still open:
 
 - persistent NPC life, richer relationships, organization doctrine, economy, action, police cases, and online systems.
+
+## Episode 3 — Persistent social and organization state
+
+Implemented:
+
+- persistent NPC routine blocks, needs, threat-adjusted schedules, long actions, and world-time settlement;
+- multi-axis relationship state with shared-event history and relationship aging;
+- separate rumor claims and observer-scoped beliefs with confidence, retelling, source, and staleness;
+- dependency-ordered organization work graphs with capability checks, member availability, leases, review, and recovery;
+- replay-compatible reducers for every new projection.
+
+Acceptance evidence:
+
+- `npm test` passes 17 tests covering all prior gates plus NPC life settlement, long-action completion, relationship contradiction/aging, rumor divergence, and expired-lease recovery.
+
+Still open:
+
+- economy, property lineage, action/case systems, renderer, online systems, and production acceptance.

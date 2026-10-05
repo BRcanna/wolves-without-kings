@@ -14,7 +14,11 @@
 | Character identity and canonical condition | character creation and condition tests | PASS |
 | History-based hidden skill progression | skill threshold test | PASS |
 | Familiarity and body-state persistence | bounded-state and restore tests | PASS |
-| Deep NPC/relationship simulation | no implementation yet | OPEN |
+| NPC routine, need, and long-action settlement | `social-organization.test.mjs` NPC test | PASS |
+| Multi-axis relationship history and aging | `social-organization.test.mjs` relationship test | PASS |
+| Observer-scoped rumor and belief divergence | `social-organization.test.mjs` rumor test | PASS |
+| Dependency-ordered organization work and lease recovery | `social-organization.test.mjs` organization test | PASS |
+| Economy, property lineage, and action/case simulation | no implementation yet | OPEN |
 | Single-player vertical slice | no implementation yet | OPEN |
 | Online underworld | explicitly deferred | OPEN |
 
