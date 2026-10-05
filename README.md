@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–18 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, and aggregate regional continuity.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–19 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, and bounded drop-in/drop-out co-op settlement.
 
 ## Current build slice
 
@@ -30,6 +30,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Protection relationships: business treatment, payment status, service delivery, owner decisions, rival claims, police exposure, time aging, and qualitative public bands are evented and replayable.
 - Vehicle provenance: one vehicle identity survives abstract theft, storage, service, appearance change, processing, transfer/resale, return, recognition risk, and trophy history.
 - Aggregate regions: fictionalized Sofia/coastal regions retain Full/Aggregate simulation modes, a bounded corridor, deterministic offscreen shocks, scars, and time settlement.
+- Co-op settlement: the host remains authoritative while guests join as temporary associates, disconnect/reconnect safely, retain guest consequences, and cannot import foreign-world assets or rewind the host.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 

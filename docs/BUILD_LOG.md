@@ -317,3 +317,23 @@ Acceptance evidence:
 Still open:
 
 - co-op settlement, persistent online breadth, real network deployment, production acceptance, and the explicitly deferred online underworld.
+
+## Episode 17 — Drop-in/drop-out co-op settlement
+
+Implemented:
+
+- explicit host-world session state with temporary associate, specialist, and crew-member guest roles;
+- join-point admission, duplicate-character rejection, bounded guest capacity, shared operation participation, and host-world revision tracking;
+- host-world consequences and guest consequences stored separately when an operation resolves;
+- disconnect/reconnect handling that preserves an active host operation and marks transient guest state without deleting history;
+- final guest leave settlement with injury/asset-return records, retained host consequences, foreign-world asset rejection, and host rewind prohibition;
+- hash-linked co-op events, snapshot restore, tamper detection, stale revision rejection, and duplicate-guest protection.
+
+Acceptance evidence:
+
+- `npm test` passes 56 tests, including four co-op settlement tests;
+- `coop.test.mjs` covers join, shared operation outcome, disconnect/reconnect, guest leave settlement, ownership boundary, stale rejection, host rewind restriction, and snapshot integrity.
+
+Still open:
+
+- persistent online underworld breadth, real network deployment, authentication/encryption, production acceptance, and the explicitly deferred online MMO layer.
