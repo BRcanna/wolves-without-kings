@@ -79,6 +79,13 @@ function baseProjection(world) {
       recognitionRiskBand: vehicle.recognitionRisk >= 60 ? "high" : vehicle.recognitionRisk >= 25 ? "moderate" : "low",
       trophyTags: clone(vehicle.trophyTags),
     })),
+    weapons: Object.values(world.weapons).map((weapon) => ({
+      id: weapon.id,
+      weaponClass: weapon.weaponClass,
+      locationId: weapon.locationId,
+      condition: weapon.condition,
+      ammoBand: weapon.ammo >= 6 ? "ready" : weapon.ammo > 0 ? "limited" : "empty",
+    })),
     objects: Object.values(world.objects).map((object) => ({
       id: object.id,
       objectType: object.objectType,

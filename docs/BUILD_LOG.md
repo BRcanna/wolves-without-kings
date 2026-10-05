@@ -382,3 +382,26 @@ Acceptance evidence:
 Still open:
 
 - full content scale, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 20 — Consequential abstract ranged action
+
+Implemented:
+
+- persistent coarse weapon state with class, handling profile, abstract ammunition, condition, owner, location, and shot history;
+- evented ranged encounters with stance, cover state, range band, stress, qualitative familiarity, suppression, injury outcome, sound band, witness/camera counts, police-interest delta, and abstract evidence artifacts;
+- weapon wear and ammunition settlement without a gunsmith simulator;
+- public projection with qualitative weapon condition/ammo bands and no owner, exact ammo, shot history, or firearm-evidence internals;
+- snapshot/replay and stale, invalid, retired-weapon, and over-ammo rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 67 tests, including three ranged-action tests;
+- `ranged.test.mjs` proves consequential encounter state, public redaction, replay equality, and fail-closed proposals.
+
+Safety boundary:
+
+- this is an abstract fictional action model. It encodes no real-world weapon operation, aiming, modification, acquisition, or evasion procedure.
+
+Still open:
+
+- prison/re-entry state, remaining content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.

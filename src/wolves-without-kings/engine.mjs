@@ -245,6 +245,8 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
     protectionArrangements: {},
     regions: {},
     corridors: {},
+    weapons: {},
+    firearmEvidence: {},
     surveillance: {},
     actions: [],
     vehicles: {},
@@ -713,6 +715,21 @@ function reduceEvent(world, event, { verifyChain = true } = {}) {
   } else if (event.eventType === "vehicle.provenance_advanced") {
     next.vehicles[event.payload.vehicleId] = {
       ...clone(event.payload.nextVehicle),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "weapon.created") {
+    next.weapons[event.payload.weapon.id] = {
+      ...clone(event.payload.weapon),
+      lastEventId: event.eventId,
+    };
+  } else if (event.eventType === "ranged.encounter_resolved") {
+    next.weapons[event.payload.weaponId] = {
+      ...clone(event.payload.nextWeapon),
+      lastEventId: event.eventId,
+    };
+    next.actions.push(clone(event.payload.action));
+    next.firearmEvidence[event.payload.evidence.id] = {
+      ...clone(event.payload.evidence),
       lastEventId: event.eventId,
     };
   }
@@ -2937,6 +2954,171 @@ export function resolveMeleeEncounter(
     subjects: [actionId],
     location: locationId,
     payload: { action, actorId, nextCondition },
+    visibility: "local",
+  });
+}
+
+function requireWeapon(world, weaponId) {
+  assertNonEmptyString(weaponId, "weaponId");
+  const weapon = world.weapons[weaponId];
+  if (!weapon) throw new InvalidCommandError(`unknown weapon: ${weaponId}`);
+  return weapon;
+}
+
+export function createWeapon(
+  world,
+  {
+    expectedRevision,
+    weaponId,
+    weaponClass = "sidearm",
+    handlingProfile = "steady",
+    ammo = 6,
+    condition = "maintained",
+    ownerId = null,
+    locationId,
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  assertNonEmptyString(weaponId, "weaponId");
+  assertNonEmptyString(weaponClass, "weaponClass");
+  assertNonEmptyString(handlingProfile, "handlingProfile");
+  assertRange(ammo, "ammo", 0, 100);
+  if (!["maintained", "worn", "damaged", "retired"].includes(condition)) {
+    throw new InvalidCommandError(`unsupported weapon condition: ${condition}`);
+  }
+  if (ownerId !== null) assertNonEmptyString(ownerId, "ownerId");
+  assertNonEmptyString(locationId, "locationId");
+  if (world.weapons[weaponId]) throw new InvalidCommandError(`weapon already exists: ${weaponId}`);
+  const weapon = {
+    id: weaponId,
+    weaponClass,
+    handlingProfile,
+    ammo,
+    condition,
+    ownerId,
+    locationId,
+    shotHistory: [],
+  };
+  return commit(world, {
+    eventType: "weapon.created",
+    actors: [ownerId ?? "system:weapon"],
+    subjects: [weaponId],
+    location: locationId,
+    payload: { weapon },
+    visibility: "local",
+  });
+}
+
+export function resolveRangedEncounter(
+  world,
+  {
+    expectedRevision,
+    actionId,
+    actorId,
+    weaponId,
+    opponentIds,
+    locationId,
+    rangeBand = "near",
+    stance = "stationary",
+    coverState = "partial",
+    stress = 0,
+    familiarity = "known",
+    shots = 1,
+    outcome = "suppressed",
+    suppression = 0,
+    injuryDelta = 0,
+    witnessCount = 0,
+    cameraCount = 0,
+    noiseBand = "high",
+    policeInterestDelta = 0,
+    evidenceArtifacts = [],
+  },
+) {
+  assertExpectedRevision(world, { expectedRevision });
+  const weapon = requireWeapon(world, weaponId);
+  assertNonEmptyString(actionId, "actionId");
+  assertNonEmptyString(actorId, "actorId");
+  assertNonEmptyString(locationId, "locationId");
+  const opponents = normalizeIds(opponentIds, "opponentIds");
+  if (opponents.length === 0) throw new InvalidCommandError("opponentIds must contain at least one opponent");
+  assertNonEmptyString(rangeBand, "rangeBand");
+  assertNonEmptyString(stance, "stance");
+  if (!["none", "partial", "solid", "unknown"].includes(coverState)) throw new InvalidCommandError(`unsupported cover state: ${coverState}`);
+  if (!["latent", "new", "known", "familiar", "seasoned"].includes(familiarity)) throw new InvalidCommandError(`unsupported firearm familiarity: ${familiarity}`);
+  if (!["missed", "suppressed", "injured", "disengaged", "fatal"].includes(outcome)) throw new InvalidCommandError(`unsupported ranged outcome: ${outcome}`);
+  if (!["low", "medium", "high"].includes(noiseBand)) throw new InvalidCommandError(`unsupported noise band: ${noiseBand}`);
+  assertRange(stress, "stress", 0, 100);
+  assertRange(shots, "shots", 1, 12);
+  assertRange(suppression, "suppression", 0, 100);
+  assertRange(injuryDelta, "injuryDelta", 0, 100);
+  assertRange(witnessCount, "witnessCount", 0, 100);
+  assertRange(cameraCount, "cameraCount", 0, 100);
+  if (!Number.isInteger(policeInterestDelta) || policeInterestDelta < -100 || policeInterestDelta > 100) {
+    throw new InvalidCommandError("policeInterestDelta must be an integer between -100 and 100");
+  }
+  const artifacts = normalizeStringArray(evidenceArtifacts, "evidenceArtifacts");
+  if (weapon.condition === "retired") throw new InvalidCommandError(`weapon is retired: ${weaponId}`);
+  if (weapon.ammo < shots) throw new InvalidCommandError(`insufficient abstract ammunition: ${weaponId}`);
+  const nextWeapon = {
+    ...clone(weapon),
+    ammo: weapon.ammo - shots,
+    condition: weapon.ammo - shots === 0 && weapon.condition === "worn" ? "damaged" : weapon.condition,
+    shotHistory: [
+      ...weapon.shotHistory,
+      {
+        actionId,
+        actorId,
+        locationId,
+        shots,
+        rangeBand,
+        stance,
+        coverState,
+        outcome,
+        noiseBand,
+        date: world.date,
+      },
+    ],
+  };
+  const evidence = {
+    id: `firearm-evidence:${actionId}`,
+    actionId,
+    locationId,
+    artifactTypes: artifacts,
+    soundEvent: noiseBand,
+    witnessCount,
+    cameraCount,
+    policeInterestDelta,
+    date: world.date,
+  };
+  const action = {
+    id: actionId,
+    type: "ranged",
+    actorId,
+    weaponId,
+    opponentIds: opponents,
+    locationId,
+    rangeBand,
+    stance,
+    coverState,
+    stress,
+    familiarity,
+    shots,
+    outcome,
+    suppression,
+    injuryDelta,
+    witnessCount,
+    cameraCount,
+    noiseBand,
+    policeInterestDelta,
+    evidenceId: evidence.id,
+    date: world.date,
+  };
+  return commit(world, {
+    eventType: "ranged.encounter_resolved",
+    actors: [actorId, ...opponents],
+    subjects: [actionId, weaponId, evidence.id],
+    location: locationId,
+    payload: { weaponId, nextWeapon, action, evidence },
     visibility: "local",
   });
 }

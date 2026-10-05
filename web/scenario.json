@@ -72,6 +72,7 @@
     "regions": [],
     "corridors": [],
     "vehicles": [],
+    "weapons": [],
     "objects": [
       {
         "id": "vehicle:favorite-sedan",

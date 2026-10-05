@@ -2,7 +2,7 @@
 
 Wolves Without Kings is a new, GitHub-hosted build for a fictional, Bulgaria-centered crime-life RPG where time, relationships, organizations, objects, cases and places retain history.
 
-The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–21 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, bounded drop-in/drop-out co-op settlement, a one-week persistent Underworld macro proof, and explicit dynasty/successor continuity.
+The project starts from the supplied mechanics docuseries and follows its dependency order. Phase 0 is the deterministic authority kernel; Sections 3–22 now add an authored district, character state, persistent social state, the first organization work graph, regional markets, item provenance, evidence-bearing police cases, a year-one single-player trace, durable surveillance knowledge, scope-filtered projections, bounded action outcomes, vehicle persistence, a local public-projection renderer preview, an in-process authority/replication contract, a transport-shaped local service adapter, persistent protection relationships, vehicle-crime provenance transitions, aggregate regional continuity, bounded drop-in/drop-out co-op settlement, a one-week persistent Underworld macro proof, explicit dynasty/successor continuity, and consequential abstract ranged action.
 
 ## Current build slice
 
@@ -33,6 +33,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Co-op settlement: the host remains authoritative while guests join as temporary associates, disconnect/reconnect safely, retain guest consequences, and cannot import foreign-world assets or rewind the host.
 - Underworld macro proof: a fictionalized shard settles shared market pressure, offline organization work, property conflicts, season history, and bounded physical-session summaries for one server week.
 - Dynasty continuity: explicit inheritance manifests transfer durable channels and burden bands while exact skills, familiarity, private memories, and competitive power do not transfer.
+- Ranged action: abstract weapon condition/ammo, suppression, cover, sound, witnesses, evidence artifacts, police interest, and fail-closed outcomes are evented and projection-filtered.
 
 The full mechanics series lives in [`docs/docuseries/`](docs/docuseries/README.md). It is design input, not proof that the complete game exists.
 
