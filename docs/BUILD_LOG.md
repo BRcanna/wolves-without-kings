@@ -362,3 +362,23 @@ Safety and evidence boundary:
 Still open:
 
 - dynasty/successor state, full content scale, real network deployment, authentication/encryption, moderation, production acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 19 — Dynasty and successor continuity
+
+Implemented:
+
+- lineage state with founder registration, retirement/disappearance/death outcomes, eras, public titles, season participation, and legacy trophies;
+- explicit inheritance manifests for properties, organization offices, documents, trophies, introductions, and burden bands;
+- successor creation that increments era and transfers only manifest-approved durable channels;
+- fail-closed rejection of private memory, familiarity, exact skill, and other non-transferable capability fields;
+- public dynasty projection that exposes lineage/title/burdens while omitting private capability and event internals;
+- hash-linked events, snapshot restore, stale rejection, manifest-use protection, and tamper detection.
+
+Acceptance evidence:
+
+- `npm test` passes 64 tests, including four dynasty/successor tests;
+- `dynasty.test.mjs` proves explicit inheritance, non-transfer of private capability/memory, season/trophy recognition without competitive power, stale/missing-state rejection, and snapshot integrity.
+
+Still open:
+
+- full content scale, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
