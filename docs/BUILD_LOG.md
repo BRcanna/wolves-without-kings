@@ -474,6 +474,29 @@ Still open:
 
 - legitimate fronts/money, remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
 
+## Episode 26 — Legitimate fronts and separate money state
+
+Implemented:
+
+- business identity, sector, capital, property, staff, manager competence/loyalty/incentive, maturity, legitimate cashflow, expenses, debt, reputation, tax attention, political connections, and criminal dependency;
+- three identical businesses that diverge over five years from different management quality;
+- manager turnover with persistent business identity and future-outcome change;
+- public projection separating qualitative maturity/reputation/debt/attention from private finance, manager internals, political connections, and event history;
+- hash-linked snapshots and fail-closed stale/invalid/tampered writes.
+
+Acceptance evidence:
+
+- `npm test` passes 91 tests, including four fronts/money tests;
+- `fronts.test.mjs` proves five-year divergence, manager turnover, financial/public separation, and snapshot integrity.
+
+Safety boundary:
+
+- this is a fictional business-simulation model. It does not provide accounting, laundering, tax evasion, political influence, or real-world financial-crime instructions.
+
+Still open:
+
+- remaining world/content volumes, production network deployment, authentication/encryption, moderation, performance/hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 23 — Organization doctrine and succession
 
 Implemented:
