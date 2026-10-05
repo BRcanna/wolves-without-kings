@@ -7,7 +7,9 @@
   "scripts": {
     "test": "node --test",
     "demo": "node src/wolves-without-kings/demo.mjs",
-    "preview:build": "node scripts/build-preview.mjs"
+    "preview:build": "node scripts/build-preview.mjs",
+    "verify": "node scripts/verify-docuseries.mjs",
+    "verify:all": "npm test && npm run preview:build && npm run verify"
   },
   "engines": {
     "node": ">=22"

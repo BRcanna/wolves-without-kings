@@ -820,3 +820,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 40 — Executable docuseries acceptance verifier
+
+Implemented:
+
+- repository verifier for PASS-row evidence references and SECTION docs;
+- contiguous build-log episode validation;
+- README scope and package-script validation;
+- public preview artifact validation;
+- explicit reporting of external gates that remain open.
+
+Acceptance evidence:
+
+- `npm test` passes 146 tests, including the verifier test;
+- `npm run preview:build` passes;
+- `npm run verify` reports `docuseries-verify: PASS`.
+
+Boundary:
+
+- this gate checks repository evidence discipline; it does not prove hardware/FPS, fresh-player usability, accessibility, security, production network deployment, or online availability.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
