@@ -652,6 +652,7 @@ Safety/evidence boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
 ## Episode 32 — Authority snapshot recovery
 
 Implemented:
@@ -669,6 +670,29 @@ Acceptance evidence:
 Boundary:
 
 - this is an in-process recovery contract, not production transport, TLS, authentication, durable database, failover, moderation, or availability proof.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 33 — Fictionalized national world structure
+
+Implemented:
+
+- capital, coastal, rural, and mountain geography roles with stable identities and distinct social/architectural cues;
+- coarse road, rail, and sea links with bounded travel, capacity, friction, and seasonal status;
+- six-month settlement that changes coastal and mountain continuity while preserving region identity;
+- public topology projection with exact institutional, financial, private-memory, and transport detail redacted;
+- hash-linked snapshots plus stale, invalid-topology, and tamper rejection.
+
+Acceptance evidence:
+
+- `npm test` passes 117 tests, including five geography tests;
+- `geography.test.mjs` proves the representative four-role fixture, seasonal settlement, public redaction, fail-closed writes, and snapshot integrity.
+
+Boundary:
+
+- all labels and links are fictionalized abstractions, not factual national mapping or real-world criminal logistics.
 
 Still open:
 
