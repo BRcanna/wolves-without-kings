@@ -1670,3 +1670,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local portable-repository contract, not cloud/off-host isolation, object lock, encryption/access control, replication transport, retention deletion, disaster recovery, or production restore/SLA acceptance.
+
+## Episode 81 — Coordinated quorum authority
+
+Implemented:
+
+- `coordinated-authority-service.mjs` composes quorum persistence with fenced authority leases;
+- mutation requests require an available current leader and exact fence token, while handoff invalidates the previous token;
+- leader unavailability and below-quorum partitions fail before or during authority mutation without advancing state;
+- combined health projection reports quorum and qualitative coordination state without exposing fencing material.
+
+Acceptance evidence:
+
+- `coordinated-authority-service.test.mjs` passes fenced admission, handoff invalidation, unavailable-leader rejection, no-quorum preservation, and health redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is an in-process composition of local quorum/fencing contracts, not cross-host transport, distributed election/membership, clock coordination, process supervision, partition recovery, or production failover acceptance.
