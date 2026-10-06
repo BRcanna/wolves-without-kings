@@ -6,7 +6,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 
 ## Current build slice
 
-- Current published scope: Sections 3–84, including isolated backup publication, digest-parity verification, reviewable retention, and explicitly authorized retention execution.
+- Current published scope: Sections 3–85, including isolated backup publication, digest-parity verification, reviewable retention, explicitly authorized retention execution, and bounded local process supervision.
 
 - Phase 0 foundation: canonical state, event ontology, world time, save/replay.
 - Revision-bound mutation: stale proposals fail before any state changes.

@@ -1725,3 +1725,20 @@ Acceptance evidence:
 Boundary:
 
 - this is an executable isolated local-store contract, not cloud/off-host custody, encryption/object lock, access control, scheduled deletion, disaster recovery, restore-time objectives, or production backup/SLA acceptance.
+
+## Episode 84 — Bounded local process supervision
+
+Implemented:
+
+- `process-supervisor.mjs` starts child processes without a shell and gates readiness on a bounded HTTP health check;
+- unexpected exits become failed lifecycle evidence, while graceful shutdown drains with a bounded force-kill fallback;
+- explicit restarts are limited by a configured budget and process configuration remains outside the public lifecycle projection.
+
+Acceptance evidence:
+
+- `process-supervisor.test.mjs` passes child startup/readiness, failed-exit observation, bounded restart, graceful drain, redaction, and malformed-configuration checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local child-process supervision contract, not an OS init system, container/cloud orchestrator, multi-host watchdog, automatic production failover, or SLA/availability acceptance.

@@ -24,6 +24,7 @@ The current repository is single-player with a tested in-process authority contr
 - quorum and fencing are now composed into a local coordinated authority service; real cross-host transport/election, clock coordination, process supervision, partition recovery, and production failover remain unimplemented.
 - a loopback authority cluster now uses independent local HTTP listeners, leader-only mutation routing, membership terms, and lease-expiry election evidence; real cross-host deployment, discovery, synchronized clocks, process supervision, partition recovery, and production failover remain unimplemented.
 - an isolated local backup store now separates source/repository roots, validates catalog/object parity, and executes only explicitly authorized retention; cloud/off-host custody, encryption, object lock, access control, scheduling, and production disaster recovery remain unimplemented.
+- a local process supervisor now health-gates child readiness, bounds graceful shutdown/force-kill, and enforces an explicit restart budget; OS/container orchestration, cloud scheduling, multi-host watchdogs, and production failover remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.

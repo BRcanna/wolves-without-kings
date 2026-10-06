@@ -89,6 +89,7 @@
 | Coordinated quorum authority requires a fenced leader, invalidates stale handoff tokens, rejects unavailable leaders, and preserves no-quorum failure | `coordinated-authority-service.test.mjs`, `coordinated-authority-service.mjs`, `SECTION_82_COORDINATED_AUTHORITY.md` | PASS |
 | Loopback authority cluster routes HTTP mutations to the elected fenced leader, rejects follower writes, records membership terms, restores membership history, and fails closed on leader transport loss below quorum | `authority-cluster.test.mjs`, `authority-cluster.mjs`, `SECTION_83_AUTHORITY_CLUSTER.md` | PASS |
 | Isolated backup store keeps source and repository roots separate, validates immutable publication, verifies catalog/object parity, and executes only explicitly authorized retention before restore | `isolated-backup-store.test.mjs`, `isolated-backup-store.mjs`, `SECTION_84_ISOLATED_BACKUP_STORE.md` | PASS |
+| Local process supervisor gates readiness on health, records failed exits, drains gracefully, bounds force-kill and explicit restart budget, and redacts process configuration | `process-supervisor.test.mjs`, `process-supervisor.mjs`, `SECTION_85_PROCESS_SUPERVISOR.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
