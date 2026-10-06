@@ -117,4 +117,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Continue the remaining character/world/content and browser/runtime audit slices; Docker image execution, actual cross-host transport and membership/election, cloud/off-host backup isolation and retention execution, failover, production service deployment, external account/MFA/consent services, CA issuance, live TLS termination/revocation, staffed moderation/appeals, hardware/load/SLA acceptance, and online underworld breadth remain explicitly deferred.
+Continue the remaining character/world/content and browser/runtime audit slices; loopback transport/election, isolated backup retention, bounded process supervision, and live TLS termination/rotation are now built and tested. Cloud/off-host backup custody, true cross-host deployment and failover, production orchestration, external account/MFA/consent services, CA issuance, TLS revocation/mTLS, staffed moderation/appeals, hardware/load/SLA acceptance, and online underworld breadth remain explicitly deferred.
