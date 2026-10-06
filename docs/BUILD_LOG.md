@@ -1998,3 +1998,20 @@ Acceptance evidence:
 Boundary:
 
 - this is an isolated local backup/retention contract for fictional online-Underworld state, not cloud/off-host custody, encryption, object lock, access control, scheduling, disaster recovery, restore-time objectives, or production backup acceptance.
+
+## Episode 100 — Coordinated online Underworld leadership
+
+Implemented:
+
+- `underworld-coordination.mjs` composes quorum persistence with a current leader lease and monotonic fencing terms;
+- only the current available leader may checkpoint, and stale terms/followers/expired leases fail closed without mutation;
+- explicit handoff and quorum-gated expiry election support bounded takeover evidence.
+
+Acceptance evidence:
+
+- `underworld-coordination.test.mjs` passes leader admission, stale-term rejection, handoff fencing, lease expiry, quorum-gated election/renewal, unavailable-target rejection, and expired-write rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is deterministic in-process coordination over file-backed fictional Underworld journals, not cross-host transport/membership, synchronized clocks, process supervision, encrypted custody, matchmaking, anti-cheat, staffed moderation, SLA availability, or production failover acceptance.

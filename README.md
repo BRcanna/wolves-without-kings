@@ -6,7 +6,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 
 ## Current build slice
 
-- Current published head: Sections 3–100, including isolated source/repository backup custody and explicitly authorized retention execution for the online Underworld.
+- Current published head: Sections 3–101, including isolated source/repository backup custody, explicitly authorized retention execution, and fenced quorum-backed Underworld leadership.
 
 - Current published scope: Sections 3–99, including isolated backup publication, digest-parity verification, reviewable retention, explicitly authorized retention execution, bounded local process supervision, live TLS termination/rotation evidence, consent/MFA access admission, independent-review appeal mechanics, local escalation response tracking, structural preview accessibility evidence, GitHub CI gate evidence, durable local online-shard checkpoints, a bearer-authenticated local shard HTTP boundary, identity-bound reconnect continuity, mirrored local shard checkpoint recovery, quorum-backed online-shard checkpoint recovery, parity-checked online-shard backup/restore, immutable online-shard backup-repository verification, and pinned/future-aware online-shard retention planning.
 
@@ -74,6 +74,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 - Online-shard backup: a complete parity-matched journal set is captured in a digest-bound envelope and restored only to matching, explicitly protected destinations.
 - Online-shard backup repository: validated envelopes publish under safe immutable IDs, replay idempotently, report tampering, and restore through the same digest/parity path.
 - Online-shard retention: a digest-backed local catalog records backup history and produces a non-destructive plan that retains pinned and future-dated objects.
+- Online-shard coordination: current leader leases and fencing terms gate checkpoints, stale leaders fail closed, and quorum-gated election replaces expired/unavailable leadership.
 - Availability probe: deterministic synthetic workloads report bounded concurrency, p95 latency, overload, failures, and explicit budget violations without claiming hardware or SLA acceptance.
 - Authority coordination: local leases and fencing terms control handoff and reject stale leaders without claiming distributed consensus or production failover.
 - Portable backup repository: validated backup envelopes publish under safe immutable object IDs, verify before restore, and reject digest conflicts.

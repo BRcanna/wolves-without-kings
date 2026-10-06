@@ -37,6 +37,7 @@ The current repository is single-player with a tested in-process authority contr
 - validated Underworld backups now publish to a safe local immutable object repository with idempotent replay, verification, and restore; cloud/off-host isolation, object lock, encryption, access control, retention deletion, disaster recovery, and production backup acceptance remain unimplemented.
 - the local Underworld backup catalog now records digests and produces pinned/future-aware retention plans without deletion; scheduling, destructive authorization, cloud/off-host custody, encryption, access control, disaster recovery, and production backup acceptance remain unimplemented.
 - an isolated local Underworld backup store now separates source/repository roots, verifies catalog/object parity, and requires explicit approval before eligible retention deletion; cloud/off-host custody, encryption, object lock, access control, scheduling, disaster recovery, and production acceptance remain unimplemented.
+- a bounded local Underworld coordination layer now gates checkpoints on a lease-bearing fenced leader and quorum, with stale-term rejection and expiry takeover; cross-host membership, synchronized clocks, process supervision, and production failover remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.
