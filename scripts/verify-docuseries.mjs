@@ -18,10 +18,11 @@ const packageJson = JSON.parse(readRequired("package.json"));
 const readme = readRequired("README.md");
 const acceptance = readRequired("docs/ACCEPTANCE.md");
 const buildLog = readRequired("docs/BUILD_LOG.md");
+const scenarioLedger = readRequired("docs/SCENARIO_ACCEPTANCE.md");
 const preview = JSON.parse(readRequired("web/scenario.json"));
 
-if (!readme.includes("Sections 3–47")) {
-  fail("README does not declare the current Sections 3–47 build scope");
+if (!readme.includes("Sections 3–48")) {
+  fail("README does not declare the current Sections 3–48 build scope");
 }
 
 for (const scriptName of ["test", "preview:build", "verify"]) {
@@ -43,6 +44,15 @@ if (matrixRows.length === 0) fail("ACCEPTANCE.md contains no status rows");
 const passRows = matrixRows.filter(([, , , status]) => status === "PASS");
 const openRows = matrixRows.filter(([, , , status]) => status === "OPEN");
 if (passRows.length < 40) fail(`acceptance matrix has only ${passRows.length} PASS rows`);
+
+const scenarioRows = [...scenarioLedger.matchAll(/^\| (Scenario Trace \d+[^|]*) \| `([^`]+)` \| ([^|]+) \| PASS \|$/gm)];
+if (scenarioRows.length !== 10) fail(`scenario acceptance ledger has ${scenarioRows.length} PASS rows; expected 10`);
+for (const [, , source, evidence] of scenarioRows) {
+  if (!existsSync(resolve(root, source))) fail(`scenario ledger references missing source ${source}`);
+  for (const [, testFile] of evidence.matchAll(/`([^`]+\.test\.mjs)`/g)) {
+    if (!existsSync(resolve(root, "test", testFile))) fail(`scenario ledger references missing test ${testFile}`);
+  }
+}
 
 const evidenceReferences = passRows.flatMap(([, , evidence]) =>
   [...evidence.matchAll(/`([^`]+)`/g)].map((match) => match[1]),
@@ -71,5 +81,6 @@ console.log("docuseries-verify: PASS");
 console.log(`acceptance-pass-rows=${passRows.length}`);
 console.log(`acceptance-open-rows=${openRows.length}`);
 console.log(`build-log-episodes=0..${episodeNumbers.at(-1)}`);
+console.log(`scenario-traces=${scenarioRows.length}`);
 console.log(`preview-scope=${preview.projection.scope}`);
 console.log("external-gates=recorded-open");

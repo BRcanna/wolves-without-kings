@@ -965,3 +965,26 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 46 — Scenario trace acceptance ledger
+
+Implemented:
+
+- source-document mapping for all ten supplied scenario traces;
+- executable subsystem-test references for each trace;
+- machine-checked source/test existence and test-body validation;
+- explicit fiction, safety, and evidence boundaries for scenario claims.
+
+Acceptance evidence:
+
+- `npm test` passes 167 tests, including the scenario coverage test;
+- `scenario-coverage.test.mjs` proves all ten trace rows resolve to source documents and executable tests;
+- `npm run verify` reports `scenario-traces=10` and `docuseries-verify: PASS`.
+
+Boundary:
+
+- the ledger binds evidence but does not claim finished authored missions, dialogue, animation, cultural review, or production online sessions.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
