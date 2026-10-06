@@ -1201,3 +1201,26 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 56 — End-to-end vertical-slice demo
+
+Implemented:
+
+- `npm run demo` now settles the year-one vertical slice;
+- it admits authored content and scenario state, dispatches a delegate branch, and prints public qualitative output;
+- the integrated runtime bundle is restored and compared for equality;
+- the demo is executable in a clean local process and covered by a test.
+
+Acceptance evidence:
+
+- `npm test` passes 183 tests, including `demo.test.mjs`;
+- `npm run demo` produces the expected public JSON result;
+- `npm run verify` continues to pass with all external gates recorded separately.
+
+Boundary:
+
+- this is a deterministic local demonstration, not a native game executable, production server, authored dialogue/audio experience, accessibility study, or online session.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

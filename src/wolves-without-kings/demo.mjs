@@ -1,38 +1,41 @@
-import {
-  advanceTime,
-  changeDistrictCondition,
-  createInitialWorld,
-  inspect,
-  resolveSocialContact,
-  snapshot,
-  restore,
-} from "./engine.mjs";
-import { createDistrictFixture, findTraversalPath } from "./district.mjs";
+import { admitContentPack, createContentRegistry, projectContent } from "./content.mjs";
+import { buildVerticalContentPack } from "./content-pack.mjs";
+import { projectWorld } from "./projection.mjs";
+import { admitScenarioPack, buildVerticalScenarioPack, createScenarioRegistry, projectScenario, resolveScenarioChoice } from "./scenario-pack.mjs";
+import { applyVerticalScenarioChoice } from "./scenario-runtime.mjs";
+import { restoreRuntimeBundle, snapshotRuntimeBundle } from "./runtime-bundle.mjs";
+import { runVerticalHistory } from "./vertical-slice.mjs";
 
-let world = createInitialWorld();
-const district = createDistrictFixture();
-world = changeDistrictCondition(world, {
-  expectedRevision: world.revision,
-  condition: "watchful",
-  actorId: "npc:district-steward",
+const { world: settledWorld } = runVerticalHistory("relationship");
+const contentPack = buildVerticalContentPack();
+let contentState = createContentRegistry({ packId: contentPack.packId, simulationDate: settledWorld.date });
+contentState = admitContentPack(contentState, { expectedRevision: contentState.revision, ...contentPack });
+const scenarioPack = buildVerticalScenarioPack();
+let scenarioState = createScenarioRegistry({
+  scenarioPackId: scenarioPack.scenarioPackId,
+  contentPackId: scenarioPack.contentPackId,
+  simulationDate: settledWorld.date,
+  knownLocationIds: Object.keys(contentState.locations),
 });
-world = resolveSocialContact(world, {
-  expectedRevision: world.revision,
-  actorId: "character:player",
-  subjectId: "npc:broker-01",
-  locationId: "loc:night-market",
-  outcome: "welcomed",
+scenarioState = admitScenarioPack(scenarioState, { expectedRevision: scenarioState.revision, scenes: scenarioPack.scenes });
+const world = applyVerticalScenarioChoice(settledWorld, { expectedRevision: settledWorld.revision, choiceId: "choice:delegate-check" });
+scenarioState = resolveScenarioChoice(scenarioState, {
+  expectedRevision: scenarioState.revision,
+  sceneId: "scene:market-lights",
+  choiceId: "choice:delegate-check",
 });
-world = advanceTime(world, { expectedRevision: world.revision, days: 30 });
+const bundle = snapshotRuntimeBundle({ world, contentState, scenarioState });
+const restored = restoreRuntimeBundle(bundle);
 
-const restored = restore(snapshot(world));
 console.log(JSON.stringify({
-  state: inspect(world),
-  district: {
-    districtId: district.districtId,
-    locations: district.locations.length,
-    pathToRooftop: findTraversalPath(district, { from: "loc:market-street", to: "loc:lantern-rooftop", mode: "climb" }),
+  demoVersion: 2,
+  world: {
+    date: world.date,
+    revision: world.revision,
+    lastEventType: world.events.at(-1).eventType,
   },
-  restoredMatches: JSON.stringify(restored) === JSON.stringify(world),
-  events: world.events.map(({ eventId, eventType, worldRevision, hash }) => ({ eventId, eventType, worldRevision, hash })),
+  content: projectContent(contentState),
+  scenario: projectScenario(scenarioState),
+  publicProjectionScope: projectWorld(world, { scope: "public" }).scope,
+  runtimeBundleRestored: JSON.stringify(restored) === JSON.stringify({ world, contentState, scenarioState }),
 }, null, 2));
