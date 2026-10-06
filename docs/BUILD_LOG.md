@@ -1494,3 +1494,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a same-process, same-host mirrored journal contract, not cross-host replication, quorum consensus, network partition handling, backup retention, encrypted storage, orchestration, failover timing, or production availability acceptance.
+
+## Episode 71 — Authority backup and restore envelope
+
+Implemented:
+
+- `authority-backup.mjs` exports parity-checked primary and replica journal records into a versioned, SHA-256-digested backup envelope;
+- restore validates the manifest digest, both journal chains, mirrored checkpoint parity, and the latest authority snapshot before writing destinations;
+- existing restore destinations are protected unless `overwrite: true` is explicit;
+- temporary-file rename is used where permitted, with a fsynced direct-write fallback for restricted Windows sandbox filesystems.
+
+Acceptance evidence:
+
+- `authority-backup.test.mjs` passes mirrored backup round-trip, restored service equality, overwrite protection, and tampered-manifest rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local backup envelope, not scheduled retention, off-host replication, encrypted backup storage, cloud/object-lock policy, disaster recovery, restore-time objective, or production backup acceptance.

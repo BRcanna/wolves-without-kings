@@ -12,6 +12,7 @@ The current repository is single-player with a tested in-process authority contr
 - a non-root Docker deployment artifact now declares host binding and a healthcheck while requiring runtime-injected secrets; image build, registry, orchestration, and rollout remain environment-gated.
 - the operational launcher can persist authority checkpoints to a local fsynced journal and the container mounts `/data`; replication, backup, encryption at rest, and failover remain unimplemented.
 - a same-host mirrored checkpoint service can repair a missing/stale copy and reject divergence; cross-host replication, quorum, partitions, backups, and failover timing remain unimplemented.
+- a local backup envelope can validate and restore mirrored journal records with overwrite protection; retention, off-host storage, encryption, disaster recovery, and restore objectives remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.
