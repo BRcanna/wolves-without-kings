@@ -55,6 +55,13 @@ function appendUiCard(container, titleText, bodyText) {
   container.append(card);
 }
 
+function renderScenario(scenario) {
+  scenario.scenes.forEach((scene) => {
+    const choices = scene.choices.map((choice) => choice.label).join(" · ");
+    appendUiCard(document.querySelector("#scenario-list"), scene.title, `${scene.summary} Options: ${choices}.`);
+  });
+}
+
 function renderUi(ui) {
   document.querySelector("#calendar-cue").textContent = `${ui.calendar.date} · ${ui.calendar.era} · ${ui.calendar.lifeCourseCue}`;
   ui.mapKnowledge.forEach((place) => appendUiCard(document.querySelector("#map-list"), place.label, `${place.familiarityCue}; known features: ${place.discoveredFeatures.join(", ")}.`));
@@ -78,6 +85,7 @@ async function render() {
     const projection = payload.projection;
     const summary = payload.summary;
     renderUi(payload.ui);
+    renderScenario(payload.scenario);
     const metrics = document.querySelector("#summary");
     appendMetric(metrics, "world date", summary.date);
     appendMetric(metrics, "businesses", summary.businessCount);

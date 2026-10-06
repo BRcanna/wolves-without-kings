@@ -41,6 +41,64 @@
       "unactivated era variants"
     ]
   },
+  "scenario": {
+    "schemaVersion": 1,
+    "scenarioPackId": "pack:scenario:market-lights",
+    "contentPackId": "pack:sofia-south-vertical",
+    "activeSceneId": "scene:market-lights",
+    "scenes": [
+      {
+        "id": "scene:market-lights",
+        "title": "When the market remembers",
+        "locationId": "loc:night-market",
+        "summary": "A venue carries a changed history into the next evening. The district offers more than one coherent response.",
+        "choices": [
+          {
+            "id": "choice:listen",
+            "label": "Listen before deciding",
+            "branch": "observe",
+            "publicCue": "learn from the surrounding history",
+            "nextSceneId": "scene:market-followup"
+          },
+          {
+            "id": "choice:meet-owner",
+            "label": "Meet the owner",
+            "branch": "meet",
+            "publicCue": "let a relationship carry the next step",
+            "nextSceneId": "scene:market-followup"
+          },
+          {
+            "id": "choice:delegate-check",
+            "label": "Delegate a bounded check",
+            "branch": "delegate",
+            "publicCue": "give the organization a limited responsibility",
+            "nextSceneId": "scene:market-followup"
+          }
+        ]
+      },
+      {
+        "id": "scene:market-followup",
+        "title": "What the history changed",
+        "locationId": "loc:market-street",
+        "summary": "The next state is shaped by the choice and by the district's accumulated relationships, pressure, and time.",
+        "choices": [
+          {
+            "id": "choice:let-time-settle",
+            "label": "Let time reveal more",
+            "branch": "defer",
+            "publicCue": "allow the world to settle before choosing again",
+            "nextSceneId": null
+          }
+        ]
+      }
+    ],
+    "resolutions": [],
+    "omittedFields": [
+      "authoring metadata",
+      "private prerequisites",
+      "event hashes"
+    ]
+  },
   "projection": {
     "projectionVersion": 1,
     "scope": "public",

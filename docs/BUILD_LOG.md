@@ -1082,3 +1082,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 51 — Branchable authored scenario content
+
+Implemented:
+
+- the admitted district package now carries a persistent scenario registry;
+- the vertical slice opens with observe, meet, and delegate branches that converge on a shared consequence scene;
+- scene admission and choice resolution are revision-bound, hash-linked, snapshot-restorable, and publicly projected;
+- instructional/evasion language is rejected at authoring time;
+- the browser preview renders the authored opening from public scenario data.
+
+Acceptance evidence:
+
+- `npm test` passes 177 tests, including two scenario-pack tests;
+- `scenario-pack.test.mjs` proves branch resolution, restore equality, topology rejection, stale rejection, and public omission fields;
+- `npm run preview:build` and `npm run verify` pass.
+
+Boundary:
+
+- this is a fictional authored scenario graph, not real-world criminal instruction, authored dialogue/audio, animation, cultural review, or a production mission runtime.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

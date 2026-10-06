@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { admitContentPack, createContentRegistry, projectContent } from "../src/wolves-without-kings/content.mjs";
 import { buildVerticalContentPack } from "../src/wolves-without-kings/content-pack.mjs";
+import { admitScenarioPack, buildVerticalScenarioPack, createScenarioRegistry, projectScenario } from "../src/wolves-without-kings/scenario-pack.mjs";
 import { projectWorld } from "../src/wolves-without-kings/projection.mjs";
 import { buildUiProjection } from "../src/wolves-without-kings/ui-projection.mjs";
 import { runVerticalHistory } from "../src/wolves-without-kings/vertical-slice.mjs";
@@ -27,11 +28,20 @@ const organization = world.organizations["org:lantern-circle"];
 const contentPack = buildVerticalContentPack();
 let contentState = createContentRegistry({ packId: contentPack.packId, simulationDate: summary.date });
 contentState = admitContentPack(contentState, { expectedRevision: contentState.revision, ...contentPack });
+const scenarioPack = buildVerticalScenarioPack();
+let scenarioState = createScenarioRegistry({
+  scenarioPackId: scenarioPack.scenarioPackId,
+  contentPackId: scenarioPack.contentPackId,
+  simulationDate: summary.date,
+  knownLocationIds: contentPack.locations.map((location) => location.id),
+});
+scenarioState = admitScenarioPack(scenarioState, { expectedRevision: scenarioState.revision, scenes: scenarioPack.scenes });
 const payload = {
   previewVersion: 1,
   generatedAt: world.date,
   summary,
   content: projectContent(contentState),
+  scenario: projectScenario(scenarioState),
   projection,
   ui: buildUiProjection({
     calendar: {
