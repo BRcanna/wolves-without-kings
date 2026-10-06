@@ -1742,3 +1742,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local child-process supervision contract, not an OS init system, container/cloud orchestrator, multi-host watchdog, automatic production failover, or SLA/availability acceptance.
+
+## Episode 85 — Live TLS termination and rotation
+
+Implemented:
+
+- `live-tls-runtime.mjs` resolves active TLS material by validity tick and server name, then drives the operational HTTPS listener with bearer admission;
+- the live server rotates its secure context to an overlapping registered material without changing authoritative service state;
+- expiry, not-yet-valid, and name-mismatched material fails before construction or rotation, while projections omit PEM and runtime secrets.
+
+Acceptance evidence:
+
+- `live-tls-runtime.test.mjs` starts a real local HTTPS listener with test-only localhost certificates, verifies fingerprint change after rotation, serves health and authenticated mutation traffic, checks redaction, and proves validity/name rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is local live TLS termination and rotation evidence, not CA/ACME issuance, mTLS identity, revocation, hardware-backed custody, certificate distribution, or production security acceptance. The committed key material is test-only and must never be deployed.
