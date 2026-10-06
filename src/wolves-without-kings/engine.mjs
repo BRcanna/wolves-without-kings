@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 
+import { createDistrictFixture } from "./district.mjs";
+
 export const ENGINE_SCHEMA_VERSION = 1;
 export const CHARACTER_SKILLS = ["driving", "fighting", "lock_work", "intimidation", "negotiation"];
 export const NPC_NEEDS = ["sleep", "food", "family", "social", "medical", "money", "safety"];
@@ -232,6 +234,7 @@ export function createInitialWorld({ worldId = "wwk-demo", startDate = "1998-01-
       label: "South Sofia (fictionalized)",
       condition: "stable",
     },
+    districtTopology: createDistrictFixture(),
     relationships: {},
     characters: {},
     npcLife: {},

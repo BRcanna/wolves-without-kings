@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { admitContentPack, createContentRegistry, projectContent } from "../src/wolves-without-kings/content.mjs";
-import { buildVerticalContentPack } from "../src/wolves-without-kings/content-pack.mjs";
+import { assertVerticalContentMatchesWorld, buildVerticalContentPack } from "../src/wolves-without-kings/content-pack.mjs";
 import { admitScenarioPack, buildVerticalScenarioPack, createScenarioRegistry, projectScenario } from "../src/wolves-without-kings/scenario-pack.mjs";
 import { projectWorld } from "../src/wolves-without-kings/projection.mjs";
 import { buildUiProjection } from "../src/wolves-without-kings/ui-projection.mjs";
@@ -26,6 +26,7 @@ const playerContacts = Object.entries(world.relationships)
   });
 const organization = world.organizations["org:lantern-circle"];
 const contentPack = buildVerticalContentPack();
+assertVerticalContentMatchesWorld(contentPack, world);
 let contentState = createContentRegistry({ packId: contentPack.packId, simulationDate: summary.date });
 contentState = admitContentPack(contentState, { expectedRevision: contentState.revision, ...contentPack });
 const scenarioPack = buildVerticalScenarioPack();

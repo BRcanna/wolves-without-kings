@@ -1106,3 +1106,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 52 — Content/runtime alignment guard
+
+Implemented:
+
+- authored locations and routes are checked against canonical topology stored in authoritative engine state;
+- authored residents, businesses, and organizations are checked against authoritative world identity;
+- preview generation fails closed on package/runtime drift;
+- alignment evidence reports stable vertical-slice counts;
+- the topology survives engine snapshot/replay while remaining outside the public projection.
+
+Acceptance evidence:
+
+- `npm test` passes 178 tests, including two content-pack tests;
+- `content-pack.test.mjs` proves identity alignment and negative drift rejection;
+- `npm run preview:build` and `npm run verify` pass with the guard active.
+
+Boundary:
+
+- this is a local identity/topology consistency guard, not imported production assets, visual reachability, animation, authored dialogue/audio, or cultural review.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

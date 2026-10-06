@@ -79,3 +79,22 @@ export function buildVerticalContentPack() {
     },
   };
 }
+
+export function assertVerticalContentMatchesWorld(pack, world) {
+  if (!pack || pack.packId !== "pack:sofia-south-vertical") throw new Error("unexpected vertical content package");
+  if (!world || !world.district || !world.districtTopology || !world.npcLife || !world.businesses || !world.organizations) throw new Error("world is missing vertical-slice content surfaces");
+  const districtLocationIds = new Set(world.districtTopology.locations.map((location) => location.id));
+  const districtRouteIds = new Set(world.districtTopology.routes.map((route) => route.id));
+  for (const location of pack.locations) if (!districtLocationIds.has(location.id)) throw new Error(`content location is not in the runtime district: ${location.id}`);
+  for (const route of pack.routes) if (!districtRouteIds.has(route.id)) throw new Error(`content route is not in the runtime district: ${route.id}`);
+  for (const npc of pack.npcs) if (!world.npcLife[npc.id]) throw new Error(`content NPC is not in the runtime world: ${npc.id}`);
+  for (const business of pack.businesses) if (!world.businesses[business.id]) throw new Error(`content business is not in the runtime world: ${business.id}`);
+  for (const organization of pack.organizations) if (!world.organizations[organization.id]) throw new Error(`content organization is not in the runtime world: ${organization.id}`);
+  return {
+    locations: pack.locations.length,
+    routes: pack.routes.length,
+    npcs: pack.npcs.length,
+    businesses: pack.businesses.length,
+    organizations: pack.organizations.length,
+  };
+}
