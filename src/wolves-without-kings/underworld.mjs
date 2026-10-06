@@ -259,6 +259,34 @@ export function leavePlayerSession(
   });
 }
 
+export function reconnectPlayerSession(
+  state,
+  { expectedRevision, sessionId, characterId, regionId },
+) {
+  assertRevision(state, expectedRevision);
+  assertNonEmpty(sessionId, "sessionId");
+  assertNonEmpty(characterId, "characterId");
+  assertNonEmpty(regionId, "regionId");
+  const session = state.playerSessions[sessionId];
+  if (!session || session.status !== "offline") throw new UnderworldValidationError(`session is not reconnectable: ${sessionId}`);
+  if (session.characterId !== characterId) throw new UnderworldValidationError("session and character binding does not match");
+  if (session.regionId !== regionId) throw new UnderworldValidationError("reconnect region does not match session history");
+  const character = state.playerCharacters[characterId];
+  if (!character || character.status !== "offline" || character.sessionId !== sessionId) throw new UnderworldValidationError("character and session history is not reconnectable");
+  const next = clone(state);
+  next.playerSessions[sessionId].status = "active";
+  next.playerSessions[sessionId].reconnectCount = (next.playerSessions[sessionId].reconnectCount ?? 0) + 1;
+  next.playerSessions[sessionId].lastReconnectWeek = state.serverWeek;
+  next.playerSessions[sessionId].reason = null;
+  next.playerCharacters[characterId].status = "active";
+  return appendEvent(next, {
+    eventType: "underworld.player_reconnected",
+    actorId: characterId,
+    subjectIds: [sessionId, characterId, regionId],
+    payload: { sessionId, characterId, regionId, propertySurvival: "unchanged" },
+  });
+}
+
 export function applyPlayerMarketInfluence(
   state,
   { expectedRevision, sessionId, marketId, pressureDelta },

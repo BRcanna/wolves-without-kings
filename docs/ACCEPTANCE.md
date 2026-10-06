@@ -98,6 +98,7 @@
 | GitHub Actions runs the full tests, preview build, and docuseries verifier with read-only permissions and no secrets | `ci-contract.test.mjs`, `.github/workflows/ci.yml`, `SECTION_91_GITHUB_CI.md` | PASS |
 | Online underworld shard checkpoints append with hash chaining, fsync, idempotent retry, crash-tail recovery, and tamper rejection | `underworld-journal.test.mjs`, `underworld-journal.mjs`, `SECTION_92_UNDERWORLD_JOURNAL.md` | PASS |
 | Local online-underworld HTTP boundary exposes public health/projection, bearer-protected revision-bound mutations, stale rejection, bounded errors, and private-state redaction | `underworld-http-service.test.mjs`, `underworld-http-service.mjs`, `SECTION_93_UNDERWORLD_HTTP_SERVICE.md` | PASS |
+| Online-underworld reconnect restores the bound offline session/character, preserves property ownership, rejects mismatches, and exposes a revision-bound HTTP route | `underworld-reconnect.test.mjs`, `underworld.mjs`, `underworld-http-service.test.mjs`, `SECTION_94_UNDERWORLD_RECONNECT.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

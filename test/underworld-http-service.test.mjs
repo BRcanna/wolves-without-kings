@@ -76,6 +76,11 @@ test("underworld HTTP adapter commits revision-bound sessions and market influen
     const stale = await jsonRequest(baseUrl, "/sessions/leave", { method: "POST", headers, body: JSON.stringify({ expectedRevision: joined.body.revision, sessionId: "session:one" }) });
     assert.equal(stale.response.status, 409);
     assert.equal(stale.body.error, "stale_underworld_revision");
+    const left = await jsonRequest(baseUrl, "/sessions/leave", { method: "POST", headers, body: JSON.stringify({ expectedRevision: influenced.body.revision, sessionId: "session:one" }) });
+    assert.equal(left.response.status, 200);
+    const reconnected = await jsonRequest(baseUrl, "/sessions/reconnect", { method: "POST", headers, body: JSON.stringify({ expectedRevision: left.body.revision, sessionId: "session:one", characterId: "character:one", regionId: "region:coast" }) });
+    assert.equal(reconnected.response.status, 200);
+    assert.equal(reconnected.body.projection.activePlayerCount, 1);
   } finally {
     await close(server);
   }

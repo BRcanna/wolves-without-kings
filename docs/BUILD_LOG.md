@@ -1878,3 +1878,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local HTTP shard boundary, not production networking, TLS/CA operations, cross-host deployment, matchmaking, anti-cheat, moderation, rate/availability acceptance, encrypted persistence, or full persistent online Underworld breadth.
+
+## Episode 93 — Identity-bound online Underworld reconnect
+
+Implemented:
+
+- `reconnectPlayerSession` restores an offline session only for its original character and region, increments reconnect evidence, and preserves property ownership;
+- active, mismatched, cross-region, and non-reconnectable histories fail closed without mutation;
+- the local shard HTTP adapter exposes `/sessions/reconnect` behind the existing bearer and revision boundary.
+
+Acceptance evidence:
+
+- `underworld-reconnect.test.mjs` and the HTTP adapter tests pass identity binding, property survival, event history, stale/mismatch rejection, and no-mutation checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is local reconnect continuity, not matchmaking, cross-host session migration, anti-cheat, production failover, account recovery, or full persistent online Underworld breadth.

@@ -5,6 +5,7 @@ import {
   joinPlayerSession,
   leavePlayerSession,
   projectUnderworld,
+  reconnectPlayerSession,
   registerMarket,
   registerNpcBaseline,
   registerOrganization,
@@ -30,6 +31,7 @@ function route(pathname, method) {
   if (method === "GET" && pathname === "/projection") return "projection";
   if (method === "POST" && pathname === "/sessions/join") return "join";
   if (method === "POST" && pathname === "/sessions/leave") return "leave";
+  if (method === "POST" && pathname === "/sessions/reconnect") return "reconnect";
   if (method === "POST" && pathname === "/markets/influence") return "influence";
   if (method === "POST" && pathname === "/properties/claim") return "claim";
   if (method === "POST" && pathname === "/weeks/settle") return "settle";
@@ -54,6 +56,7 @@ export function createUnderworldHttpService({ state = createUnderworldState() } 
         const command = { ...body };
         if (selectedRoute === "join") service.state = joinPlayerSession(service.state, command);
         if (selectedRoute === "leave") service.state = leavePlayerSession(service.state, command);
+        if (selectedRoute === "reconnect") service.state = reconnectPlayerSession(service.state, command);
         if (selectedRoute === "influence") service.state = applyPlayerMarketInfluence(service.state, command);
         if (selectedRoute === "claim") service.state = claimProperty(service.state, command);
         if (selectedRoute === "settle") service.state = settleUnderworldWeek(service.state, command);
