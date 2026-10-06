@@ -102,6 +102,7 @@
 | Online-underworld checkpoints mirror to two local journals, repair missing/stale copies, and reject divergent history or invalid configuration | `replicated-underworld-store.test.mjs`, `replicated-underworld-store.mjs`, `SECTION_95_REPLICATED_UNDERWORLD.md` | PASS |
 | Online-underworld quorum checkpoints commit through a modeled partition, fail closed below quorum, repair stale nodes, and reject divergent history | `quorum-underworld-store.test.mjs`, `quorum-underworld-store.mjs`, `SECTION_96_QUORUM_UNDERWORLD.md` | PASS |
 | Online-underworld backup/restore validates complete journal parity, digest metadata, matching destinations, and overwrite protection | `underworld-backup.test.mjs`, `underworld-backup.mjs`, `SECTION_97_UNDERWORLD_BACKUP.md` | PASS |
+| Online-underworld backup repository publishes immutable validated objects, supports idempotence, detects tampering, and restores through envelope validation | `underworld-backup-repository.test.mjs`, `underworld-backup-repository.mjs`, `SECTION_98_UNDERWORLD_BACKUP_REPOSITORY.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

@@ -1947,3 +1947,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local backup envelope for fictional online-shard state, not encrypted custody, off-host/cloud storage, object lock, scheduled retention, disaster recovery objectives, access control, or production backup acceptance.
+
+## Episode 97 — Portable online Underworld backup repository
+
+Implemented:
+
+- `underworld-backup-repository.mjs` publishes validated Underworld backup envelopes under safe portable object IDs;
+- same-digest publication is idempotent, conflicting objects are rejected, and repository verification reports tampered objects as invalid;
+- restore reads through the digest/parity validation path and preserves explicit destination protection.
+
+Acceptance evidence:
+
+- `underworld-backup-repository.test.mjs` passes idempotent publication, immutable conflict rejection, safe-ID validation, repository verification, tamper detection, and restore;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local portable repository for fictional online-Underworld backups, not cloud/off-host custody, object lock, encryption at rest, access control, replication transport, retention deletion, disaster recovery, or production restore/SLA acceptance.
