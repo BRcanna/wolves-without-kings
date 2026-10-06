@@ -1331,3 +1331,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local identity-binding contract, not credentials, TLS, account authentication, authorization policy, expiry, replay protection, moderation operations, durable sessions, or production security acceptance.
+
+## Episode 62 — Integrated regional runtime trace
+
+Implemented:
+
+- a four-region fictional regional runtime composes geography, market ecology, logistics, and Underworld state;
+- a 180-day trace carries a seasonal coastal shock, bounded transit, offline organization work, a contested property, a physical session, and player disconnect;
+- public projection and nested save/restore preserve regional continuity without exposing private transport, work, session, or event internals;
+- stale coordinator commands and tampered nested histories fail closed.
+
+Acceptance evidence:
+
+- `npm test` includes two regional-runtime tests for the seasonal trace, public redaction, restart equality, stale rejection, and tamper failure;
+- `npm run verify` checks the new evidence and contiguous build history.
+
+Boundary:
+
+- this is an in-process regional composition, not production content/assets, factual geography, MMO population load, authentication, matchmaking, anti-cheat, moderation, failover, availability, or the deferred full online underworld breadth.
