@@ -1602,3 +1602,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local identity-claim contract, not an external account provider, password/MFA system, hardware-backed custody, consent/age verification, privacy/compliance service, or production identity acceptance.
+
+## Episode 77 — Moderation operations queue
+
+Implemented:
+
+- `moderation-operations.mjs` adds content-digest-based review cases, active reviewer registration, expiring claim leases, and explicit allow/deny/escalate outcomes;
+- expired claims return to the pending queue and suspended reviewers cannot claim new work;
+- moderation changes and decisions are hash-chained and restorable, while public projection exposes only bounded queue counts and active reviewer count.
+
+Acceptance evidence:
+
+- `moderation-operations.test.mjs` passes queue/claim/decision flow, lease reclamation, reviewer authorization, suspension, snapshot restore, tamper rejection, and public redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local moderation workflow contract, not staffed human review, policy/appeals, escalation coverage, response objectives, legal/compliance operations, abuse prevention, or production moderation acceptance.

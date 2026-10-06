@@ -17,6 +17,7 @@ The current repository is single-player with a tested in-process authority contr
 - a local transport keyring can rotate, expire, revoke, and restore metadata for runtime-injected secrets while binding admission to the session key; account identity, hardware/secret custody, certificate operations, TLS rotation, and production security acceptance remain unimplemented.
 - a local TLS-material registry validates private-key syntax, tracks certificate digests/validity/name coverage, supports overlap rotation and retirement, and requires runtime reinjection on restore; CA issuance, live TLS termination, revocation infrastructure, and production security acceptance remain unimplemented.
 - a local identity registry now binds signed, time-bounded claims to accounts, sessions, clients, and characters with suspension/revocation checks; external account providers, MFA/consent services, secret custody, privacy/compliance, and production identity acceptance remain unimplemented.
+- a local moderation queue now provides expiring reviewer leases, explicit allow/deny/escalate decisions, audit restoration, and redacted counts; staffed human review, policy/appeals, escalation coverage, response objectives, and production moderation acceptance remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.
