@@ -1367,3 +1367,21 @@ Acceptance evidence:
 Boundary:
 
 - this is fictional local content admission, not factual geography, imported production assets, visual/audio reachability, dialogue/native review, cultural acceptance, or a full online content service.
+
+## Episode 64 — Durable regional runtime journal
+
+Implemented:
+
+- regional runtime snapshots now append to a local newline-delimited journal with sequence numbers, checkpoint identities, runtime metadata, and a SHA-256 hash chain;
+- checkpoint writes flush through `fsync` and retry idempotently when the same checkpoint identity names the same snapshot;
+- restore validates the journal chain and every nested geography, market, logistics, Underworld, and content snapshot before returning state;
+- incomplete final writes are reported as recoverable crash tails, while complete-record tampering and conflicting checkpoint reuse fail closed.
+
+Acceptance evidence:
+
+- `runtime-journal.test.mjs` passes hash chaining, latest-state restore, idempotent retry, conflicting reuse rejection, incomplete-tail recovery, and tamper rejection;
+- `npm run verify` checks the acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local append-only persistence contract, not a production database, replication/failover system, encryption-at-rest implementation, multi-process locking protocol, availability/load proof, or online service.

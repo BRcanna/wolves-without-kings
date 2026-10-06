@@ -69,6 +69,7 @@
 | Local scenario sessions derive actor identity server-side and reject unknown or mismatched client identity before mutation | `scenario-service.test.mjs`, `preview-server.test.mjs`, `SECTION_62_SESSION_BOUNDARY.md` | PASS |
 | Integrated regional runtime carries a seasonal multi-region trace across geography, markets, logistics, Underworld conflict, disconnect, public projection, and nested restart | `regional-runtime.test.mjs`, `regional-runtime.mjs`, `SECTION_63_REGIONAL_RUNTIME.md` | PASS |
 | Regional authored content admits four fictionalized regions, ordinary-life residents, businesses, routes, schedules, era variants, and runtime organization bindings | `regional-content-pack.test.mjs`, `regional-content-pack.mjs`, `SECTION_64_REGIONAL_CONTENT.md` | PASS |
+| Durable regional runtime checkpoints append with hash chaining, idempotent retry, incomplete-tail recovery, nested restore, and fail-closed tamper validation | `runtime-journal.test.mjs`, `runtime-journal.mjs`, `SECTION_65_RUNTIME_JOURNAL.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
