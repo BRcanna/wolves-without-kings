@@ -9,6 +9,7 @@
     "demo": "node src/wolves-without-kings/demo.mjs",
     "serve:authority": "node scripts/serve-authority.mjs",
     "serve:secure-authority": "node scripts/serve-secure-authority.mjs",
+    "serve:operational-authority": "node scripts/serve-operational-authority.mjs",
     "serve:preview": "node scripts/serve-preview.mjs",
     "preview:build": "node scripts/build-preview.mjs",
     "verify": "node scripts/verify-docuseries.mjs",

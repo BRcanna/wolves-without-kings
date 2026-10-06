@@ -1420,3 +1420,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local service security contract, not account identity proofing, secret/certificate custody, production TLS deployment, moderation operations, failover, availability/load testing, or online service acceptance.
+
+## Episode 67 — Operational service lifecycle
+
+Implemented:
+
+- the secure authority handler now has an operational wrapper with public `/health` liveness and `/ready` readiness endpoints;
+- active request admission is bounded and overloaded application traffic is rejected before authority logic runs;
+- graceful drain rejects new application traffic while allowing active work to finish and reports whether the active set reached zero;
+- `npm run serve:operational-authority` provides an environment-configured local launch path with token, optional TLS, in-flight, and drain-timeout settings.
+
+Acceptance evidence:
+
+- `operational-http-service.test.mjs` passes readiness, authentication, overload, graceful drain, active completion, and authority-continuity checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local lifecycle and back-pressure contract, not production load testing, autoscaling, process supervision, failover, durable queueing, multi-host coordination, SLA evidence, or availability acceptance.
