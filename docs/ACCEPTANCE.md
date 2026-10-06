@@ -62,6 +62,7 @@
 | World, content, and authored scenario registries restore as one identity-bound runtime bundle | `runtime-bundle.test.mjs`, `SECTION_53_RUNTIME_BUNDLE.md` | PASS |
 | Delivery matrix inventories all 74 docuseries volumes and 10 scenario traces with explicit boundaries | `DOCUSERIES_DELIVERY_MATRIX.md`, `verify-docuseries.mjs` | PASS |
 | Executable demo composes authored content, scenario dispatch, organization outcome, public projection, and bundle restore | `demo.test.mjs`, `SECTION_54_VERTICAL_DEMO.md` | PASS |
+| Browser preview exposes active authored choices, public consequence cues, follow-up scene progression, and an explicit in-memory boundary | `preview-ui.test.mjs`, `scenario-preview.mjs`, `SECTION_58_BROWSER_SCENARIO_INTERACTION.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

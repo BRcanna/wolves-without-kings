@@ -150,6 +150,7 @@ export function projectScenario(state, { scope = "public" } = {}) {
     schemaVersion: SCENARIO_SCHEMA_VERSION,
     scenarioPackId: state.scenarioPackId,
     contentPackId: state.contentPackId,
+    simulationDate: state.simulationDate,
     activeSceneId: state.activeSceneId,
     scenes: Object.values(state.scenes).map((scene) => ({
       id: scene.id,

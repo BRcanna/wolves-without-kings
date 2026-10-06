@@ -1,3 +1,5 @@
+import { resolvePublicScenarioChoice } from "./scenario-preview.mjs";
+
 const status = document.querySelector("#status");
 
 function text(value) {
@@ -55,11 +57,60 @@ function appendUiCard(container, titleText, bodyText) {
   container.append(card);
 }
 
+function clear(container) {
+  while (container.firstChild) container.removeChild(container.firstChild);
+}
+
 function renderScenario(scenario) {
+  const container = document.querySelector("#scenario-list");
+  const feedback = document.querySelector("#scenario-feedback");
+  clear(container);
   scenario.scenes.forEach((scene) => {
-    const choices = scene.choices.map((choice) => choice.label).join(" · ");
-    appendUiCard(document.querySelector("#scenario-list"), scene.title, `${scene.summary} Options: ${choices}.`);
+    const card = document.createElement("article");
+    card.className = "card scenario-card";
+    const title = document.createElement("h3");
+    title.append(text(scene.title));
+    const summary = document.createElement("p");
+    summary.append(text(scene.summary));
+    card.append(title, summary);
+
+    const resolution = [...scenario.resolutions].reverse().find((entry) => entry.sceneId === scene.id);
+    if (resolution) {
+      const resolved = document.createElement("p");
+      resolved.className = "scenario-resolved";
+      const chosen = scene.choices.find((choice) => choice.id === resolution.choiceId);
+      resolved.append(text(`Resolved: ${chosen?.label ?? resolution.choiceId} · ${chosen?.publicCue ?? "history recorded"}.`));
+      card.append(resolved);
+    } else if (scenario.activeSceneId === scene.id) {
+      const actions = document.createElement("div");
+      actions.className = "scenario-choices";
+      scene.choices.forEach((choice) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice-button";
+        button.dataset.choiceId = choice.id;
+        button.append(text(choice.label));
+        button.addEventListener("click", () => {
+          const result = resolvePublicScenarioChoice(scenario, { sceneId: scene.id, choiceId: choice.id });
+          scenario.resolutions = result.scenario.resolutions;
+          scenario.activeSceneId = result.scenario.activeSceneId;
+          feedback.textContent = `${result.choice.publicCue}. Preview branch is held in memory only; no authoritative world state was changed.`;
+          renderScenario(scenario);
+        });
+        actions.append(button);
+      });
+      card.append(actions);
+    } else {
+      const waiting = document.createElement("p");
+      waiting.className = "scenario-waiting";
+      waiting.append(text("This scene becomes available when the preceding history reaches it."));
+      card.append(waiting);
+    }
+    container.append(card);
   });
+  if (scenario.activeSceneId === null) {
+    feedback.textContent = "This preview branch has reached its local endpoint. The recorded choices remain presentation-only.";
+  }
 }
 
 function renderUi(ui) {

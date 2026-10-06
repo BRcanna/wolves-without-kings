@@ -45,6 +45,7 @@
     "schemaVersion": 1,
     "scenarioPackId": "pack:scenario:market-lights",
     "contentPackId": "pack:sofia-south-vertical",
+    "simulationDate": "1999-01-01",
     "activeSceneId": "scene:market-lights",
     "scenes": [
       {

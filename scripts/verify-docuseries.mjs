@@ -22,8 +22,8 @@ const scenarioLedger = readRequired("docs/SCENARIO_ACCEPTANCE.md");
 const deliveryMatrix = readRequired("docs/DOCUSERIES_DELIVERY_MATRIX.md");
 const preview = JSON.parse(readRequired("web/scenario.json"));
 
-if (!readme.includes("Sections 3–57")) {
-  fail("README does not declare the current Sections 3–57 build scope");
+if (!readme.includes("Sections 3–58")) {
+  fail("README does not declare the current Sections 3–58 build scope");
 }
 
 for (const scriptName of ["test", "preview:build", "verify"]) {
@@ -66,6 +66,7 @@ for (const reference of evidenceReferences) {
     const candidates = [
       resolve(root, "src/wolves-without-kings", reference),
       resolve(root, "test", reference),
+      resolve(root, "web", reference),
       resolve(root, "scripts", reference),
     ];
     if (!candidates.some((candidate) => existsSync(candidate))) {

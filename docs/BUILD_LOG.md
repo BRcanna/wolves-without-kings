@@ -1224,3 +1224,26 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 57 — Browser scenario interaction
+
+Implemented:
+
+- the public browser preview now offers buttons for the active authored scene;
+- selecting observe, meet, delegate, or defer advances the public scenario projection and shows a qualitative consequence cue;
+- previous scenes render as resolved and the follow-up scene becomes available in dependency order;
+- the UI states that the branch is held in memory only and does not mutate authoritative world state.
+
+Acceptance evidence:
+
+- `npm test` passes the browser preview contract;
+- `npm run preview:build` regenerates the public payload consumed by the interactive page;
+- `npm run verify` checks the new acceptance row and existing external-gate ledger.
+
+Boundary:
+
+- this is a local presentation interaction, not an authoritative server route, crash-safe save, multiplayer session, moderation system, accessibility certification, localization pass, controller implementation, or production client.
+
+Later verification:
+
+- test authoritative browser-to-runtime transport, persistence, synchronization, moderation, availability, and fresh-player usability in a separately deployed environment.

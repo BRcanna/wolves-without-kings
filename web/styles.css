@@ -37,6 +37,12 @@ h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
 .card { padding: 16px; }
 .card h3 { margin: 0 0 8px; font-size: 1rem; }
 .card p { margin: 4px 0; color: var(--muted); font-size: 0.88rem; }
+.scenario-feedback { margin: 0 0 18px; color: #d1cec3; }
+.scenario-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.choice-button { border: 1px solid var(--accent); border-radius: 999px; padding: 9px 13px; color: var(--ink); background: transparent; font: inherit; cursor: pointer; }
+.choice-button:hover, .choice-button:focus-visible { color: #111619; background: var(--accent); outline: none; }
+.scenario-resolved { color: var(--accent) !important; }
+.scenario-waiting { font-style: italic; }
 .price { color: var(--ink) !important; font-size: 1.15rem !important; }
 footer { margin-top: 32px; color: var(--muted); font-size: 0.82rem; }
 code { color: var(--accent); }
