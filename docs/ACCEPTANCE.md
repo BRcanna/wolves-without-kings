@@ -81,6 +81,7 @@
 | Authority backup catalog validates digests, supports idempotent registration and pinned history, and produces a non-destructive retention plan | `authority-backup-catalog.test.mjs`, `authority-backup-catalog.mjs`, `SECTION_74_BACKUP_RETENTION.md` | PASS |
 | Transport key lifecycle binds session keys, supports overlap rotation, rejects expiry/revocation/mismatch, and omits secrets from snapshots/projections | `transport-keyring.test.mjs`, `transport-keyring.mjs`, `SECTION_75_TRANSPORT_KEYRING.md` | PASS |
 | TLS material lifecycle validates private keys, supports overlap rotation, rejects expiry/retirement/name mismatch, and redacts PEM material | `tls-material.test.mjs`, `tls-material.mjs`, `SECTION_76_TLS_MATERIAL.md` | PASS |
+| Account identity claims bind account/session/client/character, fail closed on suspension/revocation/expiry/mismatch, and restore with public redaction | `account-identity.test.mjs`, `account-identity.mjs`, `SECTION_77_ACCOUNT_IDENTITY.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

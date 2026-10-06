@@ -1585,3 +1585,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local TLS-material lifecycle contract, not CA/ACME issuance, live TLS termination, revocation infrastructure, hardware-backed custody, account identity, or production security acceptance.
+
+## Episode 76 — Account identity and session claims
+
+Implemented:
+
+- `account-identity.mjs` adds hash-chained account registration, character binding, account status, and signed time-bounded session claims;
+- claim validation binds issuer, account, session, client, and character while checking expiry, revocation, suspension, and signature integrity;
+- snapshots restore the identity event chain, while public projection omits signatures, client identifiers, character bindings, and signing keys.
+
+Acceptance evidence:
+
+- `account-identity.test.mjs` passes claim binding, mismatch rejection, suspension/revocation/expiry handling, snapshot restore, tamper rejection, and public redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local identity-claim contract, not an external account provider, password/MFA system, hardware-backed custody, consent/age verification, privacy/compliance service, or production identity acceptance.
