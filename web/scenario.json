@@ -14,6 +14,33 @@
     "caseStage": "cold",
     "eventCount": 58
   },
+  "content": {
+    "schemaVersion": 1,
+    "packId": "pack:sofia-south-vertical",
+    "activeEra": "late-1990s",
+    "counts": {
+      "regions": 1,
+      "npcs": 30,
+      "businesses": 3,
+      "organizations": 2,
+      "locations": 8,
+      "routes": 7,
+      "scheduleTemplates": 30
+    },
+    "activeEraVariantCount": 2,
+    "regionLabels": [
+      {
+        "id": "region:sofia-south",
+        "label": "South Sofia"
+      }
+    ],
+    "omittedFields": [
+      "private authoring metadata",
+      "event history",
+      "source revisions",
+      "unactivated era variants"
+    ]
+  },
   "projection": {
     "projectionVersion": 1,
     "scope": "public",

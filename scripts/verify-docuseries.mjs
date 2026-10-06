@@ -21,8 +21,8 @@ const buildLog = readRequired("docs/BUILD_LOG.md");
 const scenarioLedger = readRequired("docs/SCENARIO_ACCEPTANCE.md");
 const preview = JSON.parse(readRequired("web/scenario.json"));
 
-if (!readme.includes("Sections 3–50")) {
-  fail("README does not declare the current Sections 3–50 build scope");
+if (!readme.includes("Sections 3–51")) {
+  fail("README does not declare the current Sections 3–51 build scope");
 }
 
 for (const scriptName of ["test", "preview:build", "verify"]) {
@@ -75,6 +75,9 @@ for (const reference of evidenceReferences) {
 
 if (preview.previewVersion !== 1 || preview.projection?.scope !== "public") {
   fail("web/scenario.json is not a version 1 public projection preview");
+}
+if (preview.content?.counts?.locations !== 8 || preview.content?.counts?.npcs !== 30 || preview.content?.counts?.scheduleTemplates !== 30) {
+  fail("web/scenario.json does not contain the admitted vertical-slice content package");
 }
 
 console.log("docuseries-verify: PASS");

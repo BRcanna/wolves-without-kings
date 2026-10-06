@@ -1058,3 +1058,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 50 — Authored vertical-slice district package
+
+Implemented:
+
+- the vertical slice now builds one admitted fictionalized district content package;
+- the package contains 30 residents, 3 businesses, 2 organizations, 8 locations, 7 routes, and 30 schedule templates;
+- late-1990s variants preserve stable location and route identities;
+- the public preview includes the admitted package projection and stable counts;
+- package acceptance preserves the fiction/safety boundary.
+
+Acceptance evidence:
+
+- `npm test` passes 175 tests, including `content-pack.test.mjs`;
+- `content-pack.test.mjs` proves one-transaction admission and expected topology/schedule counts;
+- `npm run preview:build` and `npm run verify` pass.
+
+Boundary:
+
+- this is a deterministic local content package, not imported production assets, visual reachability, authored dialogue/audio, cultural review, or a shipping native client.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
