@@ -1688,3 +1688,21 @@ Acceptance evidence:
 Boundary:
 
 - this is an in-process composition of local quorum/fencing contracts, not cross-host transport, distributed election/membership, clock coordination, process supervision, partition recovery, or production failover acceptance.
+
+## Episode 82 — Loopback authority cluster transport and membership
+
+Implemented:
+
+- `authority-cluster.mjs` adds hash-chained local membership state with endpoint registration, heartbeat/status transitions, quorum checks, monotonic election terms, and public redaction;
+- each configured member binds an independent loopback HTTP listener and the transport client uses `fetch`, making stopped-node transport failure observable;
+- mutation requests route only through the elected leader, follower writes return a bounded `not_current_leader` response, and a stopped leader can be replaced after quorum and lease-expiry checks;
+- recovered mutations continue through the existing coordinated authority state, so transport election does not create a second world truth.
+
+Acceptance evidence:
+
+- `authority-cluster.test.mjs` passes three-node loopback routing, follower rejection, leader transport loss, lease-expiry election, state continuity, membership history restore, and redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is executable local HTTP transport and deterministic membership/election evidence, not production cross-host networking, service discovery, clock synchronization, process supervision, partition recovery, TLS/mTLS operations, cloud orchestration, or SLA/failover acceptance.
