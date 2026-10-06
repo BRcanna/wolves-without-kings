@@ -14,12 +14,14 @@ test("container deployment contract is non-root, health-checked, and secret-free
   assert.match(dockerfile, /CMD \["node", "scripts\/serve-operational-authority\.mjs"\]/);
   assert.match(dockerfile, /WWK_HOST=0\.0\.0\.0/);
   assert.match(dockerfile, /WWK_JOURNAL_PATH=\/data\/authority\.jsonl/);
-  assert.match(dockerfile, /VOLUME \["\/data"\]/);
+  assert.match(dockerfile, /WWK_REPLICA_JOURNAL_PATH=\/replica\/authority\.jsonl/);
+  assert.match(dockerfile, /VOLUME \["\/data", "\/replica"\]/);
   assert.match(dockerignore, /^\.env$/m);
   assert.match(dockerignore, /^\.git$/m);
   assert.match(launcher, /WWK_AUTH_TOKEN is required/);
   assert.match(launcher, /WWK_TLS_KEY_PATH/);
   assert.match(launcher, /WWK_HOST/);
   assert.match(launcher, /WWK_JOURNAL_PATH/);
+  assert.match(launcher, /WWK_REPLICA_JOURNAL_PATH/);
   assert.doesNotMatch(dockerfile, /WWK_AUTH_TOKEN=/);
 });

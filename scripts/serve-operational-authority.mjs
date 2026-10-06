@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 
 import { createOperationalAuthorityHttpServer } from "../src/wolves-without-kings/operational-http-service.mjs";
 import { createCheckpointedAuthorityService } from "../src/wolves-without-kings/authority-journal.mjs";
+import { createReplicatedAuthorityService } from "../src/wolves-without-kings/replicated-authority-service.mjs";
 
 const token = process.env.WWK_AUTH_TOKEN;
 if (typeof token !== "string" || token.trim() === "") throw new Error("WWK_AUTH_TOKEN is required");
@@ -16,7 +17,13 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("WWK_PO
 const host = process.env.WWK_HOST ?? "127.0.0.1";
 if (typeof host !== "string" || host.trim() === "") throw new Error("WWK_HOST must be a non-empty host");
 const journalPath = process.env.WWK_JOURNAL_PATH;
-const service = journalPath && journalPath.trim() !== "" ? createCheckpointedAuthorityService({ journalPath }) : undefined;
+const replicaJournalPath = process.env.WWK_REPLICA_JOURNAL_PATH;
+if (replicaJournalPath && !journalPath) throw new Error("WWK_JOURNAL_PATH is required when WWK_REPLICA_JOURNAL_PATH is provided");
+const service = replicaJournalPath
+  ? createReplicatedAuthorityService({ primaryPath: journalPath, replicaPath: replicaJournalPath })
+  : journalPath && journalPath.trim() !== ""
+    ? createCheckpointedAuthorityService({ journalPath })
+    : undefined;
 
 const runtime = createOperationalAuthorityHttpServer({
   service,

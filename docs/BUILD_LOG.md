@@ -1475,3 +1475,22 @@ Acceptance evidence:
 Boundary:
 
 - this is a local single-process checkpoint integration, not a replicated database, backup/restore policy, encrypted-at-rest store, volume durability guarantee, failover proof, or production migration service.
+
+## Episode 70 — Mirrored authority checkpoint service
+
+Implemented:
+
+- `replicated-authority-service.mjs` maintains two independently readable authority checkpoint journals;
+- startup validates their shared hash-chain prefix, repairs a stale or missing copy from the surviving valid journal, and rejects divergent histories;
+- committed authority revisions are written to both journals before the service advances its in-memory state;
+- the operational launcher accepts primary and replica journal paths, and the container declares `/data` and `/replica` volumes.
+
+Acceptance evidence:
+
+- `replicated-authority-service.test.mjs` passes mirrored revisions, primary-loss recovery, stale-replica repair, and divergent-history rejection;
+- `deployment-contract.test.mjs` checks both runtime paths and volume declarations;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a same-process, same-host mirrored journal contract, not cross-host replication, quorum consensus, network partition handling, backup retention, encrypted storage, orchestration, failover timing, or production availability acceptance.
