@@ -93,8 +93,55 @@
       "era": "late-1990s",
       "lifeCourseCue": "the first year has settled into a longer history"
     },
-    "contacts": [],
-    "organization": null,
+    "contacts": [
+      {
+        "id": "npc:resident-01",
+        "displayName": "Resident 01",
+        "summary": "recently known; hard to read; nothing is owed.",
+        "availability": "close at hand",
+        "sourceCue": "shared district history"
+      },
+      {
+        "id": "npc:resident-02",
+        "displayName": "Resident 02",
+        "summary": "known for years; hard to read; nothing is owed.",
+        "availability": "close at hand",
+        "sourceCue": "shared district history"
+      },
+      {
+        "id": "npc:resident-03",
+        "displayName": "Resident 03",
+        "summary": "known for years; hard to read; nothing is owed.",
+        "availability": "close at hand",
+        "sourceCue": "shared district history"
+      },
+      {
+        "id": "npc:resident-04",
+        "displayName": "Resident 04",
+        "summary": "known for years; hard to read; nothing is owed.",
+        "availability": "close at hand",
+        "sourceCue": "shared district history"
+      }
+    ],
+    "organization": {
+      "id": "org:lantern-circle",
+      "label": "Lantern Circle",
+      "doctrineCue": "rules favor trust and competence",
+      "assignments": [
+        {
+          "id": "work:lantern-check",
+          "label": "Check the venue condition",
+          "status": "available",
+          "ownerCue": "unassigned"
+        },
+        {
+          "id": "work:lantern-route",
+          "label": "Carry a sealed package",
+          "status": "blocked",
+          "ownerCue": "unassigned"
+        }
+      ]
+    },
     "properties": [
       {
         "id": "business:night-market",
@@ -141,6 +188,11 @@
         "id": "notice:year-one",
         "label": "A year of district history has settled",
         "tone": "info"
+      },
+      {
+        "id": "notice:blocked-work",
+        "label": "One organization assignment is waiting on history",
+        "tone": "warning"
       }
     ],
     "omittedFields": [

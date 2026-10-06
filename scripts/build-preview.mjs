@@ -5,6 +5,23 @@ import { runVerticalHistory } from "../src/wolves-without-kings/vertical-slice.m
 
 const { world, summary } = runVerticalHistory("relationship");
 const projection = projectWorld(world, { scope: "public" });
+const playerContacts = Object.entries(world.relationships)
+  .filter(([relationshipId]) => relationshipId.startsWith("character:player|"))
+  .slice(0, 4)
+  .map(([relationshipId, relationship]) => {
+    const contactId = relationshipId.split("|")[1];
+    const life = world.npcLife[contactId];
+    return {
+      id: contactId,
+      displayName: life?.displayName ?? contactId,
+      reliabilityBand: relationship.trust >= 5 ? "reliable" : relationship.trust >= 2 ? "mixed" : "unknown",
+      debtBand: relationship.debt > 0 ? "open" : "clear",
+      availabilityBand: life?.currentLocationId ? "present" : "unknown",
+      knownYears: relationship.relationshipAgeDays >= 365 ? 1 : 0,
+      sourceCue: "shared district history",
+    };
+  });
+const organization = world.organizations["org:lantern-circle"];
 const payload = {
   previewVersion: 1,
   generatedAt: world.date,
@@ -15,6 +32,18 @@ const payload = {
       date: projection.date,
       era: "late-1990s",
       lifeCourseCue: "the first year has settled into a longer history",
+    },
+    contacts: playerContacts,
+    organization: {
+      id: organization.id,
+      label: organization.displayName,
+      doctrineCue: "rules favor trust and competence",
+      assignments: Object.values(organization.workItems).map((item) => ({
+        id: item.id,
+        label: item.label,
+        status: item.status,
+        ownerCue: item.claimOwner ? "an organization member holds the work" : "unassigned",
+      })),
     },
     properties: projection.businesses.map((business) => ({
       id: business.id,
@@ -36,7 +65,12 @@ const payload = {
       familiarityCue: "the district is known through lived history",
       discoveredFeatures: projection.businesses.map((business) => business.displayName),
     }],
-    notifications: [{ id: "notice:year-one", label: "A year of district history has settled", tone: "info" }],
+    notifications: [
+      { id: "notice:year-one", label: "A year of district history has settled", tone: "info" },
+      ...(Object.values(organization.workItems).some((item) => item.status === "blocked")
+        ? [{ id: "notice:blocked-work", label: "One organization assignment is waiting on history", tone: "warning" }]
+        : []),
+    ],
   }),
 };
 

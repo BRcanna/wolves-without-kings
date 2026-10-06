@@ -1035,3 +1035,26 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 49 — Browser preview context surfaces
+
+Implemented:
+
+- public preview contacts now show qualitative history, reliability, obligation, and availability cues;
+- organization doctrine and work assignments render without member identities or private capability state;
+- stable notices communicate settled history and blocked work without leaking exact causes or server-only values;
+- preview tests bind these context surfaces to committed HTML/JavaScript sections.
+
+Acceptance evidence:
+
+- `npm test` passes 174 tests, including the browser preview tests;
+- `preview-ui.test.mjs` proves contacts, organization assignments, notices, and projection-only browser surface;
+- `npm run preview:build` and `npm run verify` pass.
+
+Boundary:
+
+- this is a deterministic local browser preview, not fresh-player usability, localization, accessibility audit, native-client, or production deployment proof.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

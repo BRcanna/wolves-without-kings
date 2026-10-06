@@ -58,8 +58,16 @@ function appendUiCard(container, titleText, bodyText) {
 function renderUi(ui) {
   document.querySelector("#calendar-cue").textContent = `${ui.calendar.date} · ${ui.calendar.era} · ${ui.calendar.lifeCourseCue}`;
   ui.mapKnowledge.forEach((place) => appendUiCard(document.querySelector("#map-list"), place.label, `${place.familiarityCue}; known features: ${place.discoveredFeatures.join(", ")}.`));
+  ui.contacts.forEach((contact) => appendUiCard(document.querySelector("#contacts-list"), contact.displayName, `${contact.summary} ${contact.availability}.`));
+  if (ui.organization) {
+    document.querySelector("#organization-cue").textContent = `${ui.organization.label} · ${ui.organization.doctrineCue}`;
+    ui.organization.assignments.forEach((assignment) => appendUiCard(document.querySelector("#assignment-list"), assignment.label, `${assignment.status}; ${assignment.ownerCue}.`));
+  } else {
+    document.querySelector("#organization-cue").textContent = "No organization assignment is currently known.";
+  }
   ui.pressureCues.forEach((cue) => appendUiCard(document.querySelector("#ui-pressure-list"), cue.title, cue.message));
   ui.properties.forEach((property) => appendUiCard(document.querySelector("#ui-property-list"), property.label, `${property.conditionCue}; ${property.claimCue}.`));
+  ui.notifications.forEach((notification) => appendUiCard(document.querySelector("#notifications-list"), notification.label, notification.tone));
 }
 
 async function render() {
