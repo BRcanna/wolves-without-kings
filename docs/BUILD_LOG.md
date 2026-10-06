@@ -1793,3 +1793,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local appeal workflow contract, not staffed human moderation, policy authorship, legal or regulatory appeals, external case management, escalation staffing, response-time/SLA evidence, abuse-prevention operations, or production moderation acceptance.
+
+## Episode 88 — Moderation escalation response ledger
+
+Implemented:
+
+- `moderation-escalation.mjs` admits only cases whose existing moderation decision is explicitly `escalate`;
+- escalation records carry bounded route/evidence digests, response target ticks, expiring reviewer claims, qualitative deadline breach bands, and explicit resolve, refer, or dismiss outcomes;
+- source moderation decisions remain unchanged, while escalation state receives its own hash-chained audit and redacted projection.
+
+Acceptance evidence:
+
+- `moderation-escalation.test.mjs` passes explicit-decision composition, response-target tracking, late closure, claim expiry, no-mutation rejection, audit restore, tamper rejection, and public redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local escalation ledger and response-objective mechanic, not staffed human moderation, a legal or regulatory escalation process, external case management, an SLA/SLO guarantee, abuse-prevention operations, production staffing, or production moderation acceptance.
