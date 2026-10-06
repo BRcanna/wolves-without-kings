@@ -1930,3 +1930,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a deterministic, file-backed local quorum contract, not TCP or cross-host transport, distributed membership/election, fencing, synchronized clocks, encrypted custody, orchestration, failover timing, SLA availability, anti-cheat, staffed moderation, matchmaking, or production online acceptance.
+
+## Episode 96 — Online Underworld backup envelope
+
+Implemented:
+
+- `underworld-backup.mjs` exports the complete parity-matched quorum journal set with shard/week/revision metadata and a SHA-256 manifest digest;
+- backup reads and restores revalidate every hash chain, latest snapshot, cross-node parity, and destination node identity;
+- restore protects existing destinations unless `overwrite: true` is explicit and uses fsynced atomic local writes where supported.
+
+Acceptance evidence:
+
+- `underworld-backup.test.mjs` passes quorum journal round-trip, state equality after restore, destination protection, tamper rejection, divergent-source rejection, and minimum-node checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local backup envelope for fictional online-shard state, not encrypted custody, off-host/cloud storage, object lock, scheduled retention, disaster recovery objectives, access control, or production backup acceptance.
