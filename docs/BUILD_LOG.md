@@ -1619,3 +1619,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local moderation workflow contract, not staffed human review, policy/appeals, escalation coverage, response objectives, legal/compliance operations, abuse prevention, or production moderation acceptance.
+
+## Episode 78 — Synthetic availability probe
+
+Implemented:
+
+- `availability-probe.mjs` runs bounded synthetic request workloads through an adapter with configurable concurrency;
+- reports distinguish accepted work, expected `503` overload, thrown/5xx failures, and p50/p95/max/mean duration bands;
+- explicit threshold evaluation separates overload budgets from failure and latency budgets.
+
+Acceptance evidence:
+
+- `availability-probe.test.mjs` passes successful workload, overload accounting, failure capture, latency summary, and threshold-violation checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a synthetic local availability contract, not hardware benchmarking, real network load, autoscaling, process supervision, multi-host failover, SLA/SLO evidence, or production availability acceptance.
