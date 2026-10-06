@@ -23,7 +23,7 @@ export function createPreviewServer({ publicDirectory = resolve(process.cwd(), "
   const apiHandler = createAuthorityHttpHandler({ service });
   return createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", "http://wolves-without-kings.local");
-    if (url.pathname === "/scenario" || url.pathname === "/scenario/choice") {
+    if (url.pathname === "/scenario" || url.pathname === "/scenario/choice" || url.pathname === "/scenario/sessions/connect") {
       await apiHandler(request, response);
       return;
     }

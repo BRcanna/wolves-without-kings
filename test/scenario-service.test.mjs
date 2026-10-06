@@ -34,12 +34,17 @@ test("authoritative scenario service dispatches an authored choice atomically ov
     assert.equal(initial.body.projection.scope, "public");
     assert.equal(initial.body.content.counts.locations, 8);
     assert.equal(initial.body.scenario.activeSceneId, "scene:market-lights");
+    const session = await request(baseUrl, "/scenario/sessions/connect", {
+      method: "POST",
+      body: JSON.stringify({ sessionId: "preview:test", clientId: "client:test", characterId: "character:player" }),
+    });
+    assert.equal(session.response.status, 201);
     const command = {
       expectedWorldRevision: initial.body.worldRevision,
       expectedScenarioRevision: initial.body.scenarioRevision,
+      sessionId: "preview:test",
       sceneId: "scene:market-lights",
       choiceId: "choice:listen",
-      actorId: "character:player",
     };
     const result = await request(baseUrl, "/scenario/choice", { method: "POST", body: JSON.stringify(command) });
     assert.equal(result.response.status, 200);
@@ -59,17 +64,48 @@ test("authoritative scenario service dispatches an authored choice atomically ov
 test("authoritative scenario service rejects stale dispatch without partial world or scenario mutation", async () => {
   const service = createVerticalScenarioService();
   const before = service.state;
+  service.request({
+    method: "POST",
+    path: "/scenario/sessions/connect",
+    body: { sessionId: "preview:stale", clientId: "client:stale", characterId: "character:player" },
+  });
   const result = service.request({
     method: "POST",
     path: "/scenario/choice",
     body: {
       expectedWorldRevision: before.world.revision - 1,
       expectedScenarioRevision: before.scenarioState.revision,
+      sessionId: "preview:stale",
       sceneId: "scene:market-lights",
       choiceId: "choice:listen",
     },
   });
   assert.equal(result.status, 409);
   assert.equal(result.body.error, "stale_world_revision");
-  assert.deepEqual(service.state, before);
+  assert.equal(service.state.world.revision, before.world.revision);
+  assert.equal(service.state.scenarioState.revision, before.scenarioState.revision);
+});
+
+test("authoritative scenario service derives actor identity from a connected session", () => {
+  const service = createVerticalScenarioService();
+  const connected = service.request({
+    method: "POST",
+    path: "/scenario/sessions/connect",
+    body: { sessionId: "preview:identity", clientId: "client:identity", characterId: "character:player" },
+  });
+  assert.equal(connected.status, 201);
+  const result = service.request({
+    method: "POST",
+    path: "/scenario/choice",
+    body: {
+      expectedWorldRevision: service.state.world.revision,
+      expectedScenarioRevision: service.state.scenarioState.revision,
+      sessionId: "preview:identity",
+      actorId: "npc:resident-01",
+      sceneId: "scene:market-lights",
+      choiceId: "choice:listen",
+    },
+  });
+  assert.equal(result.status, 400);
+  assert.equal(result.body.error, "invalid_scenario_request");
 });

@@ -158,6 +158,13 @@ async function render() {
               worldRevision: authorityPayload.worldRevision,
               scenarioRevision: authorityPayload.scenarioRevision,
             };
+            const sessionId = "preview:local";
+            const sessionResponse = await fetch("./scenario/sessions/connect", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ sessionId, clientId: "client:preview", characterId: "character:player" }),
+            });
+            if (!sessionResponse.ok) throw new Error(`session connect returned ${sessionResponse.status}`);
             authority = {
               async submit(scenario, { sceneId, choiceId }) {
                 const result = await fetch("./scenario/choice", {
@@ -166,9 +173,9 @@ async function render() {
                   body: JSON.stringify({
                     expectedWorldRevision: revisions.worldRevision,
                     expectedScenarioRevision: revisions.scenarioRevision,
+                    sessionId,
                     sceneId,
                     choiceId,
-                    actorId: "character:player",
                   }),
                 });
                 const body = await result.json();

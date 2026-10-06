@@ -38,6 +38,7 @@ test("browser preview renders UI projection sections without private fields", ()
   assert.match(app, /addEventListener\("click"/);
   assert.match(app, /in memory only/);
   assert.match(app, /expectedWorldRevision/);
+  assert.match(app, /scenario\/sessions\/connect/);
   assert.match(app, /local authority available/);
   assert.doesNotMatch(app, /beliefs|hiddenCompetence|caseConfidence/);
 });

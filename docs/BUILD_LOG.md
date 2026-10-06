@@ -1313,3 +1313,21 @@ Acceptance evidence:
 Boundary:
 
 - this is local preview/runtime integration, not production TLS/authentication, session lifecycle, durable persistence, multiplayer synchronization, moderation operations, load/availability, accessibility, localization, authored dialogue/audio, or native-client acceptance.
+
+## Episode 61 — Local scenario session identity boundary
+
+Implemented:
+
+- local scenario sessions connect before accepting choices;
+- the service derives `character:player` from the connected session instead of trusting a client actor field;
+- unknown sessions and mismatched actor claims fail before either history mutates;
+- the browser preview performs the local session handshake automatically when the local authority endpoint is available.
+
+Acceptance evidence:
+
+- `npm test` covers session connection, actor derivation, mismatch rejection, and preview-server dispatch;
+- `npm run verify` checks the new acceptance evidence and contiguous episode sequence.
+
+Boundary:
+
+- this is a local identity-binding contract, not credentials, TLS, account authentication, authorization policy, expiry, replay protection, moderation operations, durable sessions, or production security acceptance.
