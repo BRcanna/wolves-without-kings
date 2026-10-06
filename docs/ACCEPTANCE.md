@@ -104,6 +104,7 @@
 | Online-underworld backup/restore validates complete journal parity, digest metadata, matching destinations, and overwrite protection | `underworld-backup.test.mjs`, `underworld-backup.mjs`, `SECTION_97_UNDERWORLD_BACKUP.md` | PASS |
 | Online-underworld backup repository publishes immutable validated objects, supports idempotence, detects tampering, and restores through envelope validation | `underworld-backup-repository.test.mjs`, `underworld-backup-repository.mjs`, `SECTION_98_UNDERWORLD_BACKUP_REPOSITORY.md` | PASS |
 | Online-underworld backup catalog records validated digests, supports idempotent registration, preserves pinned/future history, and plans retention non-destructively | `underworld-backup-catalog.test.mjs`, `underworld-backup-catalog.mjs`, `SECTION_99_UNDERWORLD_BACKUP_CATALOG.md` | PASS |
+| Online-underworld isolated backup store separates source/repository roots, verifies catalog/object parity, restores safely, and executes only explicitly authorized retention | `isolated-underworld-backup-store.test.mjs`, `isolated-underworld-backup-store.mjs`, `SECTION_100_ISOLATED_UNDERWORLD_BACKUP.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

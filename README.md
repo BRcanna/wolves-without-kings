@@ -6,6 +6,8 @@ The project starts from the supplied mechanics docuseries and follows its depend
 
 ## Current build slice
 
+- Current published head: Sections 3–100, including isolated source/repository backup custody and explicitly authorized retention execution for the online Underworld.
+
 - Current published scope: Sections 3–99, including isolated backup publication, digest-parity verification, reviewable retention, explicitly authorized retention execution, bounded local process supervision, live TLS termination/rotation evidence, consent/MFA access admission, independent-review appeal mechanics, local escalation response tracking, structural preview accessibility evidence, GitHub CI gate evidence, durable local online-shard checkpoints, a bearer-authenticated local shard HTTP boundary, identity-bound reconnect continuity, mirrored local shard checkpoint recovery, quorum-backed online-shard checkpoint recovery, parity-checked online-shard backup/restore, immutable online-shard backup-repository verification, and pinned/future-aware online-shard retention planning.
 
 - Phase 0 foundation: canonical state, event ontology, world time, save/replay.

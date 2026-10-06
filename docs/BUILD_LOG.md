@@ -1981,3 +1981,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local catalog and retention-planning contract for fictional online-Underworld backups, not scheduled jobs, destructive deletion, cloud/off-host custody, encryption, access control, disaster-recovery objectives, or production restore/availability acceptance.
+
+## Episode 99 — Isolated online Underworld backup store
+
+Implemented:
+
+- `isolated-underworld-backup-store.mjs` separates source capture from repository custody and composes validated publication with the digest-backed catalog;
+- verification checks repository/object/catalog parity before any authorized retention action;
+- retention execution requires `approveDeletion: true`, deletes only eligible objects, atomically rewrites the catalog, and redacts custody paths from projection.
+
+Acceptance evidence:
+
+- `isolated-underworld-backup-store.test.mjs` passes root separation, publication, verification, restore, explicit-approval gating, reviewed retention execution, and post-deletion validity;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is an isolated local backup/retention contract for fictional online-Underworld state, not cloud/off-host custody, encryption, object lock, access control, scheduling, disaster recovery, restore-time objectives, or production backup acceptance.
