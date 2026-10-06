@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(process.cwd());
@@ -19,10 +19,11 @@ const readme = readRequired("README.md");
 const acceptance = readRequired("docs/ACCEPTANCE.md");
 const buildLog = readRequired("docs/BUILD_LOG.md");
 const scenarioLedger = readRequired("docs/SCENARIO_ACCEPTANCE.md");
+const deliveryMatrix = readRequired("docs/DOCUSERIES_DELIVERY_MATRIX.md");
 const preview = JSON.parse(readRequired("web/scenario.json"));
 
-if (!readme.includes("Sections 3–55")) {
-  fail("README does not declare the current Sections 3–55 build scope");
+if (!readme.includes("Sections 3–56")) {
+  fail("README does not declare the current Sections 3–56 build scope");
 }
 
 for (const scriptName of ["test", "preview:build", "verify"]) {
@@ -83,10 +84,22 @@ if (preview.scenario?.scenes?.length !== 2 || preview.scenario.scenes[0]?.choice
   fail("web/scenario.json does not contain the branchable vertical-slice scenario pack");
 }
 
+const deliveryRows = [...deliveryMatrix.matchAll(/^\| ([^|]+) \| `([^`]+)` \| (\d+) \| ([^|]+) \| (SHIPPED|BOUNDED|COMPOSED|OPEN|DEFERRED) \|$/gm)];
+if (deliveryRows.length !== 12) fail(`docuseries delivery matrix has ${deliveryRows.length} groups; expected 12`);
+const deliveryFileTotal = deliveryRows.reduce((total, [, , relativeDirectory, expectedCount]) => {
+  const absoluteDirectory = resolve(root, relativeDirectory);
+  if (!existsSync(absoluteDirectory)) fail(`delivery matrix references missing directory ${relativeDirectory}`);
+  const actualCount = readdirSync(absoluteDirectory).filter((entry) => entry.endsWith(".md")).length;
+  if (actualCount !== Number(expectedCount)) fail(`delivery matrix count mismatch for ${relativeDirectory}: expected ${expectedCount}, found ${actualCount}`);
+  return total + actualCount;
+}, 0);
+if (deliveryFileTotal !== 84) fail(`delivery matrix covers ${deliveryFileTotal} source files; expected 84`);
+
 console.log("docuseries-verify: PASS");
 console.log(`acceptance-pass-rows=${passRows.length}`);
 console.log(`acceptance-open-rows=${openRows.length}`);
 console.log(`build-log-episodes=0..${episodeNumbers.at(-1)}`);
 console.log(`scenario-traces=${scenarioRows.length}`);
+console.log(`docuseries-source-files=${deliveryFileTotal}`);
 console.log(`preview-scope=${preview.projection.scope}`);
 console.log("external-gates=recorded-open");
