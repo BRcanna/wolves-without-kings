@@ -1810,3 +1810,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local escalation ledger and response-objective mechanic, not staffed human moderation, a legal or regulatory escalation process, external case management, an SLA/SLO guarantee, abuse-prevention operations, production staffing, or production moderation acceptance.
+
+## Episode 89 — Public preview accessibility contract
+
+Implemented:
+
+- the public preview now provides language metadata, skip navigation, a main landmark, a no-script boundary, live status regions, and labelled section headings;
+- focus-visible styling, reduced-motion behavior, and an image alternative rule are recorded in the static asset audit;
+- the audit reports its structural-only boundary instead of promoting markup checks to usability, screen-reader, visual, hardware, or production evidence.
+
+Acceptance evidence:
+
+- `preview-accessibility.test.mjs` passes the committed HTML/CSS audit and proves missing structural requirements fail closed;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a structural public-preview accessibility contract, not a screen-reader audit, fresh-player usability study, localization review, controller/navigation test, animation review, native-client delivery, visual regression suite, cultural review, or hardware/FPS acceptance.

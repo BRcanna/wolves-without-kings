@@ -21,7 +21,7 @@ test("renderer files expose an accessible, projection-only local surface", () =>
   const html = readFileSync("web/index.html", "utf8");
   const app = readFileSync("web/app.mjs", "utf8");
   const css = readFileSync("web/styles.css", "utf8");
-  assert.match(html, /<main class="shell">/);
+  assert.match(html, /<main id="main-content" class="shell">/);
   assert.match(html, /aria-live="polite"/);
   assert.match(html, /app\.mjs/);
   assert.match(app, /fetch\("\.\/scenario\.json"/);

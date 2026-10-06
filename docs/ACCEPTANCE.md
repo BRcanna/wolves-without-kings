@@ -94,6 +94,7 @@
 | Account access requires adult consent and current MFA verification in addition to signed identity claims, rejects exhausted/suspended paths, and redacts factor/challenge material | `account-access-policy.test.mjs`, `account-access-policy.mjs`, `SECTION_87_ACCOUNT_ACCESS.md` | PASS |
 | Moderation appeals compose decided cases, require an independent reviewer, support expiring claims and explicit outcomes, restore audit history, and redact public bands | `moderation-appeals.test.mjs`, `moderation-appeals.mjs`, `SECTION_88_MODERATION_APPEALS.md` | PASS |
 | Moderation escalations accept only explicit escalate decisions, track response-target bands, support bounded outcomes and claim expiry, restore audit history, and redact operational details | `moderation-escalation.test.mjs`, `moderation-escalation.mjs`, `SECTION_89_MODERATION_ESCALATION.md` | PASS |
+| Public preview assets provide structural language, navigation, live-region, heading, focus, reduced-motion, no-script, and image-alternative evidence | `preview-accessibility.test.mjs`, `preview-accessibility.mjs`, `SECTION_90_PREVIEW_ACCESSIBILITY.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
