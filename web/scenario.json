@@ -85,5 +85,72 @@
         ]
       }
     ]
+  },
+  "ui": {
+    "projectionVersion": 1,
+    "calendar": {
+      "date": "1999-01-01",
+      "era": "late-1990s",
+      "lifeCourseCue": "the first year has settled into a longer history"
+    },
+    "contacts": [],
+    "organization": null,
+    "properties": [
+      {
+        "id": "business:night-market",
+        "label": "Night Market Hall",
+        "conditionCue": "condition is stable",
+        "claimCue": "ownership history is part of the public record"
+      },
+      {
+        "id": "business:south-ring-motel",
+        "label": "South Ring Motel",
+        "conditionCue": "condition is stable",
+        "claimCue": "ownership history is part of the public record"
+      },
+      {
+        "id": "business:river-cafe",
+        "label": "River Cafe",
+        "conditionCue": "condition is stable",
+        "claimCue": "ownership history is part of the public record"
+      }
+    ],
+    "pressureCues": [
+      {
+        "id": "market:sofia-south",
+        "title": "nightlife-demand pressure",
+        "severity": "moderate",
+        "direction": "rising",
+        "message": "regional market conditions are changing; pressure is rising."
+      }
+    ],
+    "mapKnowledge": [
+      {
+        "id": "sofia-south",
+        "label": "South Sofia (fictionalized)",
+        "familiarityCue": "the district is known through lived history",
+        "discoveredFeatures": [
+          "Night Market Hall",
+          "South Ring Motel",
+          "River Cafe"
+        ]
+      }
+    ],
+    "notifications": [
+      {
+        "id": "notice:year-one",
+        "label": "A year of district history has settled",
+        "tone": "info"
+      }
+    ],
+    "omittedFields": [
+      "exact trust",
+      "exact debt",
+      "hidden competence",
+      "case confidence",
+      "private NPC belief",
+      "server-only pressure",
+      "event hashes"
+    ]
   }
 }

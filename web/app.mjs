@@ -44,6 +44,24 @@ function appendMarket(container, market) {
   container.append(card);
 }
 
+function appendUiCard(container, titleText, bodyText) {
+  const card = document.createElement("article");
+  card.className = "card";
+  const title = document.createElement("h3");
+  title.append(text(titleText));
+  const body = document.createElement("p");
+  body.append(text(bodyText));
+  card.append(title, body);
+  container.append(card);
+}
+
+function renderUi(ui) {
+  document.querySelector("#calendar-cue").textContent = `${ui.calendar.date} · ${ui.calendar.era} · ${ui.calendar.lifeCourseCue}`;
+  ui.mapKnowledge.forEach((place) => appendUiCard(document.querySelector("#map-list"), place.label, `${place.familiarityCue}; known features: ${place.discoveredFeatures.join(", ")}.`));
+  ui.pressureCues.forEach((cue) => appendUiCard(document.querySelector("#ui-pressure-list"), cue.title, cue.message));
+  ui.properties.forEach((property) => appendUiCard(document.querySelector("#ui-property-list"), property.label, `${property.conditionCue}; ${property.claimCue}.`));
+}
+
 async function render() {
   try {
     const response = await fetch("./scenario.json", { cache: "no-store" });
@@ -51,6 +69,7 @@ async function render() {
     const payload = await response.json();
     const projection = payload.projection;
     const summary = payload.summary;
+    renderUi(payload.ui);
     const metrics = document.querySelector("#summary");
     appendMetric(metrics, "world date", summary.date);
     appendMetric(metrics, "businesses", summary.businessCount);

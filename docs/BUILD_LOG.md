@@ -1012,3 +1012,26 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 48 — Public qualitative UI wired into browser preview
+
+Implemented:
+
+- preview generation now includes the tested qualitative UI projection;
+- browser surface renders calendar/life-course cues, learned-map context, market pressure, and place/ownership cues;
+- public projection remains the only data source and private fields stay omitted;
+- preview tests bind the UI contract to committed HTML/JavaScript sections.
+
+Acceptance evidence:
+
+- `npm test` passes 174 tests, including two preview-UI tests;
+- `preview-ui.test.mjs` proves the generated public UI payload and projection-only browser surface;
+- `npm run preview:build` and `npm run verify` pass.
+
+Boundary:
+
+- this is a deterministic local browser preview, not fresh-player usability, localization, accessibility audit, native-client, or production deployment proof.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
