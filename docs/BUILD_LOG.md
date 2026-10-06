@@ -1567,3 +1567,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local credential lifecycle contract, not account identity, hardware-backed custody, certificate authority, TLS operations, anti-cheat, or production security/compliance acceptance.
+
+## Episode 75 — TLS material lifecycle
+
+Implemented:
+
+- `tls-material.mjs` validates private-key PEM syntax and tracks certificate digests, public-key digests, validity ticks, server-name coverage, and retirement;
+- overlapping material can rotate into service while older material remains resolvable until expiry or explicit retirement;
+- snapshots and public projections omit certificate/private-key PEM values and restore only with matching runtime-injected material;
+- unknown, not-yet-valid, expired, retired, and name-mismatched material fails closed.
+
+Acceptance evidence:
+
+- `tls-material.test.mjs` passes overlap rotation, name coverage, expiry, retirement, PEM validation, redaction, and digest-matched restore checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local TLS-material lifecycle contract, not CA/ACME issuance, live TLS termination, revocation infrastructure, hardware-backed custody, account identity, or production security acceptance.
