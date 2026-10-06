@@ -96,6 +96,7 @@
 | Moderation escalations accept only explicit escalate decisions, track response-target bands, support bounded outcomes and claim expiry, restore audit history, and redact operational details | `moderation-escalation.test.mjs`, `moderation-escalation.mjs`, `SECTION_89_MODERATION_ESCALATION.md` | PASS |
 | Public preview assets provide structural language, navigation, live-region, heading, focus, reduced-motion, no-script, and image-alternative evidence | `preview-accessibility.test.mjs`, `preview-accessibility.mjs`, `SECTION_90_PREVIEW_ACCESSIBILITY.md` | PASS |
 | GitHub Actions runs the full tests, preview build, and docuseries verifier with read-only permissions and no secrets | `ci-contract.test.mjs`, `.github/workflows/ci.yml`, `SECTION_91_GITHUB_CI.md` | PASS |
+| Online underworld shard checkpoints append with hash chaining, fsync, idempotent retry, crash-tail recovery, and tamper rejection | `underworld-journal.test.mjs`, `underworld-journal.mjs`, `SECTION_92_UNDERWORLD_JOURNAL.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

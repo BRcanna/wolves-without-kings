@@ -1844,3 +1844,20 @@ Acceptance evidence:
 Boundary:
 
 - this is GitHub-hosted local-gate automation, not proof that a hosted run has completed or that production deployment, security, availability, hardware/FPS, or live-player acceptance exists.
+
+## Episode 91 — Durable online Underworld checkpoints
+
+Implemented:
+
+- `underworld-journal.mjs` persists validated online-shard snapshots as fsynced newline-delimited checkpoint records;
+- records carry shard/week/revision metadata, sequence, parent hash, and record hash, with idempotent checkpoint retry and conflict rejection;
+- latest restore reports incomplete crash-tail recovery while rejecting complete-record and nested-state tampering.
+
+Acceptance evidence:
+
+- `underworld-journal.test.mjs` passes two-checkpoint restore, hash chaining, idempotence, conflict rejection, crash-tail recovery, and tamper rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is local durable shard persistence, not a production database, cross-host replication, encrypted custody, failover, matchmaking, anti-cheat, moderation, availability/load proof, or the full persistent online underworld breadth.
