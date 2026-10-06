@@ -1636,3 +1636,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a synthetic local availability contract, not hardware benchmarking, real network load, autoscaling, process supervision, multi-host failover, SLA/SLO evidence, or production availability acceptance.
+
+## Episode 79 — Authority coordination and fencing
+
+Implemented:
+
+- `authority-coordination.mjs` adds named coordination nodes, expiring leases, monotonic terms, unique fencing tokens, renewal, and explicit handoff;
+- stale fencing tokens, expired leases, wrong leaders, and suspended nodes fail closed;
+- coordination events are hash-chained and restorable, while public projection omits fence and lease material.
+
+Acceptance evidence:
+
+- `authority-coordination.test.mjs` passes acquisition, renewal, handoff, stale-token rejection, expiry takeover, suspension, snapshot restore, tamper rejection, and redaction checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a deterministic local lease/fencing contract, not distributed consensus, membership/election, clock synchronization, process supervision, cross-host transport, failover timing, or production availability acceptance.

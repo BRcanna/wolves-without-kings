@@ -19,6 +19,7 @@ The current repository is single-player with a tested in-process authority contr
 - a local identity registry now binds signed, time-bounded claims to accounts, sessions, clients, and characters with suspension/revocation checks; external account providers, MFA/consent services, secret custody, privacy/compliance, and production identity acceptance remain unimplemented.
 - a local moderation queue now provides expiring reviewer leases, explicit allow/deny/escalate decisions, audit restoration, and redacted counts; staffed human review, policy/appeals, escalation coverage, response objectives, and production moderation acceptance remain unimplemented.
 - a synthetic availability probe now reports bounded concurrency, latency bands, overload, failures, and explicit threshold violations; hardware/load, autoscaling, multi-host failover, SLA/SLO, and production availability acceptance remain unimplemented.
+- a local coordination contract now provides expiring authority leases, monotonic fencing terms, explicit handoff, and stale-token rejection; distributed election/membership, clock safety, process supervision, cross-host transport, and production failover remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.
