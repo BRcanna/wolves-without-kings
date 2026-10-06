@@ -10,6 +10,7 @@ The current repository is single-player with a tested in-process authority contr
 - a local secure-service adapter now provides bearer-token admission, an optional TLS-required configuration, and pre-mutation moderation hold/deny hooks; token custody, certificate issuance/rotation, account identity, deployment, and operations remain external gates.
 - a local operational wrapper now exposes liveness/readiness state, bounded in-flight admission, and graceful drain behavior; this is lifecycle evidence, not a load, failover, or availability guarantee.
 - a non-root Docker deployment artifact now declares host binding and a healthcheck while requiring runtime-injected secrets; image build, registry, orchestration, and rollout remain environment-gated.
+- the operational launcher can persist authority checkpoints to a local fsynced journal and the container mounts `/data`; replication, backup, encryption at rest, and failover remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.

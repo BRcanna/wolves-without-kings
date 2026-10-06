@@ -1456,3 +1456,22 @@ Acceptance evidence:
 Boundary:
 
 - Docker image build/runtime execution is not locally verified because Docker is unavailable in the current environment; registry publication, orchestration, rollout, TLS operations, persistent volumes, failover, load, and production acceptance remain open.
+
+## Episode 69 — Checkpoint-backed authority service
+
+Implemented:
+
+- `authority-journal.mjs` stores authority snapshots as fsynced newline-delimited records with sequence and SHA-256 parent chaining;
+- `createCheckpointedAuthorityService` restores the latest checkpoint before accepting requests and checkpoints each committed authority revision before advancing durable state;
+- sessions, revisions, receipts, and event history preserve duplicate/stale semantics across service restart;
+- `WWK_JOURNAL_PATH` wires the persistence slice into the operational launcher, while the container mounts `/data/authority.jsonl` without embedding secrets.
+
+Acceptance evidence:
+
+- `authority-journal.test.mjs` passes restart equality, post-restart duplicate rejection, incomplete-tail recovery, and tamper rejection;
+- `deployment-contract.test.mjs` checks the journal path and writable volume declaration;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local single-process checkpoint integration, not a replicated database, backup/restore policy, encrypted-at-rest store, volume durability guarantee, failover proof, or production migration service.

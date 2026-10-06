@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 import { createOperationalAuthorityHttpServer } from "../src/wolves-without-kings/operational-http-service.mjs";
+import { createCheckpointedAuthorityService } from "../src/wolves-without-kings/authority-journal.mjs";
 
 const token = process.env.WWK_AUTH_TOKEN;
 if (typeof token !== "string" || token.trim() === "") throw new Error("WWK_AUTH_TOKEN is required");
@@ -14,8 +15,11 @@ const port = Number.parseInt(process.env.WWK_PORT ?? "8789", 10);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("WWK_PORT must be a valid TCP port");
 const host = process.env.WWK_HOST ?? "127.0.0.1";
 if (typeof host !== "string" || host.trim() === "") throw new Error("WWK_HOST must be a non-empty host");
+const journalPath = process.env.WWK_JOURNAL_PATH;
+const service = journalPath && journalPath.trim() !== "" ? createCheckpointedAuthorityService({ journalPath }) : undefined;
 
 const runtime = createOperationalAuthorityHttpServer({
+  service,
   tokens: [{ tokenId: "env:WWK_AUTH_TOKEN", secret: token }],
   tls,
   requireTls,

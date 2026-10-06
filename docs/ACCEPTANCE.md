@@ -74,6 +74,7 @@
 | Secure local service boundary requires bearer authentication, supports TLS-required configuration, redacted moderation holds/denials, and preserves no-mutation rejection | `secure-http-service.test.mjs`, `secure-http-service.mjs`, `SECTION_67_SECURE_SERVICE.md` | PASS |
 | Operational local service lifecycle exposes liveness/readiness, bounds in-flight work, rejects overload, and drains active requests without losing accepted authority work | `operational-http-service.test.mjs`, `operational-http-service.mjs`, `SECTION_68_OPERATIONAL_SERVICE.md` | PASS |
 | Container deployment contract is non-root, health-checked, externally configured for secrets/host binding, and excludes environment files | `deployment-contract.test.mjs`, `Dockerfile`, `SECTION_69_CONTAINER_DEPLOYMENT.md` | PASS |
+| Authority service checkpoints restore sessions/revisions across restart, preserve duplicate rejection, recover incomplete tails, and reject tampering | `authority-journal.test.mjs`, `authority-journal.mjs`, `SECTION_70_AUTHORITY_PERSISTENCE.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
