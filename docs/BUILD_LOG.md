@@ -1912,3 +1912,21 @@ Acceptance evidence:
 Boundary:
 
 - this is same-process, same-host mirrored shard persistence, not cross-host replication, quorum consensus, network partition recovery, encrypted custody, orchestration, failover timing, matchmaking, anti-cheat, moderation, availability/load proof, or full persistent online Underworld breadth.
+
+## Episode 95 — Quorum online Underworld checkpoints
+
+Implemented:
+
+- `quorum-underworld-store.mjs` requires a strict-majority quorum over at least three named Underworld journal placements;
+- partitions with a live quorum can commit the next revision, while partitions below quorum fail closed without advancing state;
+- returning shorter nodes repair from quorum history, and ahead/divergent histories are rejected instead of silently discarded;
+- startup normalizes incomplete tails and restores only from a validated quorum history.
+
+Acceptance evidence:
+
+- `quorum-underworld-store.test.mjs` passes partition commit, below-quorum no-mutation rejection, stale-node repair, divergence rejection, and configuration/shard-identity gates;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a deterministic, file-backed local quorum contract, not TCP or cross-host transport, distributed membership/election, fencing, synchronized clocks, encrypted custody, orchestration, failover timing, SLA availability, anti-cheat, staffed moderation, matchmaking, or production online acceptance.
