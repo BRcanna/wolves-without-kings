@@ -71,6 +71,7 @@
 | Regional authored content admits four fictionalized regions, ordinary-life residents, businesses, routes, schedules, era variants, and runtime organization bindings | `regional-content-pack.test.mjs`, `regional-content-pack.mjs`, `SECTION_64_REGIONAL_CONTENT.md` | PASS |
 | Durable regional runtime checkpoints append with hash chaining, idempotent retry, incomplete-tail recovery, nested restore, and fail-closed tamper validation | `runtime-journal.test.mjs`, `runtime-journal.mjs`, `SECTION_65_RUNTIME_JOURNAL.md` | PASS |
 | Browser preview renders the four-region public projection with qualitative continuity bands and omits exact regional transport/institutional fields | `preview-ui.test.mjs`, `renderer.test.mjs`, `build-preview.mjs`, `SECTION_66_REGIONAL_PREVIEW.md` | PASS |
+| Secure local service boundary requires bearer authentication, supports TLS-required configuration, redacted moderation holds/denials, and preserves no-mutation rejection | `secure-http-service.test.mjs`, `secure-http-service.mjs`, `SECTION_67_SECURE_SERVICE.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

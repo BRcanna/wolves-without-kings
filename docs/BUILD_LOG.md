@@ -1402,3 +1402,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local public projection, not a native client, live regional stream, accessibility/localization certification, production synchronization, or factual geographic/cultural representation.
+
+## Episode 66 — Secure local service boundary
+
+Implemented:
+
+- the authority HTTP adapter now has a reusable secure wrapper with bearer-token admission, constant-time token comparison, and public-health-only unauthenticated access;
+- optional Node HTTPS configuration and a `requireTls` guard reject missing or insecure transport configuration;
+- moderation hooks can stop requests before authority mutation and return only redacted hold/deny results;
+- `npm run serve:secure-authority` provides an environment-configured local launch path without committing secrets.
+
+Acceptance evidence:
+
+- `secure-http-service.test.mjs` passes authentication, no-mutation rejection, moderation hold/deny redaction, and TLS configuration tests;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local service security contract, not account identity proofing, secret/certificate custody, production TLS deployment, moderation operations, failover, availability/load testing, or online service acceptance.
