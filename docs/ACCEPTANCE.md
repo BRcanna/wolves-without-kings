@@ -79,6 +79,7 @@
 | Authority backup envelope validates mirrored journal parity and digest, round-trips restore state, protects existing destinations, and rejects tampering | `authority-backup.test.mjs`, `authority-backup.mjs`, `SECTION_72_AUTHORITY_BACKUP.md` | PASS |
 | Strict-majority authority nodes commit across a modeled partition, fail closed without quorum, repair stale nodes, and reject split-brain history | `quorum-authority-service.test.mjs`, `quorum-authority-service.mjs`, `SECTION_73_QUORUM_AUTHORITY.md` | PASS |
 | Authority backup catalog validates digests, supports idempotent registration and pinned history, and produces a non-destructive retention plan | `authority-backup-catalog.test.mjs`, `authority-backup-catalog.mjs`, `SECTION_74_BACKUP_RETENTION.md` | PASS |
+| Transport key lifecycle binds session keys, supports overlap rotation, rejects expiry/revocation/mismatch, and omits secrets from snapshots/projections | `transport-keyring.test.mjs`, `transport-keyring.mjs`, `SECTION_75_TRANSPORT_KEYRING.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

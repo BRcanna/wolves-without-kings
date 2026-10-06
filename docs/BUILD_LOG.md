@@ -1549,3 +1549,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local catalog and retention-plan contract, not scheduled jobs, deletion authorization, immutable/off-host storage, encryption, disaster recovery, restore-time objectives, or production backup acceptance.
+
+## Episode 74 — Transport key lifecycle
+
+Implemented:
+
+- `transport-keyring.mjs` adds stable key IDs, overlap rotation, expiry, revocation, and session-bound key resolution around the existing signed transport envelope;
+- expired, revoked, unknown, and client-mismatched keys fail before transport admission;
+- keyring snapshots preserve lifecycle metadata while omitting secrets and require runtime-injected material on restore;
+- public keyring projection exposes lifecycle bands without secret values.
+
+Acceptance evidence:
+
+- `transport-keyring.test.mjs` passes rotation, session binding, expiry, revocation, snapshot redaction, runtime secret injection, and mismatch rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local credential lifecycle contract, not account identity, hardware-backed custody, certificate authority, TLS operations, anti-cheat, or production security/compliance acceptance.
