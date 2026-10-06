@@ -1827,3 +1827,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a structural public-preview accessibility contract, not a screen-reader audit, fresh-player usability study, localization review, controller/navigation test, animation review, native-client delivery, visual regression suite, cultural review, or hardware/FPS acceptance.
+
+## Episode 90 — GitHub Actions local-gate CI
+
+Implemented:
+
+- `.github/workflows/ci.yml` runs on `main` pushes and pull requests with Node.js 22 and read-only repository permissions;
+- the job executes the full test suite, public preview build, and docuseries verifier without repository secrets;
+- `ci-contract.mjs` statically rejects unsafe triggers, write permissions, secret dependencies, missing runtime setup, or missing gates.
+
+Acceptance evidence:
+
+- `ci-contract.test.mjs` passes the committed workflow audit and proves incomplete or unsafe workflow text fails closed;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is GitHub-hosted local-gate automation, not proof that a hosted run has completed or that production deployment, security, availability, hardware/FPS, or live-player acceptance exists.

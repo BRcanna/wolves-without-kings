@@ -1,0 +1,27 @@
+name: WOLVES WITHOUT KINGS CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  local-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Run full test suite
+        run: npm test
+      - name: Build public preview
+        run: npm run preview:build
+      - name: Verify docuseries acceptance
+        run: npm run verify

@@ -27,6 +27,7 @@ The current repository is single-player with a tested in-process authority contr
 - a local process supervisor now health-gates child readiness, bounds graceful shutdown/force-kill, and enforces an explicit restart budget; OS/container orchestration, cloud scheduling, multi-host watchdogs, and production failover remain unimplemented.
 - a live local TLS runtime now serves HTTPS with bearer admission and rotates overlapping registered material; CA/ACME issuance, mTLS client identity, revocation, hardware-backed custody, distribution, and production security acceptance remain unimplemented.
 - the public browser preview now has a static accessibility contract for language, landmarks, skip navigation, live feedback, focus visibility, reduced motion, no-script boundaries, and image alternatives; screen-reader, fresh-player, localization, controller, visual, cultural, native-client, and hardware acceptance remain unimplemented.
+- the repository now declares a read-only GitHub Actions workflow for test, preview-build, and docuseries-verifier gates; hosted-run status, production deployment, security, availability, hardware, and live-player acceptance remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.
