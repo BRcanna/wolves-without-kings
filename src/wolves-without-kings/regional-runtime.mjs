@@ -45,6 +45,8 @@ import {
   settleUnderworldWeek,
   snapshotUnderworld,
 } from "./underworld.mjs";
+import { admitRegionalContentPack, assertRegionalContentMatchesRuntime } from "./regional-content-pack.mjs";
+import { admitContentPack, restoreContent, snapshotContent, projectContent } from "./content.mjs";
 
 export const REGIONAL_RUNTIME_SCHEMA_VERSION = 1;
 
@@ -156,7 +158,7 @@ function buildUnderworld() {
 }
 
 export function createRegionalRuntime() {
-  return appendEvent({
+  const base = {
     schemaVersion: REGIONAL_RUNTIME_SCHEMA_VERSION,
     runtimeId: "wwk-regional-runtime",
     simulationDate: "1999-01-01",
@@ -168,7 +170,10 @@ export function createRegionalRuntime() {
     logistics: buildLogistics(),
     underworld: buildUnderworld(),
     events: [],
-  }, "regional_runtime.created", { regionCount: 4, marketCount: 2, organizationCount: 2 });
+  };
+  const authored = admitRegionalContentPack({ simulationDate: base.simulationDate });
+  assertRegionalContentMatchesRuntime(authored.pack, base);
+  return appendEvent({ ...base, contentState: authored.state }, "regional_runtime.created", { regionCount: 4, marketCount: 2, organizationCount: 2, contentPackId: authored.pack.packId });
 }
 
 export function joinRegionalSession(state, { expectedRevision, sessionId, characterId, regionId }) {
@@ -231,6 +236,7 @@ export function projectRegionalRuntime(state) {
     markets: projectMarketEcology(state.markets, { scope: "public" }),
     logistics: projectLogistics(state.logistics),
     underworld: projectUnderworld(state.underworld),
+    content: projectContent(state.contentState),
     omittedFields: ["coordinator events", "exact transport contacts", "private organization work", "player session identity", "event hashes"],
   };
 }
@@ -244,6 +250,7 @@ export function snapshotRegionalRuntime(state) {
       markets: snapshotMarketEcology(state.markets),
       logistics: snapshotLogistics(state.logistics),
       underworld: snapshotUnderworld(state.underworld),
+      contentState: snapshotContent(state.contentState),
     },
   };
 }
@@ -256,6 +263,7 @@ export function restoreRegionalRuntime(snapshotValue) {
   state.markets = restoreMarketEcology(state.markets);
   state.logistics = restoreLogistics(state.logistics);
   state.underworld = restoreUnderworld(state.underworld);
+  state.contentState = restoreContent(state.contentState);
   let revision = 0;
   let previousHash = null;
   for (const event of state.events) {

@@ -1349,3 +1349,21 @@ Acceptance evidence:
 Boundary:
 
 - this is an in-process regional composition, not production content/assets, factual geography, MMO population load, authentication, matchmaking, anti-cheat, moderation, failover, availability, or the deferred full online underworld breadth.
+
+## Episode 63 — Regional authored content package
+
+Implemented:
+
+- the four-region runtime now carries a validated authored content registry;
+- ordinary residents, repair/health/market/hospitality businesses, functional locations, routes, schedules, and late-1990s variants admit together;
+- organization identities bind to the regional Underworld fixture while public projections continue to omit private work and session detail;
+- regional content admission retains an explicit anti-stereotype and fiction/safety boundary.
+
+Acceptance evidence:
+
+- `npm test` includes regional content admission and runtime projection assertions;
+- `npm run verify` checks the new acceptance row and contiguous build history.
+
+Boundary:
+
+- this is fictional local content admission, not factual geography, imported production assets, visual/audio reachability, dialogue/native review, cultural acceptance, or a full online content service.

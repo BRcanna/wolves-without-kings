@@ -42,6 +42,15 @@ test("regional runtime composes a seasonal multi-region trace with conflict and 
   const publicView = projectRegionalRuntime(state);
   assert.equal(publicView.geography.regions.length, 4);
   assert.equal(publicView.markets.markets.length, 2);
+  assert.deepEqual(publicView.content.counts, {
+    regions: 4,
+    npcs: 12,
+    businesses: 4,
+    organizations: 2,
+    locations: 8,
+    routes: 4,
+    scheduleTemplates: 12,
+  });
   assert.equal(publicView.underworld.properties[0].status, "contested");
   assert.equal(publicView.omittedFields.includes("player session identity"), true);
 });

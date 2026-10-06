@@ -68,6 +68,7 @@
 | Local preview server serves committed assets and connects browser choice submission to the revision-checked public scenario endpoint | `preview-server.test.mjs`, `preview-ui.test.mjs`, `SECTION_61_LOCAL_PREVIEW_RUNTIME.md` | PASS |
 | Local scenario sessions derive actor identity server-side and reject unknown or mismatched client identity before mutation | `scenario-service.test.mjs`, `preview-server.test.mjs`, `SECTION_62_SESSION_BOUNDARY.md` | PASS |
 | Integrated regional runtime carries a seasonal multi-region trace across geography, markets, logistics, Underworld conflict, disconnect, public projection, and nested restart | `regional-runtime.test.mjs`, `regional-runtime.mjs`, `SECTION_63_REGIONAL_RUNTIME.md` | PASS |
+| Regional authored content admits four fictionalized regions, ordinary-life residents, businesses, routes, schedules, era variants, and runtime organization bindings | `regional-content-pack.test.mjs`, `regional-content-pack.mjs`, `SECTION_64_REGIONAL_CONTENT.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
