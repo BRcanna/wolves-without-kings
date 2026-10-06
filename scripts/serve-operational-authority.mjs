@@ -12,6 +12,8 @@ const tls = keyPath && certPath ? { key: readFileSync(keyPath), cert: readFileSy
 const requireTls = process.env.WWK_REQUIRE_TLS === "1";
 const port = Number.parseInt(process.env.WWK_PORT ?? "8789", 10);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("WWK_PORT must be a valid TCP port");
+const host = process.env.WWK_HOST ?? "127.0.0.1";
+if (typeof host !== "string" || host.trim() === "") throw new Error("WWK_HOST must be a non-empty host");
 
 const runtime = createOperationalAuthorityHttpServer({
   tokens: [{ tokenId: "env:WWK_AUTH_TOKEN", secret: token }],
@@ -32,7 +34,6 @@ const shutdown = async () => {
 };
 process.once("SIGINT", shutdown);
 process.once("SIGTERM", shutdown);
-runtime.server.listen(port, "127.0.0.1", () => {
-  console.log(`wolves-without-kings operational authority listening on ${protocol}://127.0.0.1:${port}`);
+runtime.server.listen(port, host, () => {
+  console.log(`wolves-without-kings operational authority listening on ${protocol}://${host}:${port}`);
 });
-

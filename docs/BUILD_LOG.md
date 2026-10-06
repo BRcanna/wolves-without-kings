@@ -1438,3 +1438,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a local lifecycle and back-pressure contract, not production load testing, autoscaling, process supervision, failover, durable queueing, multi-host coordination, SLA evidence, or availability acceptance.
+
+## Episode 68 — Container deployment contract
+
+Implemented:
+
+- `Dockerfile` packages the operational authority on Node 22 Alpine, runs as the non-root `node` user, binds through `WWK_HOST=0.0.0.0`, and declares a `/health` healthcheck;
+- `.dockerignore` excludes repository metadata, tests, docs, browser assets, logs, and environment files;
+- runtime tokens and optional TLS material remain environment/path configured and are not copied into the image;
+- `deployment-contract.test.mjs` checks the packaging and secret-boundary contract.
+
+Acceptance evidence:
+
+- `deployment-contract.test.mjs` and `node --check scripts/serve-operational-authority.mjs` pass;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- Docker image build/runtime execution is not locally verified because Docker is unavailable in the current environment; registry publication, orchestration, rollout, TLS operations, persistent volumes, failover, load, and production acceptance remain open.
