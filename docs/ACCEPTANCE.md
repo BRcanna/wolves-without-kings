@@ -85,6 +85,7 @@
 | Moderation operations queue supports expiring reviewer claims, explicit decisions, audit restore, tamper rejection, and redacted public counts | `moderation-operations.test.mjs`, `moderation-operations.mjs`, `SECTION_78_MODERATION_OPERATIONS.md` | PASS |
 | Synthetic availability probe measures bounded concurrency, latency, overload, failures, and explicit threshold violations | `availability-probe.test.mjs`, `availability-probe.mjs`, `SECTION_79_AVAILABILITY_PROBE.md` | PASS |
 | Authority coordination provides expiring leases, monotonic fencing terms, handoff, stale-token rejection, expiry takeover, and restorable redacted history | `authority-coordination.test.mjs`, `authority-coordination.mjs`, `SECTION_80_AUTHORITY_COORDINATION.md` | PASS |
+| Portable authority backup repository validates immutable object publication, idempotent replay, safe IDs, verification, tamper detection, and restore | `authority-backup-repository.test.mjs`, `authority-backup-repository.mjs`, `SECTION_81_BACKUP_REPOSITORY.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

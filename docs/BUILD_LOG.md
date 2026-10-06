@@ -1653,3 +1653,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a deterministic local lease/fencing contract, not distributed consensus, membership/election, clock synchronization, process supervision, cross-host transport, failover timing, or production availability acceptance.
+
+## Episode 80 — Portable authority backup repository
+
+Implemented:
+
+- `authority-backup-repository.mjs` publishes only digest-validated authority backup envelopes under safe object IDs;
+- same-digest publication is idempotent while conflicting publication is rejected without overwrite;
+- repository verification reports object digest/revision health and restore uses the existing validated backup path with explicit destination protection.
+
+Acceptance evidence:
+
+- `authority-backup-repository.test.mjs` passes idempotent publication, immutable conflict rejection, safe-ID validation, verified read/restore, and tamper detection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local portable-repository contract, not cloud/off-host isolation, object lock, encryption/access control, replication transport, retention deletion, disaster recovery, or production restore/SLA acceptance.
