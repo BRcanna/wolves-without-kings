@@ -61,7 +61,7 @@ function clear(container) {
   while (container.firstChild) container.removeChild(container.firstChild);
 }
 
-function renderScenario(scenario) {
+function renderScenario(scenario, { authority = null, notice = null } = {}) {
   const container = document.querySelector("#scenario-list");
   const feedback = document.querySelector("#scenario-feedback");
   clear(container);
@@ -90,12 +90,20 @@ function renderScenario(scenario) {
         button.className = "choice-button";
         button.dataset.choiceId = choice.id;
         button.append(text(choice.label));
-        button.addEventListener("click", () => {
-          const result = resolvePublicScenarioChoice(scenario, { sceneId: scene.id, choiceId: choice.id });
-          scenario.resolutions = result.scenario.resolutions;
-          scenario.activeSceneId = result.scenario.activeSceneId;
-          feedback.textContent = `${result.choice.publicCue}. Preview branch is held in memory only; no authoritative world state was changed.`;
-          renderScenario(scenario);
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          try {
+            const result = authority
+              ? await authority.submit(scenario, { sceneId: scene.id, choiceId: choice.id })
+              : { ...resolvePublicScenarioChoice(scenario, { sceneId: scene.id, choiceId: choice.id }), authoritative: false };
+            const notice = result.authoritative
+              ? `${result.choice.publicCue}. Local authoritative branch committed; production deployment is not implied.`
+              : `${result.choice.publicCue}. Preview branch is held in memory only; no authoritative world state was changed.`;
+            renderScenario(result.scenario, { authority, notice });
+          } catch (error) {
+            feedback.textContent = `Choice unavailable: ${error.message}`;
+            button.disabled = false;
+          }
         });
         actions.append(button);
       });
@@ -108,8 +116,12 @@ function renderScenario(scenario) {
     }
     container.append(card);
   });
-  if (scenario.activeSceneId === null) {
-    feedback.textContent = "This preview branch has reached its local endpoint. The recorded choices remain presentation-only.";
+  if (scenario.activeSceneId === null && !notice) {
+    feedback.textContent = authority
+      ? "This local authoritative branch has reached its endpoint. Production deployment is not implied."
+      : "This preview branch has reached its local endpoint. The recorded choices remain presentation-only.";
+  } else if (notice) {
+    feedback.textContent = notice;
   }
 }
 
@@ -135,8 +147,45 @@ async function render() {
     const payload = await response.json();
     const projection = payload.projection;
     const summary = payload.summary;
+    let authority = null;
+    if (location.protocol !== "file:") {
+      try {
+        const authorityResponse = await fetch("./scenario", { cache: "no-store" });
+        if (authorityResponse.ok) {
+          const authorityPayload = await authorityResponse.json();
+          if (Number.isInteger(authorityPayload.worldRevision) && Number.isInteger(authorityPayload.scenarioRevision)) {
+            const revisions = {
+              worldRevision: authorityPayload.worldRevision,
+              scenarioRevision: authorityPayload.scenarioRevision,
+            };
+            authority = {
+              async submit(scenario, { sceneId, choiceId }) {
+                const result = await fetch("./scenario/choice", {
+                  method: "POST",
+                  headers: { "content-type": "application/json" },
+                  body: JSON.stringify({
+                    expectedWorldRevision: revisions.worldRevision,
+                    expectedScenarioRevision: revisions.scenarioRevision,
+                    sceneId,
+                    choiceId,
+                    actorId: "character:player",
+                  }),
+                });
+                const body = await result.json();
+                if (!result.ok) throw new Error(body.message ?? body.error ?? `HTTP ${result.status}`);
+                revisions.worldRevision = body.worldRevision;
+                revisions.scenarioRevision = body.scenarioRevision;
+                return { scenario: body.scenario, choice: scenario.scenes.find((scene) => scene.id === sceneId).choices.find((choice) => choice.id === choiceId), authoritative: true };
+              },
+            };
+          }
+        }
+      } catch {
+        authority = null;
+      }
+    }
     renderUi(payload.ui);
-    renderScenario(payload.scenario);
+    renderScenario(payload.scenario, { authority });
     const metrics = document.querySelector("#summary");
     appendMetric(metrics, "world date", summary.date);
     appendMetric(metrics, "businesses", summary.businessCount);
@@ -144,7 +193,9 @@ async function render() {
     appendMetric(metrics, "public objects", projection.objects.length);
     projection.businesses.forEach((business) => appendBusiness(document.querySelector("#business-list"), business));
     projection.markets.forEach((market) => appendMarket(document.querySelector("#market-list"), market));
-    status.textContent = `Loaded public projection · ${projection.worldId}`;
+    status.textContent = authority
+      ? `Loaded public projection · ${projection.worldId} · local authority available`
+      : `Loaded public projection · ${projection.worldId}`;
   } catch (error) {
     status.className = "status error";
     status.textContent = `Projection unavailable: ${error.message}`;

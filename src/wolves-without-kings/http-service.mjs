@@ -49,11 +49,11 @@ function writeJson(response, status, body) {
   response.end(JSON.stringify(body));
 }
 
-export function createAuthorityHttpServer({ service = createAuthorityService(), maxBodyBytes = DEFAULT_MAX_BODY_BYTES } = {}) {
+export function createAuthorityHttpHandler({ service = createAuthorityService(), maxBodyBytes = DEFAULT_MAX_BODY_BYTES } = {}) {
   if (!service || typeof service.request !== "function") throw new TypeError("service must expose request");
   if (!Number.isInteger(maxBodyBytes) || maxBodyBytes < 1) throw new TypeError("maxBodyBytes must be a positive integer");
 
-  return createServer(async (request, response) => {
+  return async (request, response) => {
     try {
       const body = request.method === "GET" || request.method === "HEAD" ? null : await readBody(request, maxBodyBytes);
       const result = service.request({ method: request.method, path: request.url ?? "/", body });
@@ -70,5 +70,9 @@ export function createAuthorityHttpServer({ service = createAuthorityService(), 
       }
       writeJson(response, 500, { error: "internal_service_error" });
     }
-  });
+  };
+}
+
+export function createAuthorityHttpServer(options = {}) {
+  return createServer(createAuthorityHttpHandler(options));
 }

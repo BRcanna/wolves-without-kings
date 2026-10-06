@@ -1,29 +1,17 @@
-import { admitContentPack, createContentRegistry, projectContent } from "./content.mjs";
-import { buildVerticalContentPack } from "./content-pack.mjs";
 import { projectWorld } from "./projection.mjs";
-import { admitScenarioPack, buildVerticalScenarioPack, createScenarioRegistry, projectScenario, resolveScenarioChoice } from "./scenario-pack.mjs";
-import { applyVerticalScenarioChoice } from "./scenario-runtime.mjs";
+import { projectContent } from "./content.mjs";
+import { projectScenario } from "./scenario-pack.mjs";
 import { restoreRuntimeBundle, snapshotRuntimeBundle } from "./runtime-bundle.mjs";
-import { runVerticalHistory } from "./vertical-slice.mjs";
+import { createVerticalRuntime, dispatchVerticalScenarioChoice } from "./vertical-runtime.mjs";
 
-const { world: settledWorld } = runVerticalHistory("relationship");
-const contentPack = buildVerticalContentPack();
-let contentState = createContentRegistry({ packId: contentPack.packId, simulationDate: settledWorld.date });
-contentState = admitContentPack(contentState, { expectedRevision: contentState.revision, ...contentPack });
-const scenarioPack = buildVerticalScenarioPack();
-let scenarioState = createScenarioRegistry({
-  scenarioPackId: scenarioPack.scenarioPackId,
-  contentPackId: scenarioPack.contentPackId,
-  simulationDate: settledWorld.date,
-  knownLocationIds: Object.keys(contentState.locations),
-});
-scenarioState = admitScenarioPack(scenarioState, { expectedRevision: scenarioState.revision, scenes: scenarioPack.scenes });
-const world = applyVerticalScenarioChoice(settledWorld, { expectedRevision: settledWorld.revision, choiceId: "choice:delegate-check" });
-scenarioState = resolveScenarioChoice(scenarioState, {
-  expectedRevision: scenarioState.revision,
+const initialRuntime = createVerticalRuntime();
+const { runtime: finalRuntime } = dispatchVerticalScenarioChoice(initialRuntime, {
+  expectedWorldRevision: initialRuntime.world.revision,
+  expectedScenarioRevision: initialRuntime.scenarioState.revision,
   sceneId: "scene:market-lights",
   choiceId: "choice:delegate-check",
 });
+const { world, contentState, scenarioState } = finalRuntime;
 const bundle = snapshotRuntimeBundle({ world, contentState, scenarioState });
 const restored = restoreRuntimeBundle(bundle);
 

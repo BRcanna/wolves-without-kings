@@ -33,10 +33,12 @@ test("browser preview renders UI projection sections without private fields", ()
   assert.match(html, /id="scenario-list"/);
   assert.match(html, /id="scenario-feedback"/);
   assert.match(app, /renderUi\(payload\.ui\)/);
-  assert.match(app, /renderScenario\(payload\.scenario\)/);
+  assert.match(app, /renderScenario\(payload\.scenario, \{ authority \}\)/);
   assert.match(app, /choice-button/);
   assert.match(app, /addEventListener\("click"/);
   assert.match(app, /in memory only/);
+  assert.match(app, /expectedWorldRevision/);
+  assert.match(app, /local authority available/);
   assert.doesNotMatch(app, /beliefs|hiddenCompetence|caseConfidence/);
 });
 

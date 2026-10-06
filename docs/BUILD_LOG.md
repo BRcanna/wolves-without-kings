@@ -1270,3 +1270,46 @@ Boundary:
 Later verification:
 
 - connect the browser scenario surface to an authoritative runtime endpoint only after session/authentication, persistence, synchronization, and moderation policy are specified and tested.
+
+## Episode 59 — Authoritative scenario HTTP runtime
+
+Implemented:
+
+- a reusable vertical runtime factory assembles the settled world, admitted content, and active authored scenario graph;
+- `GET /scenario` exposes public revisions and projections;
+- `POST /scenario/choice` performs revision-checked authored choice resolution and systemic consequence application as one local commit;
+- stale or invalid dispatches leave both the world event history and scenario event history unchanged;
+- private beliefs, hidden competence, case confidence, and event hashes remain outside the response boundary.
+
+Acceptance evidence:
+
+- `npm test` includes two authoritative scenario service tests over an ephemeral loopback socket;
+- `npm run verify` checks the acceptance evidence and contiguous build history;
+- the existing runtime-bundle and scenario-runtime tests remain green.
+
+Boundary:
+
+- this is a deterministic local authority endpoint, not production authentication, TLS, durable storage, moderation operations, multiplayer session management, failover, load testing, or native-client acceptance.
+
+Later verification:
+
+- connect the browser client through an authenticated session contract after persistence, synchronization, moderation, and availability requirements are separately specified and tested.
+
+## Episode 60 — Local preview/runtime integration
+
+Implemented:
+
+- the preview server serves the committed page/assets and the authoritative local scenario endpoint together;
+- the browser detects revision-bearing local authority and submits choices with world and scenario revisions;
+- successful local responses advance the rendered public scenario, while static-file viewing retains its explicit in-memory fallback;
+- the server uses an allowlisted asset surface and preserves public-only response projection.
+
+Acceptance evidence:
+
+- `npm test` includes an ephemeral preview-server test plus browser wiring assertions;
+- `npm run verify` checks the new acceptance row and contiguous episode history;
+- `npm run serve:preview` is the documented local launch path.
+
+Boundary:
+
+- this is local preview/runtime integration, not production TLS/authentication, session lifecycle, durable persistence, multiplayer synchronization, moderation operations, load/availability, accessibility, localization, authored dialogue/audio, or native-client acceptance.

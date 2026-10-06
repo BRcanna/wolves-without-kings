@@ -33,6 +33,7 @@ test("vertical scenario pack admits, branches, projects, and restores without pr
   state = resolveScenarioChoice(state, { expectedRevision: state.revision, sceneId: "scene:market-lights", choiceId: "choice:delegate-check" });
   const projected = projectScenario(state);
   assert.equal(projected.activeSceneId, "scene:market-followup");
+  assert.equal(projected.simulationDate, "1998-01-01");
   assert.equal(projected.resolutions[0].branch, "delegate");
   assert.deepEqual(restoreScenario(snapshotScenario(state)), state);
   assert.deepEqual(projected.omittedFields, ["authoring metadata", "private prerequisites", "event hashes"]);
