@@ -11,7 +11,7 @@ The current repository is single-player with a tested in-process authority contr
 - a local operational wrapper now exposes liveness/readiness state, bounded in-flight admission, and graceful drain behavior; this is lifecycle evidence, not a load, failover, or availability guarantee.
 - a non-root Docker deployment artifact now declares host binding and a healthcheck while requiring runtime-injected secrets; image build, registry, orchestration, and rollout remain environment-gated.
 - the operational launcher can persist authority checkpoints to a local fsynced journal and the container mounts `/data`; replication, backup, encryption at rest, and failover remain unimplemented.
-- a same-host mirrored checkpoint service can repair a missing/stale copy and reject divergence; cross-host replication, quorum, partitions, backups, and failover timing remain unimplemented.
+- a same-host mirrored checkpoint service can repair a missing/stale copy and reject divergence; a deterministic file-backed quorum harness now models strict-majority commits, partition fail-closed behavior, stale-node repair, and split-brain rejection; actual cross-host transport, membership, fencing, and failover timing remain unimplemented.
 - a local backup envelope can validate and restore mirrored journal records with overwrite protection; retention, off-host storage, encryption, disaster recovery, and restore objectives remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 

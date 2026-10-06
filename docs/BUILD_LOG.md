@@ -1512,3 +1512,22 @@ Acceptance evidence:
 Boundary:
 
 - this is a local backup envelope, not scheduled retention, off-host replication, encrypted backup storage, cloud/object-lock policy, disaster recovery, restore-time objective, or production backup acceptance.
+
+## Episode 72 — Quorum authority and partition contract
+
+Implemented:
+
+- `quorum-authority-service.mjs` coordinates a strict-majority set of independently persisted authority journals;
+- committed revisions continue when a modeled partition leaves at least quorum nodes available;
+- requests fail closed with a retryable `503` and no authoritative revision advance when fewer than quorum nodes are available;
+- returning stale nodes can be explicitly repaired from canonical quorum history, while split-brain journal histories are rejected;
+- health output reports node availability, journal depth, authoritative revision, quorum status, and repair state.
+
+Acceptance evidence:
+
+- `quorum-authority-service.test.mjs` passes partitioned commit, no-quorum rejection, stale-node repair, split-brain rejection, and strict-majority configuration checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a deterministic file-backed quorum harness, not TCP/cross-host transport, leader election, membership/fencing, encrypted replication, orchestration, failover timing, load testing, SLA evidence, or production availability acceptance.
