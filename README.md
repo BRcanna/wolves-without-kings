@@ -6,7 +6,7 @@ The project starts from the supplied mechanics docuseries and follows its depend
 
 ## Current build slice
 
-- Current published scope: Sections 3–86, including isolated backup publication, digest-parity verification, reviewable retention, explicitly authorized retention execution, bounded local process supervision, and live TLS termination/rotation evidence.
+- Current published scope: Sections 3–87, including isolated backup publication, digest-parity verification, reviewable retention, explicitly authorized retention execution, bounded local process supervision, live TLS termination/rotation evidence, and consent/MFA access admission.
 
 - Phase 0 foundation: canonical state, event ontology, world time, save/replay.
 - Revision-bound mutation: stale proposals fail before any state changes.
@@ -117,4 +117,4 @@ The passing tests verify this bounded headless foundation only. They do not prov
 
 ## Next episode
 
-Continue the remaining character/world/content and browser/runtime audit slices; loopback transport/election, isolated backup retention, bounded process supervision, and live TLS termination/rotation are now built and tested. Cloud/off-host backup custody, true cross-host deployment and failover, production orchestration, external account/MFA/consent services, CA issuance, TLS revocation/mTLS, staffed moderation/appeals, hardware/load/SLA acceptance, and online underworld breadth remain explicitly deferred.
+Continue the remaining character/world/content and browser/runtime audit slices; loopback transport/election, isolated backup retention, bounded process supervision, live TLS termination/rotation, and local consent/MFA access admission are now built and tested. Cloud/off-host backup custody, true cross-host deployment and failover, production orchestration, external account/factor/age-consent services, CA issuance, TLS revocation/mTLS, staffed moderation/appeals, hardware/load/SLA acceptance, and online underworld breadth remain explicitly deferred.

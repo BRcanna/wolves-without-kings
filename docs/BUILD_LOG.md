@@ -1759,3 +1759,20 @@ Acceptance evidence:
 Boundary:
 
 - this is local live TLS termination and rotation evidence, not CA/ACME issuance, mTLS identity, revocation, hardware-backed custody, certificate distribution, or production security acceptance. The committed key material is test-only and must never be deployed.
+
+## Episode 86 — Consent and MFA access admission
+
+Implemented:
+
+- `account-access-policy.mjs` adds hash-chained local access state for account status, policy-version consent, age eligibility bands, MFA enrollment, expiring challenges, attempt limits, and verification windows;
+- signed identity claims now have an executable composition gate requiring active account state, adult consent, and current MFA verification by default;
+- rejected challenges commit bounded outcomes without storing raw codes, while snapshots and projections omit factor material, code/factor digests, and exact verification expiry.
+
+Acceptance evidence:
+
+- `account-access-policy.test.mjs` passes claim composition, adult-consent/MFA admission, invalid and exhausted challenge rejection, suspended-account rejection, snapshot/tamper checks, and redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a deterministic local access-policy contract, not an external account provider, password/factor delivery service, real age verification, legal consent workflow, privacy/compliance system, hardware-backed custody, or production identity acceptance.

@@ -91,6 +91,7 @@
 | Isolated backup store keeps source and repository roots separate, validates immutable publication, verifies catalog/object parity, and executes only explicitly authorized retention before restore | `isolated-backup-store.test.mjs`, `isolated-backup-store.mjs`, `SECTION_84_ISOLATED_BACKUP_STORE.md` | PASS |
 | Local process supervisor gates readiness on health, records failed exits, drains gracefully, bounds force-kill and explicit restart budget, and redacts process configuration | `process-supervisor.test.mjs`, `process-supervisor.mjs`, `SECTION_85_PROCESS_SUPERVISOR.md` | PASS |
 | Live TLS runtime serves HTTPS with bearer-protected mutation traffic, rotates an overlapping secure context, rejects invalid/name-mismatched material, and redacts PEM values | `live-tls-runtime.test.mjs`, `live-tls-runtime.mjs`, `SECTION_86_LIVE_TLS_RUNTIME.md` | PASS |
+| Account access requires adult consent and current MFA verification in addition to signed identity claims, rejects exhausted/suspended paths, and redacts factor/challenge material | `account-access-policy.test.mjs`, `account-access-policy.mjs`, `SECTION_87_ACCOUNT_ACCESS.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
