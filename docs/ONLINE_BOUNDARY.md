@@ -38,6 +38,7 @@ The current repository is single-player with a tested in-process authority contr
 - the local Underworld backup catalog now records digests and produces pinned/future-aware retention plans without deletion; scheduling, destructive authorization, cloud/off-host custody, encryption, access control, disaster recovery, and production backup acceptance remain unimplemented.
 - an isolated local Underworld backup store now separates source/repository roots, verifies catalog/object parity, and requires explicit approval before eligible retention deletion; cloud/off-host custody, encryption, object lock, access control, scheduling, disaster recovery, and production acceptance remain unimplemented.
 - a bounded local Underworld coordination layer now gates checkpoints on a lease-bearing fenced leader and quorum, with stale-term rejection and expiry takeover; cross-host membership, synchronized clocks, process supervision, and production failover remain unimplemented.
+- the Underworld mutation boundary now validates local signed identity claims plus adult consent and current MFA before admission; external identity providers, factor delivery, age/consent verification, secret custody, privacy/compliance, account recovery, and production authentication remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.

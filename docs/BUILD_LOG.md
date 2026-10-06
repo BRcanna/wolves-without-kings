@@ -2015,3 +2015,20 @@ Acceptance evidence:
 Boundary:
 
 - this is deterministic in-process coordination over file-backed fictional Underworld journals, not cross-host transport/membership, synchronized clocks, process supervision, encrypted custody, matchmaking, anti-cheat, staffed moderation, SLA availability, or production failover acceptance.
+
+## Episode 101 — Identity-bound online Underworld access
+
+Implemented:
+
+- `underworld-access-boundary.mjs` composes signed account/session/character claims with adult-consent and current-MFA admission before Underworld mutations;
+- missing, mismatched, expired, and denied access returns a bounded error without entering the Underworld command path or changing revision;
+- public health/projection reads remain redacted and do not expose identity, factor, or challenge material.
+
+Acceptance evidence:
+
+- `underworld-access-boundary.test.mjs` passes valid admission, missing/mismatched/expired denial, no-mutation rejection, and public projection redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local identity/access composition, not an external identity provider, real age/consent verification, factor delivery, secret custody, privacy/compliance review, account recovery, or production authentication acceptance.

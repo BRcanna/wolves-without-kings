@@ -106,6 +106,7 @@
 | Online-underworld backup catalog records validated digests, supports idempotent registration, preserves pinned/future history, and plans retention non-destructively | `underworld-backup-catalog.test.mjs`, `underworld-backup-catalog.mjs`, `SECTION_99_UNDERWORLD_BACKUP_CATALOG.md` | PASS |
 | Online-underworld isolated backup store separates source/repository roots, verifies catalog/object parity, restores safely, and executes only explicitly authorized retention | `isolated-underworld-backup-store.test.mjs`, `isolated-underworld-backup-store.mjs`, `SECTION_100_ISOLATED_UNDERWORLD_BACKUP.md` | PASS |
 | Online-underworld coordination gates checkpoints on the current lease-bearing leader and fencing term, rejects stale terms, and quorum-gates handoff/election | `underworld-coordination.test.mjs`, `underworld-coordination.mjs`, `SECTION_101_UNDERWORLD_COORDINATION.md` | PASS |
+| Online-underworld mutations require signed account/session/character identity, adult consent, and current MFA while public projection remains redacted | `underworld-access-boundary.test.mjs`, `underworld-access-boundary.mjs`, `SECTION_102_UNDERWORLD_ACCESS.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
