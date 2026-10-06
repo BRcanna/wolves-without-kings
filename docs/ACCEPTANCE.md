@@ -52,6 +52,7 @@
 | Atomic authoritative event batches, stale preflight rejection, all-or-nothing failure, and save/restore compatibility | `atomic-batch.test.mjs`, `SECTION_46_ATOMIC_BATCHES.md` | PASS |
 | Functional content locations, access routes, schedules, era identity, and pre-commit reference validation | `content-pipeline.test.mjs`, `SECTION_47_CONTENT_PIPELINE.md` | PASS |
 | Ten supplied scenario traces mapped to source documents, executable subsystem tests, and explicit fiction/safety boundaries | `scenario-coverage.test.mjs`, `SCENARIO_ACCEPTANCE.md` | PASS |
+| Signed transport envelopes, ordered retries, rate limiting, moderation holds, clock-skew rejection, and public security redaction | `transport-envelope.test.mjs`, `SECTION_48_TRANSPORT_ENVELOPE.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

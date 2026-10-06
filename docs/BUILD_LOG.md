@@ -988,3 +988,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 47 — Bounded transport envelope and admission guard
+
+Implemented:
+
+- signed abstract intent envelopes with session identity, sequence, nonce, and tick;
+- rejection of client-provided authoritative results and world-state payloads;
+- ordered retry/idempotency, conflicting duplicate rejection, and clock-skew checks;
+- explicit rate-limit and moderation-hold outcomes;
+- public transport projection and hash-linked snapshot recovery.
+
+Acceptance evidence:
+
+- `npm test` passes 172 tests, including five transport-envelope tests;
+- `transport-envelope.test.mjs` proves integrity, replay handling, rate limiting, moderation holds, snapshot recovery, and redaction;
+- `npm run verify` continues to report `docuseries-verify: PASS`.
+
+Boundary:
+
+- this is a local integrity/admission contract, not production encryption, key management, TLS, anti-cheat, moderation operations, availability, deployment, or compliance acceptance.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
