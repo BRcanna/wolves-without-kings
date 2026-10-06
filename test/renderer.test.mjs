@@ -9,6 +9,8 @@ test("renderer preview is reproducible and consumes only the public projection",
   const payload = JSON.parse(readFileSync("web/scenario.json", "utf8"));
   assert.equal(payload.previewVersion, 1);
   assert.equal(payload.projection.scope, "public");
+  assert.equal(payload.regional.geography.regions.length, 4);
+  assert.equal(payload.regional.logistics.omittedFields.includes("exact travel hours"), true);
   assert.equal(Object.hasOwn(payload.projection, "beliefs"), false);
   assert.equal(Object.hasOwn(payload.projection, "surveillance"), false);
   assert.equal(Object.hasOwn(payload.projection, "cases"), false);

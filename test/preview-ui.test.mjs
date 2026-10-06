@@ -11,6 +11,9 @@ test("browser preview carries the public qualitative UI projection", () => {
 
   assert.equal(payload.ui.projectionVersion, 1);
   assert.equal(payload.ui.calendar.era, "late-1990s");
+  assert.equal(payload.regional.geography.regions.length, 4);
+  assert.equal(payload.regional.content.counts.npcs, 12);
+  assert.ok(payload.regional.geography.links.every((link) => !Object.hasOwn(link, "exactTravelDays")));
   assert.equal(payload.ui.mapKnowledge.length, 1);
   assert.equal(payload.scenario.scenes.length, 2);
   assert.equal(payload.scenario.scenes[0].choices.length, 3);
@@ -32,7 +35,9 @@ test("browser preview renders UI projection sections without private fields", ()
   assert.match(html, /id="notifications-list"/);
   assert.match(html, /id="scenario-list"/);
   assert.match(html, /id="scenario-feedback"/);
+  assert.match(html, /id="regional-list"/);
   assert.match(app, /renderUi\(payload\.ui\)/);
+  assert.match(app, /renderRegional\(payload\.regional\)/);
   assert.match(app, /renderScenario\(payload\.scenario, \{ authority \}\)/);
   assert.match(app, /choice-button/);
   assert.match(app, /addEventListener\("click"/);

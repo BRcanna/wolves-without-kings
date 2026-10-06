@@ -100,6 +100,299 @@
       "event hashes"
     ]
   },
+  "regional": {
+    "schemaVersion": 1,
+    "runtimeId": "wwk-regional-runtime",
+    "simulationDate": "1999-01-01",
+    "revision": 1,
+    "geography": {
+      "schemaVersion": 1,
+      "worldId": "wwk-regional-runtime",
+      "simulationDate": "1999-01-01",
+      "era": "late-1990s",
+      "season": "winter",
+      "regions": [
+        {
+          "id": "region:capital",
+          "publicLabel": "Capital Network (fictionalized)",
+          "role": "capital",
+          "cityOrArea": "Sofia Basin",
+          "socialLayers": [
+            "government",
+            "estates",
+            "nightlife"
+          ],
+          "architecture": [
+            "estate",
+            "industrial"
+          ],
+          "simulationMode": "full",
+          "seasonBand": "continuous",
+          "memoryCount": 0,
+          "ageBand": "low"
+        },
+        {
+          "id": "region:coast",
+          "publicLabel": "Coastal Network (fictionalized)",
+          "role": "coastal",
+          "cityOrArea": "Black Sea Corridor",
+          "socialLayers": [
+            "tourism",
+            "port-work",
+            "construction"
+          ],
+          "architecture": [
+            "resort",
+            "port-edge"
+          ],
+          "simulationMode": "aggregate",
+          "seasonBand": "seasonal-low",
+          "memoryCount": 0,
+          "ageBand": "low"
+        },
+        {
+          "id": "region:rural",
+          "publicLabel": "Rural Network (fictionalized)",
+          "role": "rural",
+          "cityOrArea": "North Valley Towns",
+          "socialLayers": [
+            "family-business",
+            "agriculture"
+          ],
+          "architecture": [
+            "village",
+            "warehouse"
+          ],
+          "simulationMode": "aggregate",
+          "seasonBand": "quiet",
+          "memoryCount": 0,
+          "ageBand": "low"
+        },
+        {
+          "id": "region:mountain",
+          "publicLabel": "Mountain Network (fictionalized)",
+          "role": "mountain",
+          "cityOrArea": "Mountain Pass Country",
+          "socialLayers": [
+            "seasonal-work",
+            "old-families"
+          ],
+          "architecture": [
+            "stone",
+            "forest-edge"
+          ],
+          "simulationMode": "aggregate",
+          "seasonBand": "weathered",
+          "memoryCount": 0,
+          "ageBand": "low"
+        }
+      ],
+      "links": [
+        {
+          "id": "link:capital-coast",
+          "fromRegionId": "region:capital",
+          "toRegionId": "region:coast",
+          "linkType": "rail",
+          "travelBand": "high",
+          "status": "open"
+        },
+        {
+          "id": "link:rural-mountain",
+          "fromRegionId": "region:rural",
+          "toRegionId": "region:mountain",
+          "linkType": "road",
+          "travelBand": "moderate",
+          "status": "restricted"
+        }
+      ],
+      "omittedFields": [
+        "policeDomain",
+        "economyProfile",
+        "privateMemory",
+        "exactTravelDays",
+        "baseFriction",
+        "event payload",
+        "lastEventHash"
+      ]
+    },
+    "markets": {
+      "schemaVersion": 1,
+      "worldId": "wwk-regional-runtime",
+      "simulationDate": "1999-01-01",
+      "markets": [
+        {
+          "id": "market:capital",
+          "regionId": "region:capital",
+          "commodity": "nightlife-demand",
+          "priceBand": "high",
+          "supplyBand": "high",
+          "demandBand": "moderate",
+          "inventoryBand": "low",
+          "ecologicalPressureBand": "low",
+          "confidenceBand": "moderate"
+        },
+        {
+          "id": "market:coast",
+          "regionId": "region:coast",
+          "commodity": "seasonal-hospitality",
+          "priceBand": "high",
+          "supplyBand": "moderate",
+          "demandBand": "high",
+          "inventoryBand": "low",
+          "ecologicalPressureBand": "low",
+          "confidenceBand": "moderate"
+        }
+      ],
+      "links": [
+        {
+          "id": "link:capital-coast-market",
+          "status": "open",
+          "capacityBand": "low",
+          "latencyBand": "high"
+        }
+      ],
+      "omittedFields": [
+        "exact supply",
+        "exact demand",
+        "exact inventory",
+        "legal pressure",
+        "faction control",
+        "shock history",
+        "event hashes"
+      ]
+    },
+    "logistics": {
+      "schemaVersion": 1,
+      "simulationDate": "1999-01-01",
+      "routes": [
+        {
+          "id": "route:capital-coast-fictional",
+          "status": "available",
+          "travelTimeBand": "medium",
+          "riskBand": "moderate",
+          "borderState": "open",
+          "fallbackCount": 1
+        }
+      ],
+      "planCount": 0,
+      "transitCount": 0,
+      "omittedFields": [
+        "segments",
+        "accessRequirements",
+        "contacts",
+        "coverBusiness",
+        "cargoClass",
+        "exact travel hours",
+        "risk score",
+        "events",
+        "lastEventHash"
+      ]
+    },
+    "underworld": {
+      "schemaVersion": 1,
+      "shardId": "shard:regional-runtime",
+      "serverEra": "1999-Q1-fictional",
+      "serverWeek": 0,
+      "markets": [
+        {
+          "id": "market:shared-vehicle-demand",
+          "regionId": "region:coast",
+          "commodityClass": "vehicle-demand",
+          "pressureBand": "moderate",
+          "indexBand": "moderate"
+        }
+      ],
+      "npcBaselines": [
+        {
+          "regionId": "region:coast",
+          "populationBand": "high",
+          "liquidityBand": "high"
+        }
+      ],
+      "organizations": [
+        {
+          "id": "organization:lanterns",
+          "headquartersRegionId": "region:capital",
+          "offlineWeeks": 0,
+          "completedWorkCount": 0,
+          "activeWorkCount": 0
+        },
+        {
+          "id": "organization:rivals",
+          "headquartersRegionId": "region:coast",
+          "offlineWeeks": 0,
+          "completedWorkCount": 0,
+          "activeWorkCount": 0
+        }
+      ],
+      "properties": [
+        {
+          "id": "property:coastal-warehouse",
+          "regionId": "region:coast",
+          "propertyType": "business-site",
+          "status": "held"
+        }
+      ],
+      "physicalSessionCount": 0,
+      "activePlayerCount": 0,
+      "omittedFields": [
+        "pressure",
+        "index",
+        "history",
+        "playerCharacters",
+        "playerSessions",
+        "marketInfluenceLedger",
+        "events",
+        "lastEventHash"
+      ]
+    },
+    "content": {
+      "schemaVersion": 1,
+      "packId": "pack:regional-vertical-b",
+      "activeEra": "late-1990s",
+      "counts": {
+        "regions": 4,
+        "npcs": 12,
+        "businesses": 4,
+        "organizations": 2,
+        "locations": 8,
+        "routes": 4,
+        "scheduleTemplates": 12
+      },
+      "activeEraVariantCount": 4,
+      "regionLabels": [
+        {
+          "id": "region:capital",
+          "label": "Capital Network (fictionalized)"
+        },
+        {
+          "id": "region:coast",
+          "label": "Coastal Network (fictionalized)"
+        },
+        {
+          "id": "region:rural",
+          "label": "Rural Network (fictionalized)"
+        },
+        {
+          "id": "region:mountain",
+          "label": "Mountain Network (fictionalized)"
+        }
+      ],
+      "omittedFields": [
+        "private authoring metadata",
+        "event history",
+        "source revisions",
+        "unactivated era variants"
+      ]
+    },
+    "omittedFields": [
+      "coordinator events",
+      "exact transport contacts",
+      "private organization work",
+      "player session identity",
+      "event hashes"
+    ]
+  },
   "projection": {
     "projectionVersion": 1,
     "scope": "public",

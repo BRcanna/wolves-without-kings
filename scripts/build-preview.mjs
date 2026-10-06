@@ -5,6 +5,7 @@ import { admitScenarioPack, buildVerticalScenarioPack, createScenarioRegistry, p
 import { projectWorld } from "../src/wolves-without-kings/projection.mjs";
 import { buildUiProjection } from "../src/wolves-without-kings/ui-projection.mjs";
 import { runVerticalHistory } from "../src/wolves-without-kings/vertical-slice.mjs";
+import { createRegionalRuntime, projectRegionalRuntime } from "../src/wolves-without-kings/regional-runtime.mjs";
 
 const { world, summary } = runVerticalHistory("relationship");
 const projection = projectWorld(world, { scope: "public" });
@@ -37,12 +38,14 @@ let scenarioState = createScenarioRegistry({
   knownLocationIds: contentPack.locations.map((location) => location.id),
 });
 scenarioState = admitScenarioPack(scenarioState, { expectedRevision: scenarioState.revision, scenes: scenarioPack.scenes });
+const regionalProjection = projectRegionalRuntime(createRegionalRuntime());
 const payload = {
   previewVersion: 1,
   generatedAt: world.date,
   summary,
   content: projectContent(contentState),
   scenario: projectScenario(scenarioState),
+  regional: regionalProjection,
   projection,
   ui: buildUiProjection({
     calendar: {

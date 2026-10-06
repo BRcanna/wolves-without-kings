@@ -1385,3 +1385,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local append-only persistence contract, not a production database, replication/failover system, encryption-at-rest implementation, multi-process locking protocol, availability/load proof, or online service.
+
+## Episode 65 — Regional public browser projection
+
+Implemented:
+
+- the deterministic preview payload now carries the four-region regional-runtime public projection alongside the vertical-slice scenario;
+- the browser renders qualitative region roles, fidelity bands, seasonal bands, age bands, and public link counts;
+- exact travel, friction, institutional, cargo, session, organization-work, and event-hash fields remain outside the browser surface.
+
+Acceptance evidence:
+
+- `preview-ui.test.mjs` and `renderer.test.mjs` verify generated regional payloads, browser wiring, and public redaction;
+- `npm run preview:build` and `npm run verify` pass with the updated public preview artifact.
+
+Boundary:
+
+- this is a local public projection, not a native client, live regional stream, accessibility/localization certification, production synchronization, or factual geographic/cultural representation.

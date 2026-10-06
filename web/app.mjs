@@ -46,6 +46,19 @@ function appendMarket(container, market) {
   container.append(card);
 }
 
+function appendRegionalRegion(container, region, linkCount) {
+  const card = document.createElement("article");
+  card.className = "card";
+  const title = document.createElement("h3");
+  title.append(text(region.publicLabel));
+  const role = document.createElement("p");
+  role.append(text(`${region.role} · ${region.simulationMode} continuity`));
+  const season = document.createElement("p");
+  season.append(text(`${region.seasonBand} seasonal band · ${region.ageBand} age band · ${linkCount} public link${linkCount === 1 ? "" : "s"}`));
+  card.append(title, role, season);
+  container.append(card);
+}
+
 function appendUiCard(container, titleText, bodyText) {
   const card = document.createElement("article");
   card.className = "card";
@@ -140,6 +153,16 @@ function renderUi(ui) {
   ui.notifications.forEach((notification) => appendUiCard(document.querySelector("#notifications-list"), notification.label, notification.tone));
 }
 
+function renderRegional(regional) {
+  const container = document.querySelector("#regional-list");
+  const linkCounts = new Map(regional.geography.regions.map((region) => [region.id, 0]));
+  regional.geography.links.forEach((link) => {
+    linkCounts.set(link.fromRegionId, (linkCounts.get(link.fromRegionId) ?? 0) + 1);
+    linkCounts.set(link.toRegionId, (linkCounts.get(link.toRegionId) ?? 0) + 1);
+  });
+  regional.geography.regions.forEach((region) => appendRegionalRegion(container, region, linkCounts.get(region.id) ?? 0));
+}
+
 async function render() {
   try {
     const response = await fetch("./scenario.json", { cache: "no-store" });
@@ -192,6 +215,7 @@ async function render() {
       }
     }
     renderUi(payload.ui);
+    renderRegional(payload.regional);
     renderScenario(payload.scenario, { authority });
     const metrics = document.querySelector("#summary");
     appendMetric(metrics, "world date", summary.date);
