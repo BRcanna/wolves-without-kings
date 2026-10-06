@@ -1130,3 +1130,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 53 — Authored scenario runtime bridge
+
+Implemented:
+
+- authored observe choices emit bounded information-history events;
+- authored meet choices resolve through the relationship authority path;
+- authored delegate choices claim organization work through the lease authority path;
+- stale dispatch rejects before mutation and client outcomes are never trusted;
+- the fiction/safety boundary remains explicit.
+
+Acceptance evidence:
+
+- `npm test` passes 180 tests, including two scenario-runtime tests;
+- `scenario-runtime.test.mjs` proves observe, meet, and delegate outcomes plus stale rejection;
+- `npm run preview:build` and `npm run verify` pass.
+
+Boundary:
+
+- this is a deterministic local runtime bridge for fictional consequences, not a production mission executor, authored dialogue/audio system, animation system, or real-world operational guide.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.

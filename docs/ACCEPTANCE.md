@@ -58,6 +58,7 @@
 | Vertical slice admits a functional authored district package with residents, businesses, organizations, routes, schedules, and era variants | `content-pack.test.mjs`, `SECTION_49_DISTRICT_CONTENT.md` | PASS |
 | Branchable authored scenario graph references admitted locations, persists choices, restores history, and rejects instructional language | `scenario-pack.test.mjs`, `SECTION_50_SCENARIO_CONTENT.md` | PASS |
 | Authored district IDs remain aligned with authoritative runtime locations, routes, residents, businesses, and organizations | `content-pack.test.mjs`, `SECTION_51_CONTENT_RUNTIME_ALIGNMENT.md` | PASS |
+| Authored observe, meet, and delegate choices dispatch into bounded event, relationship, and organization outcomes | `scenario-runtime.test.mjs`, `SECTION_52_SCENARIO_RUNTIME.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |
