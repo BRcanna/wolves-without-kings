@@ -1706,3 +1706,22 @@ Acceptance evidence:
 Boundary:
 
 - this is executable local HTTP transport and deterministic membership/election evidence, not production cross-host networking, service discovery, clock synchronization, process supervision, partition recovery, TLS/mTLS operations, cloud orchestration, or SLA/failover acceptance.
+
+## Episode 83 — Isolated backup store and retention execution
+
+Implemented:
+
+- `isolated-backup-store.mjs` requires separate source and repository roots and keeps catalog state inside the isolated repository target;
+- immutable backup publication and catalog registration share the validated digest path from the existing backup repository;
+- verification checks repository health and catalog-to-object digest/path parity before destructive work;
+- retention remains non-mutating until an explicit authorization flag is supplied, then removes only eligible unpinned objects and updates the catalog;
+- restore continues through the validated repository path with destination protection.
+
+Acceptance evidence:
+
+- `isolated-backup-store.test.mjs` passes root-isolation validation, publication, verification, review-only planning, authorized retention execution, restore, and fail-closed source-path checks;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is an executable isolated local-store contract, not cloud/off-host custody, encryption/object lock, access control, scheduled deletion, disaster recovery, restore-time objectives, or production backup/SLA acceptance.

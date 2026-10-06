@@ -6,6 +6,8 @@ The project starts from the supplied mechanics docuseries and follows its depend
 
 ## Current build slice
 
+- Current published scope: Sections 3–84, including isolated backup publication, digest-parity verification, reviewable retention, and explicitly authorized retention execution.
+
 - Phase 0 foundation: canonical state, event ontology, world time, save/replay.
 - Revision-bound mutation: stale proposals fail before any state changes.
 - Event chain: every committed event carries actors, subjects, location, cause, visibility, provenance, and a SHA-256 parent hash.
