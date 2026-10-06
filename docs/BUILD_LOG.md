@@ -1154,3 +1154,27 @@ Boundary:
 Still open:
 
 - production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
+
+## Episode 54 — Integrated vertical-slice runtime bundle
+
+Implemented:
+
+- engine world, content registry, and authored scenario registry save as one versioned bundle;
+- each subsystem keeps its own hash/revision validation;
+- content-pack and scenario location identity bindings are checked on restore;
+- canonical district topology survives bundle round-trip;
+- tampered subsystem history fails closed.
+
+Acceptance evidence:
+
+- `npm test` passes 182 tests, including two runtime-bundle tests;
+- `runtime-bundle.test.mjs` proves full bundle equality and tampered scenario-history rejection;
+- `npm run verify` passes with external gates still recorded separately.
+
+Boundary:
+
+- this is a deterministic local persistence boundary, not crash-safe filesystem writing, cloud backup durability, online rollback, or a production migration service.
+
+Still open:
+
+- production network deployment, authentication/encryption, moderation, remaining technical/content volumes, hardware acceptance, and the explicitly deferred online MMO layer.
