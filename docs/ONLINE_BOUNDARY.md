@@ -35,6 +35,7 @@ The current repository is single-player with a tested in-process authority contr
 - the shard now has a deterministic strict-majority checkpoint contract over three or more local journal placements, with partition fail-closed behavior, stale-node repair, and divergent-history rejection; actual cross-host transport, distributed membership/election, encryption, orchestration, failover timing, and production acceptance remain unimplemented.
 - the shard now exports and restores a digest-bound, parity-checked journal-set backup with destination protection; encrypted custody, off-host/cloud storage, object lock, scheduled retention, disaster recovery objectives, and production backup acceptance remain unimplemented.
 - validated Underworld backups now publish to a safe local immutable object repository with idempotent replay, verification, and restore; cloud/off-host isolation, object lock, encryption, access control, retention deletion, disaster recovery, and production backup acceptance remain unimplemented.
+- the local Underworld backup catalog now records digests and produces pinned/future-aware retention plans without deletion; scheduling, destructive authorization, cloud/off-host custody, encryption, access control, disaster recovery, and production backup acceptance remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.

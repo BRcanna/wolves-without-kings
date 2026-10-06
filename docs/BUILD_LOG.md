@@ -1964,3 +1964,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a local portable repository for fictional online-Underworld backups, not cloud/off-host custody, object lock, encryption at rest, access control, replication transport, retention deletion, disaster recovery, or production restore/SLA acceptance.
+
+## Episode 98 — Online Underworld backup catalog and retention plan
+
+Implemented:
+
+- `underworld-backup-catalog.mjs` registers complete validated backups with shard/week/revision metadata, digest, creation time, and pinned status;
+- repeated metadata-identical registration is idempotent and changed metadata is rejected;
+- retention planning keeps the newest eligible backups plus pinned and future-dated history, reporting candidates without deleting files.
+
+Acceptance evidence:
+
+- `underworld-backup-catalog.test.mjs` passes digest-backed registration, idempotent replay, pinned retention, non-destructive planning, changed-metadata rejection, and tampered-backup rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local catalog and retention-planning contract for fictional online-Underworld backups, not scheduled jobs, destructive deletion, cloud/off-host custody, encryption, access control, disaster-recovery objectives, or production restore/availability acceptance.
