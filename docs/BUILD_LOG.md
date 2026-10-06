@@ -1247,3 +1247,26 @@ Boundary:
 Later verification:
 
 - test authoritative browser-to-runtime transport, persistence, synchronization, moderation, availability, and fresh-player usability in a separately deployed environment.
+
+## Episode 58 — Loopback HTTP authority adapter
+
+Implemented:
+
+- the in-process authority service is now reachable through a real local Node HTTP socket;
+- health, session connection, ordered input, duplicate/stale errors, malformed JSON, and redacted response behavior are exercised over loopback;
+- `npm run serve:authority` provides a bounded local process entry point on `127.0.0.1`;
+- the adapter enforces a request-body limit and does not expose server-private authority payloads.
+
+Acceptance evidence:
+
+- `npm test` includes two ephemeral-socket HTTP tests;
+- `npm run verify` checks the new acceptance row and evidence files;
+- the existing in-process service tests remain green.
+
+Boundary:
+
+- this is a local socket adapter, not TLS/authentication, durable storage, moderation operations, failover, load/availability, browser compatibility, or production deployment proof.
+
+Later verification:
+
+- connect the browser scenario surface to an authoritative runtime endpoint only after session/authentication, persistence, synchronization, and moderation policy are specified and tested.

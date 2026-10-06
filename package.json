@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test",
     "demo": "node src/wolves-without-kings/demo.mjs",
+    "serve:authority": "node scripts/serve-authority.mjs",
     "preview:build": "node scripts/build-preview.mjs",
     "verify": "node scripts/verify-docuseries.mjs",
     "verify:all": "npm test && npm run preview:build && npm run verify"
