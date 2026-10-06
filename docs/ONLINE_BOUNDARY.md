@@ -31,6 +31,7 @@ The current repository is single-player with a tested in-process authority contr
 - the bounded online shard now has a local fsynced hash-chained checkpoint journal with crash-tail recovery and tamper rejection; production database custody, cross-host replication, encryption, failover, matchmaking, anti-cheat, moderation, availability, and full online breadth remain unimplemented.
 - the bounded online shard now also has a loopback bearer-authenticated HTTP adapter for public projection and revision-bound session/market/property/settlement mutations; production networking, TLS/CA, cross-host deployment, matchmaking, anti-cheat, moderation, availability, and full online breadth remain unimplemented.
 - the shard now restores an offline session only through its original character/region binding and exposes reconnect evidence over HTTP; matchmaking, cross-host migration, anti-cheat, production failover, account recovery, and full online breadth remain unimplemented.
+- the shard now mirrors local checkpoints to two independently readable journals and repairs shorter history while rejecting divergence; cross-host replication, quorum, partition recovery, encrypted custody, orchestration, and production failover remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.

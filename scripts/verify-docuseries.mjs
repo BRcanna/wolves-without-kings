@@ -22,8 +22,8 @@ const scenarioLedger = readRequired("docs/SCENARIO_ACCEPTANCE.md");
 const deliveryMatrix = readRequired("docs/DOCUSERIES_DELIVERY_MATRIX.md");
 const preview = JSON.parse(readRequired("web/scenario.json"));
 
-if (!readme.includes("Sections 3–94")) {
-  fail("README does not declare the current Sections 3–94 build scope");
+if (!readme.includes("Sections 3–95")) {
+  fail("README does not declare the current Sections 3–95 build scope");
 }
 
 for (const scriptName of ["test", "preview:build", "verify"]) {

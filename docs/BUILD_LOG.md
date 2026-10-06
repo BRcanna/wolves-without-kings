@@ -1895,3 +1895,20 @@ Acceptance evidence:
 Boundary:
 
 - this is local reconnect continuity, not matchmaking, cross-host session migration, anti-cheat, production failover, account recovery, or full persistent online Underworld breadth.
+
+## Episode 94 — Mirrored online Underworld checkpoints
+
+Implemented:
+
+- `replicated-underworld-store.mjs` writes validated shard checkpoints to primary and replica journals;
+- startup repairs missing or shorter local history from the surviving valid journal and rejects divergent checkpoint chains;
+- state and journal access are cloned, same-path configuration is rejected, and invalid checkpoint state fails closed.
+
+Acceptance evidence:
+
+- `replicated-underworld-store.test.mjs` passes mirrored checkpoint, missing-primary recovery, stale-copy repair, divergence rejection, configuration rejection, and invalid-state tests;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is same-process, same-host mirrored shard persistence, not cross-host replication, quorum consensus, network partition recovery, encrypted custody, orchestration, failover timing, matchmaking, anti-cheat, moderation, availability/load proof, or full persistent online Underworld breadth.
