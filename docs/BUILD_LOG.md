@@ -1861,3 +1861,20 @@ Acceptance evidence:
 Boundary:
 
 - this is local durable shard persistence, not a production database, cross-host replication, encrypted custody, failover, matchmaking, anti-cheat, moderation, availability/load proof, or the full persistent online underworld breadth.
+
+## Episode 92 — Local online Underworld HTTP boundary
+
+Implemented:
+
+- `underworld-http-service.mjs` exposes public health/projection and bearer-protected session, market, property, and weekly-settlement routes;
+- the adapter composes existing revision-bound Underworld mutations and returns only next revision plus redacted public projection;
+- stale commands, malformed JSON, invalid requests, and unknown routes fail closed without leaking canonical state.
+
+Acceptance evidence:
+
+- `underworld-http-service.test.mjs` exercises the real loopback server for public routes, bearer admission, mutation, stale rejection, bounded errors, and redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local HTTP shard boundary, not production networking, TLS/CA operations, cross-host deployment, matchmaking, anti-cheat, moderation, rate/availability acceptance, encrypted persistence, or full persistent online Underworld breadth.
