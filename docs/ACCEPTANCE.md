@@ -92,6 +92,7 @@
 | Local process supervisor gates readiness on health, records failed exits, drains gracefully, bounds force-kill and explicit restart budget, and redacts process configuration | `process-supervisor.test.mjs`, `process-supervisor.mjs`, `SECTION_85_PROCESS_SUPERVISOR.md` | PASS |
 | Live TLS runtime serves HTTPS with bearer-protected mutation traffic, rotates an overlapping secure context, rejects invalid/name-mismatched material, and redacts PEM values | `live-tls-runtime.test.mjs`, `live-tls-runtime.mjs`, `SECTION_86_LIVE_TLS_RUNTIME.md` | PASS |
 | Account access requires adult consent and current MFA verification in addition to signed identity claims, rejects exhausted/suspended paths, and redacts factor/challenge material | `account-access-policy.test.mjs`, `account-access-policy.mjs`, `SECTION_87_ACCOUNT_ACCESS.md` | PASS |
+| Moderation appeals compose decided cases, require an independent reviewer, support expiring claims and explicit outcomes, restore audit history, and redact public bands | `moderation-appeals.test.mjs`, `moderation-appeals.mjs`, `SECTION_88_MODERATION_APPEALS.md` | PASS |
 | Agency-specific police cases, witnesses, jurisdiction, and aging | `police-case.test.mjs` case trace | PASS |
 | Integrated single-player year-one trace | `vertical-slice.test.mjs` three-history and replay tests | PASS |
 | Bounded surveillance knowledge, staleness, and noncombat outcomes | `surveillance.test.mjs` | PASS |

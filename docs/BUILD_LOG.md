@@ -1776,3 +1776,20 @@ Acceptance evidence:
 Boundary:
 
 - this is a deterministic local access-policy contract, not an external account provider, password/factor delivery service, real age verification, legal consent workflow, privacy/compliance system, hardware-backed custody, or production identity acceptance.
+
+## Episode 87 — Moderation appeals and independent review
+
+Implemented:
+
+- `moderation-appeals.mjs` composes with decided local moderation cases without rewriting their original allow/deny evidence;
+- appeal submissions retain caller-supplied appellant/reason digests, use expiring independent-reviewer claims, and record explicit uphold, overturn, or dismiss outcomes;
+- appeal events are hash-chained, snapshots are replay-validated, and public projection exposes only qualitative queue bands.
+
+Acceptance evidence:
+
+- `moderation-appeals.test.mjs` passes composition, independent-reviewer admission, duplicate/unresolved rejection, lease expiry, no-mutation rejection, audit restore, tamper rejection, and public redaction;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local appeal workflow contract, not staffed human moderation, policy authorship, legal or regulatory appeals, external case management, escalation staffing, response-time/SLA evidence, abuse-prevention operations, or production moderation acceptance.
