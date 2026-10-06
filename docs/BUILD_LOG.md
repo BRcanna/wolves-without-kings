@@ -1531,3 +1531,21 @@ Acceptance evidence:
 Boundary:
 
 - this is a deterministic file-backed quorum harness, not TCP/cross-host transport, leader election, membership/fencing, encrypted replication, orchestration, failover timing, load testing, SLA evidence, or production availability acceptance.
+
+## Episode 73 — Authority backup catalog and retention plan
+
+Implemented:
+
+- `authority-backup-catalog.mjs` validates backup envelopes before catalog registration and records their digest, revision, creation time, and pin state;
+- repeated registration of the same backup metadata is idempotent while changed metadata is rejected;
+- retention planning keeps the configured newest history, always retains pinned/future entries, and reports eligible deletion candidates without mutating files;
+- the existing backup reader now exposes one shared validation path for restore and catalog registration.
+
+Acceptance evidence:
+
+- `authority-backup-catalog.test.mjs` passes digest-backed registration, idempotent replay, pinned retention, non-destructive planning, metadata rejection, and tamper rejection;
+- `npm run verify` checks the new acceptance evidence and contiguous build history.
+
+Boundary:
+
+- this is a local catalog and retention-plan contract, not scheduled jobs, deletion authorization, immutable/off-host storage, encryption, disaster recovery, restore-time objectives, or production backup acceptance.

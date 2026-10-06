@@ -128,6 +128,17 @@ export function createAuthorityBackup({ primaryPath, replicaPath, backupPath } =
   return clone(backup);
 }
 
+export function readAuthorityBackup(backupPath) {
+  assertPath(backupPath, "backupPath");
+  let value;
+  try {
+    value = JSON.parse(readFileSync(backupPath, "utf8"));
+  } catch (error) {
+    throw new AuthorityBackupValidationError(`backup read failed: ${error.message}`);
+  }
+  return validateBackupEnvelope(value);
+}
+
 export function restoreAuthorityBackup(
   backupPath,
   { primaryPath, replicaPath, overwrite = false } = {},
@@ -138,12 +149,7 @@ export function restoreAuthorityBackup(
   if (primaryPath === replicaPath) throw new AuthorityBackupValidationError("primaryPath and replicaPath must be different");
   if (typeof overwrite !== "boolean") throw new AuthorityBackupValidationError("overwrite must be a boolean");
   if (!overwrite && (existsSync(primaryPath) || existsSync(replicaPath))) throw new AuthorityBackupValidationError("restore destination exists; set overwrite explicitly");
-  let backup;
-  try { backup = validateBackupEnvelope(JSON.parse(readFileSync(backupPath, "utf8"))); }
-  catch (error) {
-    if (error instanceof AuthorityBackupValidationError) throw error;
-    throw new AuthorityBackupValidationError(`backup read failed: ${error.message}`);
-  }
+  const backup = readAuthorityBackup(backupPath);
   writeTextAtomically(primaryPath, journalLines(backup.primaryEntries));
   writeTextAtomically(replicaPath, journalLines(backup.replicaEntries));
   return { worldId: backup.authorityWorldId, worldRevision: backup.worldRevision, checkpointCount: backup.primaryEntries.length };

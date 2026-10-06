@@ -13,6 +13,7 @@ The current repository is single-player with a tested in-process authority contr
 - the operational launcher can persist authority checkpoints to a local fsynced journal and the container mounts `/data`; replication, backup, encryption at rest, and failover remain unimplemented.
 - a same-host mirrored checkpoint service can repair a missing/stale copy and reject divergence; a deterministic file-backed quorum harness now models strict-majority commits, partition fail-closed behavior, stale-node repair, and split-brain rejection; actual cross-host transport, membership, fencing, and failover timing remain unimplemented.
 - a local backup envelope can validate and restore mirrored journal records with overwrite protection; retention, off-host storage, encryption, disaster recovery, and restore objectives remain unimplemented.
+- a local backup catalog can validate registrations, preserve pinned history, and produce a non-destructive retention plan; scheduling, deletion authorization, immutable/off-host storage, encryption, and production disaster recovery remain unimplemented.
 - online authority, anti-cheat, durable moderation operations, persistence operations, and availability are not claimed as implemented.
 
 This boundary is a safety and evidence statement, not a promise of multiplayer support.
